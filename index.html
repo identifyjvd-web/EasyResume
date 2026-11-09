@@ -14022,12 +14022,20 @@ function renderAcademicInputs() {
         let prePrintTransform = '';
         let prePrintMarginBottom = '';
         let prePrintBoxShadow = '';
+        let prePrintDocTitle = '';
 
         function prepareSheetForPrint() {
             if (typeof activeInlineEdit !== 'undefined' && activeInlineEdit) commitInlineEdit(false);
             if (currentResume) renderLiveA4Preview();
             updateResumeFooterTimestamp();
             
+            // Set document.title so browser's "Save as PDF" dialog defaults to:
+            // "<Candidate Name> EasyResume°.pdf"
+            if (!prePrintDocTitle) prePrintDocTitle = document.title;
+            const rawName = (currentResume?.studentName || currentResume?.title || 'Resume').trim();
+            const safeName = rawName.replace(/[/\\?%*:|"<>]/g, '').trim() || 'Resume';
+            document.title = `${safeName} EasyResume°`;
+
             const sheet = document.getElementById('live-resume-sheet');
             if (sheet) {
                 prePrintTransform = sheet.style.transform;
@@ -14040,6 +14048,10 @@ function renderAcademicInputs() {
         }
 
         function restoreSheetAfterPrint() {
+            if (prePrintDocTitle) {
+                document.title = prePrintDocTitle;
+                prePrintDocTitle = '';
+            }
             const sheet = document.getElementById('live-resume-sheet');
             if (sheet) {
                 sheet.style.transform = prePrintTransform || (typeof currentZoom !== 'undefined' ? `scale(${currentZoom.toFixed(2)})` : 'none');
@@ -14055,7 +14067,7 @@ function renderAcademicInputs() {
             }
             prepareSheetForPrint();
             window.print();
-            setTimeout(restoreSheetAfterPrint, 600);
+            setTimeout(restoreSheetAfterPrint, 1000);
         }
 
         window.addEventListener('beforeprint', prepareSheetForPrint);
@@ -14391,7 +14403,7 @@ function renderAcademicInputs() {
             currentResume = res;
             prepareSheetForPrint();
             window.print();
-            setTimeout(restoreSheetAfterPrint, 600);
+            setTimeout(restoreSheetAfterPrint, 1000);
         }
 
         // Batch export selected resumes as PDF
@@ -14418,8 +14430,8 @@ function renderAcademicInputs() {
                     const sheet = document.getElementById('live-resume-sheet');
                     if (sheet) {
                         const rawName = (res.studentName || res.title || 'Resume').trim();
-                        const cleanName = rawName.replace(/[^a-zA-Z0-9_\-\s]/g, '').replace(/\s+/g, '_') || 'Resume';
-                        const filename = `${cleanName}_Resume.pdf`;
+                        const safeName = rawName.replace(/[/\\?%*:|"<>]/g, '').trim() || 'Resume';
+                        const filename = `${safeName} EasyResume°.pdf`;
                         const opt = {
                             margin: 0,
                             filename: filename,
