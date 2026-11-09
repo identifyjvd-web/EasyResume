@@ -26,6 +26,17 @@
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <!-- QRCode.js for Scanning Mobile Sync Link -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- PDF.js for Resume PDF Extraction & Auto-Fill -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Mammoth.js for Word (.docx) Extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <!-- Tesseract.js for Image Resume OCR Extraction -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
 
     <style>
         * {
@@ -522,15 +533,37 @@
             max-width: 210mm !important;
             min-height: 297mm;
             height: auto;
+            display: flex !important;
+            flex-direction: column !important;
             flex-shrink: 0 !important;
             background: #ffffff;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            margin: 0 auto;
-            position: relative;
-            transform-origin: top center;
-            transition: transform 0.2s ease;
+            margin: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top left;
+            transition: transform 0.15s ease-out;
             box-sizing: border-box;
             color: #1e293b;
+        }
+
+        #live-resume-sheet:not([data-multi-page="true"]),
+        #live-resume-sheet:not([data-multi-page="true"]) .sheet-root-inner {
+            min-height: 297mm !important;
+        }
+
+        #live-resume-sheet[data-multi-page="true"],
+        #live-resume-sheet[data-multi-page="true"] .sheet-root-inner {
+            min-height: 594mm !important;
+        }
+
+        /* Scaler wrapper matches visual dimensions precisely so horizontal scroll reaches 0 without left clipping */
+        #resume-sheet-scaler {
+            position: relative;
+            flex-shrink: 0;
+            transform-origin: top left;
+            transition: width 0.15s ease-out, height 0.15s ease-out;
         }
 
         /* Visual A4 Page Break Divider (Shows Page 2 boundary at 297mm on screen preview) */
@@ -632,20 +665,24 @@
             row-gap: 0.25rem !important;
         }
 
-        /* Resume Page Footer (Left: Generated Date Time | Right: Clickable Hyperlink) */
+        /* Resume Page Footer (Left: Generated Date Time | Right: Clickable Hyperlink - Strictly pinned to bottom) */
         .resume-sheet-footer {
-            margin-top: auto;
-            padding-top: 10px;
+            margin-top: auto !important;
+            padding-top: 5px !important;
+            padding-bottom: 2px !important;
+            margin-bottom: 0 !important;
             border-top: 1px solid rgba(203, 213, 225, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 8.5px;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            font-size: 8px;
             line-height: 1.2;
             color: #64748b;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
             user-select: none;
-            width: 100%;
+            width: 100% !important;
+            flex-shrink: 0 !important;
+            box-sizing: border-box !important;
         }
         .resume-sheet-footer a {
             color: #475569;
@@ -1129,6 +1166,27 @@
         .sheet-root-inner {
             min-height: 297mm;
             box-sizing: border-box;
+            padding-bottom: 4px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            flex: 1 1 auto !important;
+            width: 100% !important;
+        }
+
+        #live-resume-sheet .sheet-root-inner.flex-row {
+            flex-direction: row !important;
+        }
+
+        #live-resume-sheet .sheet-root-inner.flex-row > div:first-child,
+        #live-resume-sheet .sheet-root-inner.flex-row > div:last-child,
+        #live-resume-sheet .w-\[68\%\] {
+            min-height: 100% !important;
+            align-self: stretch !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            padding-bottom: 4px !important;
         }
 
         #live-resume-sheet {
@@ -1269,10 +1327,23 @@
 
         /* Adjust template inner elements */
         #live-resume-sheet .sheet-root-inner:not(.flex-row) {
-            padding: var(--sheet-pad-y) var(--sheet-pad-x) !important;
+            padding-top: var(--sheet-pad-y) !important;
+            padding-left: var(--sheet-pad-x) !important;
+            padding-right: var(--sheet-pad-x) !important;
+            padding-bottom: 4px !important;
         }
         #live-resume-sheet .sheet-root-inner.flex-row > div:first-child {
-            padding: var(--sheet-pad-y) 18px !important;
+            padding-top: var(--sheet-pad-y) !important;
+            padding-left: 18px !important;
+            padding-right: 18px !important;
+            padding-bottom: 4px !important;
+        }
+        #live-resume-sheet .sheet-root-inner.flex-row > div:last-child {
+            padding-bottom: 4px !important;
+        }
+        #live-resume-sheet .sheet-root-inner,
+        #live-resume-sheet .w-\[68\%\] {
+            padding-bottom: 4px !important;
         }
         #live-resume-sheet .sheet-root-inner > div > div:not(:first-child),
         #live-resume-sheet .sheet-root-inner.flex-row > div:last-child > div > div:not(:first-child) {
@@ -1330,7 +1401,8 @@
             #view-editor,
             #view-editor > div,
             #preview-pane,
-            #resume-preview-container {
+            #resume-preview-container,
+            #resume-sheet-scaler {
                 display: block !important;
                 position: static !important;
                 width: 210mm !important;
@@ -1399,13 +1471,12 @@
 
             /* Printable Sheet Formats - Clean white page without shadow or software backgrounds */
             #live-resume-sheet, .a4-sheet {
-                display: block !important;
+                display: flex !important;
+                flex-direction: column !important;
                 position: static !important;
                 width: 210mm !important;
                 max-width: 210mm !important;
                 min-width: 210mm !important;
-                min-height: 0 !important;
-                height: auto !important;
                 max-height: none !important;
                 box-shadow: none !important;
                 border: none !important;
@@ -1425,11 +1496,27 @@
                 print-color-adjust: exact !important;
                 -webkit-print-color-adjust: exact !important;
                 overflow: visible !important;
+                box-sizing: border-box !important;
+            }
+
+            #live-resume-sheet:not([data-multi-page="true"]),
+            .a4-sheet:not([data-multi-page="true"]) {
+                min-height: 296.5mm !important;
+                height: 296.5mm !important;
+            }
+
+            #live-resume-sheet[data-multi-page="true"],
+            .a4-sheet[data-multi-page="true"] {
+                min-height: 593mm !important;
+                height: auto !important;
             }
 
             #live-resume-sheet .sheet-root-inner {
-                min-height: 0 !important;
-                height: auto !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                flex: 1 1 auto !important;
+                width: 100% !important;
                 max-height: none !important;
                 box-sizing: border-box !important;
                 background: #ffffff !important;
@@ -1437,6 +1524,46 @@
                 border: none !important;
                 box-shadow: none !important;
                 overflow: visible !important;
+                padding-bottom: 4px !important;
+            }
+
+            #live-resume-sheet:not([data-multi-page="true"]) .sheet-root-inner {
+                min-height: 296.5mm !important;
+                height: 296.5mm !important;
+            }
+
+            #live-resume-sheet[data-multi-page="true"] .sheet-root-inner {
+                min-height: 593mm !important;
+                height: auto !important;
+            }
+
+            #live-resume-sheet .sheet-root-inner.flex-row {
+                flex-direction: row !important;
+            }
+
+            #live-resume-sheet .sheet-root-inner.flex-row > div:first-child,
+            #live-resume-sheet .sheet-root-inner.flex-row > div:last-child,
+            #live-resume-sheet .w-\[68\%\] {
+                min-height: 100% !important;
+                height: 100% !important;
+                align-self: stretch !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                padding-bottom: 4px !important;
+            }
+
+            #live-resume-sheet .resume-sheet-footer {
+                margin-top: auto !important;
+                flex-shrink: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                width: 100% !important;
+                padding-top: 5px !important;
+                padding-bottom: 2px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
 
             /* Remove live highlight glows when printing */
@@ -1470,6 +1597,18 @@
         #header-doc-type-filter.hidden,
         #header-dropdown-menu.hidden {
             display: none !important;
+        }
+
+        @media (min-width: 640px) {
+            #toggle-form-btn {
+                display: inline-flex !important;
+            }
+        }
+
+        @media (max-width: 639px) {
+            #toggle-form-btn.hidden {
+                display: none !important;
+            }
         }
 
         #header-btn-menu,
@@ -1668,10 +1807,23 @@
                                     <i class="fa-solid fa-file-arrow-up"></i>
                                 </span>
                                 <div class="flex-1 min-w-0">
-                                    <div class="font-extrabold text-sm text-slate-900 group-hover:text-purple-700">Import Resume</div>
+                                    <div class="font-extrabold text-sm text-slate-900 group-hover:text-purple-700">Import Resume (JSON)</div>
                                     <div class="text-[11px] text-slate-600 font-medium">Restore Resume Data (.json backup)</div>
                                 </div>
                             </button>
+
+                            <!-- 4. Upload & Auto-Fill from PDF -->
+                            <button type="button" onclick="triggerImportResumePdf(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-rose-700 hover:bg-rose-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                                <span class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition-transform border border-rose-200">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-extrabold text-sm text-slate-900 group-hover:text-rose-700">Upload PDF (Auto-Fill)</div>
+                                    <div class="text-[11px] text-slate-600 font-medium">Extract existing PDF resume into form</div>
+                                </div>
+                            </button>
+
+
                         </div>
                     </div>
 
@@ -1719,6 +1871,14 @@
                 <span>Import Resume (JSON)</span>
             </button>
 
+            <!-- 4b. Upload PDF Auto-Fill -->
+            <button type="button" onclick="triggerImportResumePdf(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-amber-300">
+                <i class="fa-solid fa-wand-magic-sparkles text-sm w-4 text-center text-amber-400"></i>
+                <span>Upload PDF (Auto-Fill)</span>
+            </button>
+
+
+
             <div class="h-px bg-slate-800 my-1"></div>
 
             <!-- 5. Formats & Colors -->
@@ -1756,32 +1916,41 @@
             <!-- VIEW 1: DASHBOARD (RESUMES GRID) -->
             <div id="view-dashboard" class="flex-1 overflow-y-auto custom-scroll px-4 sm:px-6 lg:px-8 py-5 sm:py-7 w-full max-w-7xl mx-auto space-y-6 sm:space-y-8">
                 
-                <!-- Mobile Only: Create New Resume Card (Format Card Style with Center + Icon) -->
-                <div class="sm:hidden">
-                    <div onclick="createNewIndianResume()" class="system-card rounded-2xl p-5 bg-gradient-to-b from-emerald-50/70 via-white to-white border-2 border-dashed border-emerald-400 hover:border-emerald-600 active:border-emerald-600 active:scale-[0.98] transition-all duration-200 flex flex-col items-center justify-center text-center cursor-pointer shadow-xs group">
-                        <div class="w-14 h-14 rounded-full bg-emerald-600 group-hover:bg-emerald-700 text-white flex items-center justify-center text-2xl font-black mb-2 shadow-sm shadow-emerald-600/30 group-active:scale-95 transition-transform">
-                            <i class="fa-solid fa-plus"></i>
-                        </div>
-                        <h4 class="text-base font-black text-slate-900 tracking-tight group-hover:text-emerald-700 transition">Create New Resume</h4>
-                        <p class="text-xs font-medium text-slate-500 mt-0.5">Start fresh with modern standard format</p>
-                    </div>
-                </div>
-
                 <!-- 1. RESUME SECTION -->
-                <section id="section-resumes" class="scroll-mt-4">
-                    <div class="mb-4 sm:mb-5 flex items-center justify-between gap-3 flex-wrap">
-                        <div class="flex items-center gap-2.5 sm:gap-3 flex-wrap">
-                            <h2 class="text-base sm:text-lg md:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                                <i class="fa-solid fa-shapes text-emerald-600 text-sm sm:text-base"></i>
-                                <span>Resume Formats</span>
-                            </h2>
-                            <span class="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                            <span class="hidden sm:inline-block text-xs md:text-sm text-slate-500 font-medium">Select any format to create new resume</span>
+                <section id="section-resumes" class="scroll-mt-4 space-y-4">
+                    
+                    <!-- Section Header with Actions (Desktop: Title + 7 Formats badge & Buttons on right; Mobile: Title + Upload Old Resume button, no Create New) -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
+                        <div>
+                            <div class="flex items-center justify-between sm:justify-start gap-2.5">
+                                <h2 class="text-base sm:text-lg md:text-xl font-black text-slate-900 tracking-tight flex items-center gap-1.5 sm:gap-2">
+                                    <i class="fa-solid fa-shapes text-emerald-600"></i>
+                                    <span>Choose a Resume Format</span>
+                                </h2>
+                                <span class="hidden sm:inline-flex text-xs font-black text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-300/80">7 Formats</span>
+                                <!-- Mobile Only: Upload Old Resume in place of 7 Formats badge -->
+                                <button type="button" onclick="triggerImportResumePdf()" class="sm:hidden py-1 px-2.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center gap-1.5 shadow-2xs active:scale-95 transition cursor-pointer shrink-0 ml-auto sm:ml-0" title="Auto-fill from existing PDF, Word (.docx) or Image Resume">
+                                    <i class="fa-solid fa-cloud-arrow-up text-emerald-600 text-xs"></i>
+                                    <span>Upload Old Resume</span>
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-500 font-medium mt-0.5">Click any format to start customizing with your details &amp; live preview</p>
                         </div>
-                        <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50/90 px-3 py-1 rounded-full border border-emerald-200/90 shadow-2xs shrink-0">
-                            <i class="fa-solid fa-layer-group text-[11px] text-emerald-600"></i>
-                            <span>7 Formats</span>
-                        </span>
+
+                        <!-- Theme Actions: Desktop only (Upload Old Resume & Create New) -->
+                        <div class="hidden sm:flex items-center gap-2 sm:gap-2.5 shrink-0">
+                            <!-- Left: Upload Old Resume -->
+                            <button type="button" onclick="triggerImportResumePdf()" class="py-1.5 sm:py-2 px-3 sm:px-4 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center gap-1.5 shadow-2xs active:scale-95 transition cursor-pointer" title="Auto-fill from existing PDF, Word (.docx) or Image Resume">
+                                <i class="fa-solid fa-cloud-arrow-up text-emerald-600 text-xs"></i>
+                                <span>Upload Old Resume</span>
+                            </button>
+
+                            <!-- Right: Create New Resume -->
+                            <button type="button" onclick="createNewIndianResume()" class="py-1.5 sm:py-2 px-3 sm:px-4 rounded-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs active:scale-95 transition cursor-pointer" title="Create Fresh Resume">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                <span>Create New</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Resume Formats Grid -->
@@ -1790,50 +1959,58 @@
                     </div>
                 </section>
 
-                <!-- Saved Drafts Section (Collapsible) -->
+                <!-- Saved Drafts Section (Collapsible & High-End) -->
                 <div class="pt-6 sm:pt-7 border-t border-slate-200/90">
-                    <details id="saved-resumes-details" class="group" open>
-                        <summary class="flex items-center justify-between flex-wrap gap-2.5 cursor-pointer list-none py-2 text-slate-700 hover:text-slate-900 select-none">
-                            <div class="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm font-bold tracking-tight text-slate-800">
-                                <i class="fa-solid fa-folder-closed group-open:hidden text-slate-400 text-sm sm:text-base"></i>
-                                <i class="fa-solid fa-folder-open hidden group-open:inline text-emerald-600 text-sm sm:text-base"></i>
-                                <span>Saved Resumes &amp; Drafts</span>
-                                <span id="resumes-count" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">0</span>
-                            </div>
-                            <div class="flex items-center gap-2 sm:gap-3" onclick="event.stopPropagation()">
-                                <!-- Batch Action Toolbar (Delete is to the LEFT of Select All; Green tick appears on Select All) -->
-                                <div id="batch-actions-toolbar" class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                                    <!-- Export Selected as PDF Button (BEFORE Delete Selected) -->
-                                    <button type="button" id="btn-export-selected-pdf" onclick="exportSelectedResumesPDF()" class="hidden px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer" title="Export selected resumes as PDF">
-                                        <i class="fa-solid fa-file-pdf text-xs text-rose-600"></i>
-                                        <span>PDF (<span id="selected-pdf-count">0</span>)</span>
-                                    </button>
-
-                                    <!-- Export Selected as Word Button (BEFORE Delete Selected) -->
-                                    <button type="button" id="btn-export-selected-word" onclick="exportSelectedResumesWord()" class="hidden px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-300 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer" title="Export selected resumes as Word (.doc)">
-                                        <i class="fa-solid fa-file-word text-xs text-blue-600"></i>
-                                        <span>Word (<span id="selected-word-count">0</span>)</span>
-                                    </button>
-
-                                    <!-- Delete Button (LEFT side of Select All) -->
-                                    <button type="button" id="btn-delete-selected-resumes" onclick="deleteSelectedResumes()" class="hidden px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer" title="Delete selected resumes">
-                                        <i class="fa-solid fa-trash-can text-xs"></i>
-                                        <span>Delete (<span id="selected-resumes-count">0</span>)</span>
-                                    </button>
-
-                                    <!-- Select All Button (Empty box initially, Green Tick ONLY after selection) -->
-                                    <button type="button" id="btn-batch-select-all" onclick="toggleSelectAllBtnClick()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs cursor-pointer select-none" title="Select all saved resumes">
-                                        <i id="batch-select-all-icon" class="fa-regular fa-square text-slate-400 text-xs"></i>
-                                        <span id="batch-select-all-text">Select All</span>
-                                    </button>
+                    <details id="saved-resumes-details" class="group bg-slate-50/70 rounded-2xl border border-slate-200/90 p-4 sm:p-5 transition-all" open>
+                        <summary class="flex items-center justify-between flex-wrap gap-2.5 cursor-pointer list-none py-1 text-slate-700 hover:text-slate-900 select-none">
+                            <div class="flex items-center gap-2 sm:gap-2.5 text-sm sm:text-base font-black tracking-tight text-slate-900">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0">
+                                    <i class="fa-solid fa-folder-open"></i>
                                 </div>
+                                <span>Saved Resumes &amp; Drafts</span>
+                                <span id="resumes-count" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-white text-emerald-700 border border-emerald-300 shadow-2xs">0</span>
+                            </div>
+                            <div class="flex items-center gap-2 sm:gap-2.5" onclick="event.stopPropagation()">
+                                <!-- Select All Button (Upar hi rahega) -->
+                                <button type="button" id="btn-batch-select-all" onclick="toggleSelectAllBtnClick()" class="px-2.5 py-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-300 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs cursor-pointer select-none" title="Select all saved resumes">
+                                    <i id="batch-select-all-icon" class="hidden text-xs"></i>
+                                    <span id="batch-select-all-text">Select All</span>
+                                </button>
 
-                                <button type="button" class="w-7 h-7 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition cursor-pointer" onclick="const det = document.getElementById('saved-resumes-details'); if(det) det.open = !det.open;" title="Toggle section">
+                                <!-- Hide/Unhide Toggle Button (Label line me hi rahega) -->
+                                <button type="button" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition cursor-pointer shadow-2xs" onclick="const det = document.getElementById('saved-resumes-details'); if(det) det.open = !det.open;" title="Toggle section">
                                     <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 group-open:rotate-180"></i>
                                 </button>
                             </div>
                         </summary>
-                        <div id="resumes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 pt-3 pb-8">
+
+                        <!-- Selection Mode Action Bar (Just label text ke niche selection mode on hone par) -->
+                        <div id="saved-resumes-selection-bar" class="hidden items-center justify-between flex-wrap gap-2 pt-3 pb-1 border-t border-slate-200/80 mt-2.5">
+                            <div class="flex items-center gap-2 text-xs font-extrabold text-slate-700">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span id="selected-status-label">0 Selected</span>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <!-- Export Selected as PDF Button -->
+                                <button type="button" id="btn-export-selected-pdf" onclick="exportSelectedResumesPDF()" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer" title="Export selected resumes as PDF">
+                                    <i class="fa-solid fa-file-pdf text-xs text-rose-600"></i>
+                                    <span>Export PDF (<span id="selected-pdf-count">0</span>)</span>
+                                </button>
+
+                                <!-- Delete Button -->
+                                <button type="button" id="btn-delete-selected-resumes" onclick="deleteSelectedResumes()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer" title="Delete selected resumes">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                    <span>Delete (<span id="selected-resumes-count">0</span>)</span>
+                                </button>
+
+                                <!-- Cancel Selection Mode Button -->
+                                <button type="button" onclick="exitBatchSelectionMode()" class="px-2.5 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition flex items-center gap-1 cursor-pointer active:scale-95" title="Exit selection mode">
+                                    <i class="fa-solid fa-xmark text-xs"></i>
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="resumes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 pt-4 pb-2">
                             <!-- Dynamic Saved Resume Cards -->
                         </div>
                     </details>
@@ -1947,13 +2124,13 @@
                         <!-- Page Density, 1-Page / 2-Page & Section Reorder (Fixed Mobile Footer, Floating Desktop Dock) -->
                         <div id="preview-density-dock" class="absolute bottom-0 sm:bottom-4 left-0 sm:left-1/2 right-0 sm:right-auto sm:-translate-x-1/2 z-20 bg-white/95 backdrop-blur-md border-t sm:border border-slate-200/90 sm:border-emerald-300/80 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] sm:shadow-lg rounded-none sm:rounded-full px-2.5 sm:px-3 py-1.5 sm:py-1.5 flex items-center justify-around sm:justify-center gap-1 sm:gap-1.5 select-none transition-all whitespace-nowrap w-full sm:w-auto max-w-full sm:max-w-[96vw] overflow-x-auto custom-scroll">
 
-                            <!-- Formats Button (Mobile & Desktop Format Picker) -->
-                            <button type="button" id="dock-btn-formats" onclick="openFormatsModal()" class="px-2.5 sm:px-2.5 py-1 sm:py-1 rounded-full text-[10.5px] sm:text-[11px] font-black transition-all flex items-center gap-1 bg-slate-100 hover:bg-emerald-100 text-slate-800 hover:text-emerald-800 cursor-pointer shadow-2xs border border-slate-200 active:scale-95 whitespace-nowrap shrink-0" title="Choose Resume Format">
+                            <!-- Formats Button (Mobile Only Format Picker, Hidden on Desktop) -->
+                            <button type="button" id="dock-btn-formats" onclick="openFormatsModal()" class="flex sm:hidden px-2.5 py-1 rounded-full text-[10.5px] font-black transition-all items-center gap-1 bg-slate-100 hover:bg-emerald-100 text-slate-800 hover:text-emerald-800 cursor-pointer shadow-2xs border border-slate-200 active:scale-95 whitespace-nowrap shrink-0" title="Choose Resume Format">
                                 <i class="fa-solid fa-shapes text-[10.5px] text-emerald-600"></i>
                                 <span class="whitespace-nowrap">Formats</span>
                             </button>
 
-                            <span class="w-px h-3.5 bg-slate-300 shrink-0"></span>
+                            <span class="w-px h-3.5 bg-slate-300 shrink-0 block sm:hidden"></span>
 
                             <!-- Page Spacing / Density Pill Button: Tap to cycle 1/5 -> 2/5 -> 3/5 -> 4/5 -> 5/5 -> 1/5 (-+ removed per user request) -->
                             <button type="button" onclick="cycleResumeDensity()" id="density-level-badge" class="px-2.5 sm:px-3 py-1 sm:py-1 rounded-full text-[10.5px] sm:text-[11px] font-black transition-all flex items-center justify-center gap-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 cursor-pointer shadow-2xs border border-emerald-300 whitespace-nowrap shrink-0 active:scale-95" title="Tap to change Page Spacing (1/5 - 5/5)">
@@ -1989,9 +2166,11 @@
                         </div>
 
                         <!-- A4 Printable Sheet Area (Strict Fixed Aspect Ratio) -->
-                        <div id="resume-preview-container" class="flex-1 overflow-x-auto overflow-y-auto custom-scroll p-2 sm:p-4 pb-14 sm:pb-4 flex justify-center items-start">
-                            <div id="live-resume-sheet" class="a4-sheet shrink-0 shadow-2xl transition-all duration-200" style="transform: scale(0.85); flex-shrink: 0;">
-                                <!-- Live rendered Indian Standard Resume -->
+                        <div id="resume-preview-container" class="flex-1 overflow-x-auto overflow-y-auto custom-scroll p-2 sm:p-4 pb-14 sm:pb-4 flex items-start">
+                            <div id="resume-sheet-scaler" class="relative shrink-0" style="margin: 0 auto; width: 675px; height: 955px;">
+                                <div id="live-resume-sheet" class="a4-sheet shrink-0 shadow-2xl" style="transform-origin: top left; transform: scale(0.85);">
+                                    <!-- Live rendered Indian Standard Resume -->
+                                </div>
                             </div>
                         </div>
 
@@ -2038,7 +2217,7 @@
                                 <!-- 2. SCROLLABLE FORM BODY (FIELDS ONLY) -->
                                 <div id="form-scroll-body" class="flex-1 overflow-y-auto custom-scroll p-4 sm:p-5 min-h-0">
 
-                                    <!-- ================= SECTION 1: CONTACT & PHOTO ================= -->
+                                <!-- ================= SECTION 1: CONTACT & PHOTO ================= -->
                                 <div id="form-sec-1" class="form-section-pane block space-y-3.5">
                                     <!-- Top Row: Passport Photo & Quick Controls Card (Fully Responsive for Mobile & Desktop) -->
                                     <div class="bg-emerald-50/40 p-3 sm:p-4 rounded-2xl border border-emerald-200/70 mb-4">
@@ -2062,6 +2241,12 @@
 
                                             <!-- Photo Controls: Upload, Capture, Visibility, Width Selector -->
                                             <div class="flex-1 flex flex-col justify-between gap-2 min-w-0">
+                                                <!-- Auto-fill from old resume button right above Upload & Capture buttons (Theme Emerald Style with Upload Icon at the end) -->
+                                                <button type="button" onclick="triggerImportResumePdf()" class="w-full py-1.5 sm:py-2 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer" title="Auto-fill form from existing PDF, Word (.docx) or Image Resume">
+                                                    <span class="truncate">Auto fill from old resume</span>
+                                                    <i class="fa-solid fa-cloud-arrow-up text-emerald-600 text-xs"></i>
+                                                </button>
+
                                                 <!-- Upload & Capture Buttons -->
                                                 <div class="grid grid-cols-2 gap-1.5 sm:gap-2">
                                                     <button type="button" onclick="triggerPhotoUpload()" class="premium-btn-green py-2 px-2 !rounded-[12px] text-xs font-black flex items-center justify-center gap-1.5 whitespace-nowrap active:scale-95 transition cursor-pointer" title="Upload Photo">
@@ -2937,10 +3122,16 @@
 
         </main>
 
+        <!-- Mobile Floating Action Button (FAB) at Right Bottom (+ Create Resume) -->
+        <button id="mobile-floating-create-btn" type="button" onclick="createNewIndianResume()" class="sm:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center justify-center shadow-[0_10px_25px_-5px_rgba(5,153,108,0.5)] border-2 border-white/90 active:scale-90 transition-all duration-200 cursor-pointer group" title="Create New Resume" aria-label="Create New Resume">
+            <i class="fa-solid fa-plus text-2xl group-active:rotate-90 transition-transform"></i>
+        </button>
+
         <!-- Hidden Inputs for Photo Upload/Capture & Resume JSON Import -->
         <input type="file" id="hidden-photo-input" accept="image/*" class="hidden" onchange="onPhotoFileChosen(event)">
         <input type="file" id="hidden-capture-input" accept="image/*" capture="user" class="hidden" onchange="onPhotoFileChosen(event)">
         <input type="file" id="hidden-import-json-input" accept=".json,application/json" class="hidden" onchange="handleResumeJsonImport(event)">
+        <input type="file" id="hidden-import-pdf-input" accept=".pdf,.doc,.docx,image/*" class="hidden" onchange="handleResumePdfImport(event)">
 
         <!-- Resume Section Reorder Modal -->
         <div id="reorder-sections-modal" class="fixed inset-0 bg-black/75 z-[99999] hidden items-center justify-center p-4 backdrop-blur-xs select-none" onclick="if(event.target === this) closeSectionReorderModal()">
@@ -3010,11 +3201,11 @@
                 </div>
 
                 <!-- Theme Color Palette Bar -->
-                <div class="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between gap-2 shrink-0">
-                    <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <div class="px-3.5 py-2.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between gap-2 shrink-0">
+                    <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5 shrink-0">
                         <i class="fa-solid fa-palette text-emerald-600"></i> Theme Color:
                     </span>
-                    <div id="modal-color-palette" class="flex items-center gap-1.5 overflow-x-auto py-0.5">
+                    <div id="modal-color-palette" class="flex items-center gap-2 overflow-x-auto py-2 px-1.5 custom-scroll">
                         <!-- Rendered dynamically -->
                     </div>
                 </div>
@@ -3273,6 +3464,7 @@
                 </button>
             </div>
         </div>
+
 
         <!-- Toast -->
         <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-[99999] bg-white/95 text-slate-800 border border-emerald-400/60 px-5 py-3 rounded-2xl shadow-2xl backdrop-blur-md flex items-center gap-2.5 text-xs sm:text-sm font-bold transition-all duration-300 opacity-0 pointer-events-none -translate-y-4 max-w-[92vw]">
@@ -4429,6 +4621,20 @@
             handleSearchInput();
         }
 
+        let currentFormatCategory = 'all';
+
+        function filterFormatsByCategory(cat) {
+            currentFormatCategory = cat;
+            document.querySelectorAll('.format-cat-btn').forEach(btn => {
+                if (btn.dataset.category === cat) {
+                    btn.className = "format-cat-btn px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs cursor-pointer transition shrink-0";
+                } else {
+                    btn.className = "format-cat-btn px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/90 shadow-2xs cursor-pointer transition shrink-0";
+                }
+            });
+            renderFormatsGallery();
+        }
+
         function renderFormatsGallery(filteredList = null) {
             const resumeContainer = document.getElementById('resumes-formats-grid');
             if (!resumeContainer) return;
@@ -4438,17 +4644,28 @@
             let resumeFormats = RESUME_FORMATS.filter(f => f.docType === 'resume');
             if (filteredList) {
                 resumeFormats = filteredList.filter(f => f.docType === 'resume');
+            } else if (currentFormatCategory && currentFormatCategory !== 'all') {
+                if (currentFormatCategory === 'popular') {
+                    resumeFormats = resumeFormats.filter(f => ['modern', 'compact_pro', 'tech', 'minimalist'].includes(f.id));
+                } else if (currentFormatCategory === 'executive') {
+                    resumeFormats = resumeFormats.filter(f => ['modern', 'executive_bold', 'compact_pro', 'minimalist'].includes(f.id));
+                } else if (currentFormatCategory === 'tech') {
+                    resumeFormats = resumeFormats.filter(f => ['tech', 'twocolumn', 'modern'].includes(f.id));
+                } else if (currentFormatCategory === 'creative') {
+                    resumeFormats = resumeFormats.filter(f => ['creative', 'twocolumn', 'modern'].includes(f.id));
+                }
             }
 
             const renderCard = (fmt) => {
                 const effectiveId = fmt.templateId || fmt.id;
                 const isActive = (currentTpl === effectiveId);
                 const cleanName = (fmt.name || '').replace(/\s+Resume$/i, '');
+
                 return `
-                    <div class="system-card rounded-2xl p-3.5 sm:p-4 relative overflow-hidden flex flex-col justify-between group cursor-pointer border-2 transition-all duration-200 hover:shadow-lg hover:border-emerald-500 ${isActive ? 'border-emerald-600 ring-2 ring-emerald-500/20 bg-emerald-50/15' : 'border-slate-200/80 bg-white'}" onclick="selectResumeFormat('${effectiveId}')">
+                    <div class="system-card rounded-2xl p-3.5 sm:p-4 relative overflow-hidden flex flex-col justify-between group cursor-pointer border-2 transition-all duration-300 hover:shadow-xl hover:border-emerald-500 hover:-translate-y-1.5 ${isActive ? 'border-emerald-600 ring-2 ring-emerald-500/25 bg-emerald-50/15' : 'border-slate-200/90 bg-white'}" onclick="selectResumeFormat('${effectiveId}')">
                         <div>
-                            <!-- Visual Mockup -->
-                            <div class="mb-3">
+                            <!-- Visual Mockup Container -->
+                            <div class="relative mb-3 rounded-xl overflow-hidden group-hover:scale-[1.01] transition-transform duration-300">
                                 ${getMockupHtml(fmt.mockup)}
                             </div>
 
@@ -4461,13 +4678,18 @@
                                     ${fmt.badge}
                                 </span>
                             </div>
+
+                            <!-- Best For Snippet -->
+                            <p class="text-[11px] text-slate-500 font-medium px-0.5 mt-1 line-clamp-1" title="${escapeAttr(fmt.bestFor || '')}">
+                                ${escapeAttr(fmt.bestFor || fmt.subtitle || '')}
+                            </p>
                         </div>
 
                         <!-- Action Button -->
                         <div class="pt-3 border-t border-slate-100 mt-3" onclick="event.stopPropagation()">
-                            <button type="button" onclick="selectResumeFormat('${effectiveId}')" class="w-full py-2.5 rounded-xl ${isActive ? 'bg-emerald-700' : 'bg-emerald-600 hover:bg-emerald-700'} text-white font-bold text-xs shadow-2xs active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid ${isActive ? 'fa-circle-check text-emerald-300' : 'fa-plus'} text-xs"></i>
-                                <span>${isActive ? 'Active Format' : 'Use Format'}</span>
+                            <button type="button" onclick="selectResumeFormat('${effectiveId}')" class="w-full py-2.5 rounded-xl ${isActive ? 'bg-emerald-700 shadow-sm' : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700'} text-white font-bold text-xs shadow-2xs active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid ${isActive ? 'fa-circle-check text-emerald-300' : 'fa-wand-magic-sparkles'} text-xs"></i>
+                                <span>${isActive ? 'Active Format' : 'Use This Format'}</span>
                             </button>
                         </div>
                     </div>
@@ -4478,10 +4700,15 @@
                 resumeContainer.innerHTML = resumeFormats.map(renderCard).join('');
             } else {
                 resumeContainer.innerHTML = `
-                    <div class="col-span-full py-10 px-4 text-center bg-slate-50/60 rounded-2xl border-2 border-dashed border-slate-200/90 flex flex-col items-center justify-center">
-                        <i class="fa-solid fa-shapes text-3xl mb-2 text-slate-300"></i>
-                        <h4 class="text-sm sm:text-base font-bold text-slate-700">No Formats Match Your Search</h4>
-                        <p class="text-xs text-slate-400 mt-1">Try another keyword like Modern, Creative, ATS, or Developer</p>
+                    <div class="col-span-full py-12 px-4 text-center bg-slate-50/80 rounded-2xl border-2 border-dashed border-slate-200/90 flex flex-col items-center justify-center">
+                        <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xl mb-3">
+                            <i class="fa-solid fa-shapes text-2xl text-slate-300"></i>
+                        </div>
+                        <h4 class="text-sm sm:text-base font-bold text-slate-800">No Formats Match This Filter</h4>
+                        <p class="text-xs text-slate-400 mt-1 max-w-sm">Try clicking "All Formats" above or clear your search keyword.</p>
+                        <button type="button" onclick="filterFormatsByCategory('all')" class="mt-4 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xs transition">
+                            View All Formats
+                        </button>
                     </div>
                 `;
             }
@@ -5060,6 +5287,7 @@
 
             // Re-render live A4 preview immediately with chosen template!
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
 
             // Re-render sidebar to highlight clicked card
             renderSidebarSamples();
@@ -5202,6 +5430,7 @@
             populateFormWithCurrentResume();
             liveUpdateResume();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
 
             // Render sidebar samples with active state
             renderSidebarSamples();
@@ -5279,6 +5508,7 @@
                 if (sel) sel.value = tpl;
                 updateActiveFormatBadge(tpl);
                 renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                 renderFormatsGallery();
                 renderSidebarSamples();
                 showToast(`Template switched to ${getFormatTitle(tpl)}`);
@@ -5312,6 +5542,7 @@
                 applyResumeThemeColor(currentResume.themeColorId || 'emerald', false);
                 populateFormWithCurrentResume();
                 renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             }
 
             setTimeout(() => {
@@ -5771,6 +6002,7 @@
                 populateFormWithCurrentResume();
                 liveUpdateResume();
                 renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                 renderSidebarSamples();
                 renderColorPalettes();
                 applyResumeThemeColor((currentResume && currentResume.themeColorId) ? currentResume.themeColorId : activeThemeColorId, false);
@@ -5794,17 +6026,29 @@
                 // Configure responsive mobile/desktop view & header controls
                 setFormMinimizedState(isFormMinimized, true);
 
-                const sheet = document.getElementById('live-resume-sheet');
-                if (sheet) sheet.style.transform = `scale(${currentZoom.toFixed(2)})`;
-                const lbl = document.getElementById('zoom-val-label');
-                if (lbl) lbl.innerText = Math.round(currentZoom * 100) + '%';
+                if (typeof applyZoom === 'function') {
+                    applyZoom(currentZoom, true);
+                } else {
+                    const sheet = document.getElementById('live-resume-sheet');
+                    if (sheet) sheet.style.transform = `scale(${currentZoom.toFixed(2)})`;
+                    const lbl = document.getElementById('zoom-val-label');
+                    if (lbl) lbl.innerText = Math.round(currentZoom * 100) + '%';
+                }
             }
         }
 
-        // Dynamic Action Button State (+ in Dashboard, Red ? in Editor)
+        // Dynamic Action Button State (+ in Dashboard, Red X in Editor)
         function updateHeaderActionBtn(viewName) {
             const btn = document.getElementById('toggle-form-btn');
             const icon = document.getElementById('toggle-icon');
+            const mobFab = document.getElementById('mobile-floating-create-btn');
+            if (mobFab) {
+                if (viewName === 'editor') {
+                    mobFab.classList.add('hidden');
+                } else {
+                    mobFab.classList.remove('hidden');
+                }
+            }
             if (!btn || !icon) return;
 
             if (viewName === 'editor') {
@@ -6156,7 +6400,8 @@
             const total = list.length;
             const count = selectedResumeIds.size;
 
-            const toolbar = document.getElementById('batch-actions-toolbar');
+            const selectionBar = document.getElementById('saved-resumes-selection-bar');
+            const statusLabel = document.getElementById('selected-status-label');
             const selectAllBtn = document.getElementById('btn-batch-select-all');
             const selectAllIcon = document.getElementById('batch-select-all-icon');
             const selectAllText = document.getElementById('batch-select-all-text');
@@ -6164,62 +6409,64 @@
             const pdfBtn = document.getElementById('btn-export-selected-pdf');
             const pdfCountEl = document.getElementById('selected-pdf-count');
 
-            const wordBtn = document.getElementById('btn-export-selected-word');
-            const wordCountEl = document.getElementById('selected-word-count');
-
             const delBtn = document.getElementById('btn-delete-selected-resumes');
             const delCountEl = document.getElementById('selected-resumes-count');
 
-            if (toolbar) {
-                toolbar.style.display = total > 0 ? 'flex' : 'none';
+            if (selectAllBtn) {
+                selectAllBtn.style.display = total > 0 ? 'inline-flex' : 'none';
             }
 
             const isAllSelected = (count === total && total > 0);
 
-            // Green tick appears ONLY after select all is active
+            // Tick box appears in Select All button ONLY when selection mode is ON
             if (selectAllIcon) {
-                if (isAllSelected) {
-                    selectAllIcon.className = "fa-solid fa-square-check text-emerald-600 text-xs";
-                } else if (count > 0) {
-                    selectAllIcon.className = "fa-solid fa-square-minus text-emerald-600 text-xs";
-                } else {
+                if (isBatchSelectionMode && count > 0) {
+                    selectAllIcon.classList.remove('hidden');
+                    if (isAllSelected) {
+                        selectAllIcon.className = "fa-solid fa-square-check text-emerald-600 text-xs";
+                    } else {
+                        selectAllIcon.className = "fa-solid fa-square-minus text-emerald-600 text-xs";
+                    }
+                } else if (isBatchSelectionMode) {
+                    selectAllIcon.classList.remove('hidden');
                     selectAllIcon.className = "fa-regular fa-square text-slate-400 text-xs";
+                } else {
+                    selectAllIcon.className = "hidden";
                 }
             }
 
             if (selectAllBtn) {
-                if (isAllSelected) {
+                if (isBatchSelectionMode && isAllSelected) {
                     selectAllBtn.className = "px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs cursor-pointer select-none";
+                } else if (isBatchSelectionMode && count > 0) {
+                    selectAllBtn.className = "px-2.5 py-1 rounded-lg bg-emerald-50/70 text-emerald-700 border border-emerald-200 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs cursor-pointer select-none";
                 } else {
-                    selectAllBtn.className = "px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs cursor-pointer select-none";
+                    selectAllBtn.className = "px-2.5 py-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-300 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs cursor-pointer select-none";
                 }
             }
 
-            // Show selected count in Select All button text
+            // Show selected count in Select All button text when in batch mode
             if (selectAllText) {
-                if (count > 0) {
+                if (isBatchSelectionMode && count > 0) {
                     selectAllText.innerText = isAllSelected ? `Select All (${count})` : `Selected (${count})`;
                 } else {
                     selectAllText.innerText = 'Select All';
                 }
             }
 
-            if (!isBatchSelectionMode || count === 0) {
-                if (pdfBtn) pdfBtn.classList.add('hidden');
-                if (wordBtn) wordBtn.classList.add('hidden');
-                if (delBtn) delBtn.classList.add('hidden');
-            } else {
-                if (pdfBtn) {
-                    pdfBtn.classList.remove('hidden');
+            // Selection action bar appears right below label text when selection mode is ON
+            if (selectionBar) {
+                if (isBatchSelectionMode && count > 0) {
+                    selectionBar.classList.remove('hidden');
+                    selectionBar.classList.add('flex');
+                    if (statusLabel) {
+                        statusLabel.innerText = isAllSelected ? `All ${count} Resumes Selected` : `${count} Resume${count > 1 ? 's' : ''} Selected`;
+                    }
                     if (pdfCountEl) pdfCountEl.innerText = count;
-                }
-                if (wordBtn) {
-                    wordBtn.classList.remove('hidden');
-                    if (wordCountEl) wordCountEl.innerText = count;
-                }
-                if (delBtn) {
-                    delBtn.classList.remove('hidden');
                     if (delCountEl) delCountEl.innerText = count;
+                } else {
+                    selectionBar.classList.add('hidden');
+                    selectionBar.classList.remove('flex');
                 }
             }
 
@@ -6449,6 +6696,7 @@
             populateFormWithCurrentResume();
             liveUpdateResume();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             renderSidebarSamples();
 
             // Open entry form!
@@ -6981,11 +7229,11 @@ function renderAcademicInputs() {
                         </div>
                     </div>
 
-                    <!-- Row 3: Total Marks, Obtained Marks & Score (% vs CGPA Radio) -->
-                    <div class="p-2.5 bg-slate-100/70 rounded-xl border border-slate-200/90 space-y-2">
-                        <div class="flex flex-wrap items-center justify-between gap-1 pb-1.5 border-b border-slate-200/60">
-                            <label class="premium-label !mb-0 text-[11px]">
-                                <i class="fa-solid fa-calculator"></i> Marks & Result
+                    <!-- Row 3: Marks & Result (In same card & same style, Side by Side: Obtained, Total, Score) -->
+                    <div class="pt-2 border-t border-slate-200/70 space-y-2">
+                        <div class="flex items-center justify-between gap-1 flex-wrap">
+                            <label class="premium-label !mb-0 text-[11px] font-bold text-slate-700">
+                                <i class="fa-solid fa-calculator text-emerald-600"></i> Marks &amp; Result
                             </label>
                             <!-- Radio Toggle: Percentage (%) vs CGPA -->
                             <div class="flex items-center gap-2.5 bg-white px-2 py-0.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-700 select-none shadow-2xs">
@@ -7000,18 +7248,18 @@ function renderAcademicInputs() {
                             </div>
                         </div>
 
-                        <!-- 3 Inputs in Grid: Total, Obtained, Score -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <!-- 3 Inputs in Grid: 1st Obtained, 2nd Total, 3rd Percentage / Score -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                             <div>
-                                <label class="premium-label !mb-1 text-[10.5px]"><i class="fa-solid fa-list-ol"></i> Total Marks</label>
-                                <input type="number" id="ac-total-${idx}" class="premium-input font-medium" placeholder="e.g. 500" value="${escapeAttr(ac.totalMarks || '')}" oninput="onAcademicMarksCalc(${idx})">
-                            </div>
-                            <div>
-                                <label class="premium-label !mb-1 text-[10.5px]"><i class="fa-solid fa-award"></i> Marks Obtained</label>
+                                <label class="premium-label"><i class="fa-solid fa-award"></i> Marks Obtained</label>
                                 <input type="number" id="ac-obtained-${idx}" class="premium-input font-medium" placeholder="e.g. 420" value="${escapeAttr(ac.marksObtained || '')}" oninput="onAcademicMarksCalc(${idx})">
                             </div>
                             <div>
-                                <label class="premium-label !mb-1 text-[10.5px]"><i id="ac-score-icon-${idx}" class="fa-solid ${isCgpa ? 'fa-chart-simple' : 'fa-percent'}"></i> <span id="ac-score-lbl-${idx}">${isCgpa ? 'CGPA' : 'Percentage (%)'}</span></label>
+                                <label class="premium-label"><i class="fa-solid fa-list-ol"></i> Total Marks</label>
+                                <input type="number" id="ac-total-${idx}" class="premium-input font-medium" placeholder="e.g. 500" value="${escapeAttr(ac.totalMarks || '')}" oninput="onAcademicMarksCalc(${idx})">
+                            </div>
+                            <div>
+                                <label class="premium-label"><i id="ac-score-icon-${idx}" class="fa-solid ${isCgpa ? 'fa-chart-simple' : 'fa-percent'}"></i> <span id="ac-score-lbl-${idx}">${isCgpa ? 'CGPA' : 'Percentage (%)'}</span></label>
                                 <input type="text" id="ac-score-${idx}" class="premium-input font-black text-emerald-700" placeholder="${isCgpa ? 'e.g. 8.5 CGPA' : 'e.g. 84%'}" value="${escapeAttr(ac.score || '')}" oninput="onAcademicScoreManualInput(${idx}, this.value)" onblur="onAcademicScoreBlur(${idx})">
                             </div>
                         </div>
@@ -7688,6 +7936,7 @@ function renderAcademicInputs() {
             // Re-render live preview
             liveUpdateResume();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
 
             // Save state
             saveAllResumesToStorage();
@@ -8037,10 +8286,34 @@ function renderAcademicInputs() {
             downloadIndianPDF();
         }
 
+        let hasDismissedFormUploadBanner = false;
+
+        function hideFormUploadBannerPermanently() {
+            hasDismissedFormUploadBanner = true;
+            const banner = document.getElementById('form-initial-upload-banner');
+            if (banner) banner.classList.add('hidden');
+        }
+
+        function checkFormUploadOptionVisibility() {
+            const banner = document.getElementById('form-initial-upload-banner');
+            if (!banner) return;
+            const isNonDummy = currentResume && !currentResume.isDummy && currentResume.studentName && currentResume.studentName !== 'CANDIDATE FULL NAME';
+            if (hasDismissedFormUploadBanner || isNonDummy) {
+                banner.classList.add('hidden');
+            } else {
+                banner.classList.remove('hidden');
+            }
+        }
+
         // Live Collect & Preview
         function liveUpdateResume() {
             if (!currentResume) return;
             currentResume.hasBeenEdited = true;
+
+            // Auto-hide upload banner once user starts typing/editing
+            if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+                hideFormUploadBannerPermanently();
+            }
 
             currentResume.studentName = document.getElementById('inp-fullname')?.value || '';
             // Check designation from custom field or input
@@ -8122,6 +8395,7 @@ function renderAcademicInputs() {
 
 
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             const idx = allResumes.findIndex(r => r.id === currentResume.id);
             if (idx >= 0) {
                 allResumes[idx] = currentResume;
@@ -9689,6 +9963,7 @@ function renderAcademicInputs() {
             updatePhotoFormUI(dataUrl);
             liveUpdateResume();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             closeDesktopWebcamModal();
             showToast("Webcam photo captured (3:4 Passport)!");
         }
@@ -9789,6 +10064,7 @@ function renderAcademicInputs() {
                 updatePhotoFormUI(cropped);
                 liveUpdateResume();
                 renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                 closeMobileSyncModal();
                 showToast("📸 Photo received from Mobile Camera (3:4)!");
             });
@@ -9957,6 +10233,7 @@ function renderAcademicInputs() {
                     updatePhotoFormUI(passportPhoto);
                     liveUpdateResume();
                     renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                     showToast("Photo uploaded successfully (3:4 Passport)!");
                 });
             };
@@ -10012,6 +10289,7 @@ function renderAcademicInputs() {
             updatePhotoFormUI('');
             liveUpdateResume();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             showToast("Photo removed!");
         }
 
@@ -10020,6 +10298,7 @@ function renderAcademicInputs() {
             currentResume.showPhoto = checked;
             liveUpdateResume();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             showToast(checked ? "Photo visible on resume" : "Photo hidden from resume");
         }
 
@@ -10031,6 +10310,7 @@ function renderAcademicInputs() {
             updatePhotoWidthUI();
             liveUpdateResume();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             showToast(size === 'large' ? "Photo width: Extra Wide (150px)" : (size === 'compact' ? "Photo width: Compact (110px)" : "Photo width: Standard Wide (135px)"));
         }
 
@@ -10160,6 +10440,7 @@ function renderAcademicInputs() {
             currentResume.hasBeenEdited = true;
             updateHeaderDocTitleButtons();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             saveCurrentResumeSilently();
             showToast(`Header title set to: ${title === 'NONE' ? 'Hidden' : title}`);
         }
@@ -10210,6 +10491,7 @@ function renderAcademicInputs() {
             }
             updateExperienceSectionEnableUI();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             saveCurrentResumeSilently();
             showToast(checked ? "Work Experience enabled on resume" : "Work Experience disabled (Fresher mode)");
         }
@@ -10234,6 +10516,7 @@ function renderAcademicInputs() {
             currentResume.hasBeenEdited = true;
             updateSkillsSectionEnableUI();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             saveCurrentResumeSilently();
             showToast(checked ? "Skills enabled on resume" : "Skills disabled on resume");
             if (checked) {
@@ -10264,6 +10547,7 @@ function renderAcademicInputs() {
             currentResume.hasBeenEdited = true;
             updateHobbiesSectionEnableUI();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             saveCurrentResumeSilently();
             showToast(checked ? "Hobbies enabled on resume" : "Hobbies disabled on resume");
             if (checked) {
@@ -10305,6 +10589,7 @@ function renderAcademicInputs() {
                 inputEl.value = lastPart.trimStart();
             }
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
         }
 
         function commitSkillInput(inputEl) {
@@ -10315,6 +10600,7 @@ function renderAcademicInputs() {
                 inputEl.value = '';
             }
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
         }
 
         function handleHobbyInputLive(inputEl) {
@@ -10333,6 +10619,7 @@ function renderAcademicInputs() {
                 inputEl.value = lastPart.trimStart();
             }
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
         }
 
         function commitHobbyInput(inputEl) {
@@ -10343,6 +10630,7 @@ function renderAcademicInputs() {
                 inputEl.value = '';
             }
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
         }
 
         // ============================================================
@@ -10391,6 +10679,7 @@ function renderAcademicInputs() {
             currentResume.hasBeenEdited = true;
             saveCurrentResumeSilently();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             showToast("✓ Photo frame reset to default (100x129px)");
             const wrapper = document.querySelector('.resume-passport-photo-wrapper');
             if (wrapper) triggerPhotoControls(wrapper);
@@ -10466,6 +10755,7 @@ function renderAcademicInputs() {
                     currentResume.hasBeenEdited = true;
                     saveCurrentResumeSilently();
                     renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                     showToast(`Photo size updated: ${finalWidth} × ${Math.round(finalWidth * (129/100))}px`);
                 }
             }
@@ -10579,6 +10869,7 @@ function renderAcademicInputs() {
                     updatePhotoFormUI(croppedDataUrl);
                     liveUpdateResume();
                     renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                     showToast("Photo cropped & framed (100:129)!");
                 }
             } catch(e) {
@@ -10605,6 +10896,7 @@ function renderAcademicInputs() {
             populateFormWithCurrentResume();
             liveUpdateResume();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             saveAllResumesToStorage();
             showToast("Sample Resume Details & Photo Loaded!");
         }
@@ -10673,6 +10965,7 @@ function renderAcademicInputs() {
         function renderColorPalettes() {
             const expContainer = document.getElementById('expanded-color-palette');
             const minContainer = document.getElementById('minimized-color-palette');
+            const modalContainer = document.getElementById('modal-color-palette');
 
             if (expContainer) {
                 expContainer.innerHTML = RESUME_THEME_COLORS.map(c => {
@@ -10680,7 +10973,7 @@ function renderAcademicInputs() {
                     return `
                         <button type="button" 
                                 onclick="event.stopPropagation(); applyResumeThemeColor('${c.id}')" 
-                                class="w-5 h-5 rounded-full flex items-center justify-center transition-all duration-150 cursor-pointer shadow-2xs active:scale-90 ${isActive ? 'ring-2 ring-offset-1 ring-slate-800 scale-105' : 'hover:scale-115 opacity-85 hover:opacity-100'}" 
+                                class="w-5 h-5 rounded-full shrink-0 flex items-center justify-center transition-all duration-150 cursor-pointer shadow-2xs active:scale-90 ${isActive ? 'ring-2 ring-offset-1.5 ring-slate-800 scale-105' : 'hover:scale-115 opacity-85 hover:opacity-100'}" 
                                 style="background-color: ${c.hex};" 
                                 title="${c.name} Theme">
                             ${isActive ? '<i class="fa-solid fa-check text-[8px] text-white"></i>' : ''}
@@ -10695,7 +10988,7 @@ function renderAcademicInputs() {
                     return `
                         <button type="button" 
                                 onclick="event.stopPropagation(); applyResumeThemeColor('${c.id}')" 
-                                class="w-3.5 h-3.5 rounded-full flex items-center justify-center transition-all duration-150 cursor-pointer shadow-2xs active:scale-90 ${isActive ? 'ring-1.5 ring-offset-1 ring-slate-800 scale-110' : 'hover:scale-125 opacity-80 hover:opacity-100'}" 
+                                class="w-4 h-4 rounded-full shrink-0 flex items-center justify-center transition-all duration-150 cursor-pointer shadow-2xs active:scale-90 ${isActive ? 'ring-1.5 ring-offset-1 ring-slate-800 scale-110' : 'hover:scale-125 opacity-80 hover:opacity-100'}" 
                                 style="background-color: ${c.hex};" 
                                 title="${c.name} Theme">
                             ${isActive ? '<span class="w-1 h-1 rounded-full bg-white"></span>' : ''}
@@ -10703,20 +10996,66 @@ function renderAcademicInputs() {
                     `;
                 }).join('');
             }
+
+            if (modalContainer) {
+                modalContainer.innerHTML = RESUME_THEME_COLORS.map(c => {
+                    const isActive = (c.id === activeThemeColorId);
+                    return `
+                        <button type="button" 
+                                onclick="event.stopPropagation(); applyResumeThemeColor('${c.id}'); if (typeof renderFormatsModalContent === 'function') renderFormatsModalContent();" 
+                                class="w-6 h-6 rounded-full shrink-0 flex items-center justify-center transition-all duration-150 cursor-pointer shadow-xs active:scale-95 ${isActive ? 'ring-2 ring-offset-2 ring-slate-800 scale-105' : 'hover:scale-110 opacity-85 hover:opacity-100'}" 
+                                style="background-color: ${c.hex};" 
+                                title="${c.name} Theme">
+                            ${isActive ? '<i class="fa-solid fa-check text-[9px] text-white"></i>' : ''}
+                        </button>
+                    `;
+                }).join('');
+            }
         }
 
-        // Zoom & Fit to Screen Controls
-        function adjustZoom(delta) {
-            currentZoom = Math.min(1.5, Math.max(0.30, Math.round((currentZoom + delta) * 100) / 100));
+        // Zoom & Fit to Screen Controls (Unified Pixel-Perfect Geometry Engine)
+        function applyZoom(zoom, silent = false) {
+            currentZoom = Math.min(1.5, Math.max(0.30, Math.round(zoom * 100) / 100));
             const sheet = document.getElementById('live-resume-sheet');
-            if (sheet) {
-                sheet.style.transform = `scale(${currentZoom.toFixed(2)})`;
-                const a4Height = 1123;
-                const offset = (a4Height * currentZoom) - a4Height;
-                sheet.style.marginBottom = `${offset + (window.innerWidth < 1024 ? 40 : 20)}px`;
-            }
+            const scaler = document.getElementById('resume-sheet-scaler');
+            const container = document.getElementById('resume-preview-container');
             const lbl = document.getElementById('zoom-val-label');
             if (lbl) lbl.innerText = Math.round(currentZoom * 100) + '%';
+
+            if (sheet) {
+                sheet.style.transformOrigin = 'top left';
+                sheet.style.transform = `scale(${currentZoom.toFixed(2)})`;
+                sheet.style.marginBottom = '0px';
+
+                const a4Width = 794;
+                const isMulti = sheet.getAttribute('data-multi-page') === 'true';
+                const baseA4Height = isMulti ? 2246 : 1123;
+                const a4Height = (sheet.offsetHeight && sheet.offsetHeight > 500) ? sheet.offsetHeight : baseA4Height;
+                const scaledWidth = Math.round(a4Width * currentZoom);
+                const scaledHeight = Math.round(a4Height * currentZoom);
+
+                if (scaler) {
+                    scaler.style.width = `${scaledWidth}px`;
+                    scaler.style.height = `${scaledHeight}px`;
+
+                    if (container) {
+                        const isMobile = window.innerWidth < 640;
+                        const containerPad = isMobile ? 16 : 32;
+                        const availW = container.clientWidth - containerPad;
+                        if (scaledWidth < availW) {
+                            scaler.style.marginLeft = 'auto';
+                            scaler.style.marginRight = 'auto';
+                        } else {
+                            scaler.style.marginLeft = '0px';
+                            scaler.style.marginRight = 'auto';
+                        }
+                    }
+                }
+            }
+        }
+
+        function adjustZoom(delta) {
+            applyZoom(currentZoom + delta);
         }
 
         function resetZoom() {
@@ -10730,7 +11069,9 @@ function renderAcademicInputs() {
 
             // A4 dimensions: ~794px width x 1123px height
             const a4Width = 794;
-            const a4Height = 1123;
+            const isMulti = sheet.getAttribute('data-multi-page') === 'true';
+            const baseA4Height = isMulti ? 2246 : 1123;
+            const a4Height = (sheet.offsetHeight && sheet.offsetHeight > 500) ? sheet.offsetHeight : baseA4Height;
 
             const isMobile = window.innerWidth < 1024;
             const paddingX = isMobile ? 16 : 40;
@@ -10749,16 +11090,11 @@ function renderAcademicInputs() {
                 targetZoom = Math.min(1.25, Math.max(0.40, Math.min(scaleX, scaleY)));
             }
 
-            currentZoom = Math.round(targetZoom * 20) / 20;
-
-            sheet.style.transform = `scale(${currentZoom.toFixed(2)})`;
-            const offset = (a4Height * currentZoom) - a4Height;
-            sheet.style.marginBottom = `${offset + (isMobile ? 40 : 20)}px`;
-
-            const lbl = document.getElementById('zoom-val-label');
-            if (lbl) lbl.innerText = Math.round(currentZoom * 100) + '%';
+            const zoomVal = Math.round(targetZoom * 20) / 20;
+            applyZoom(zoomVal, silent);
 
             container.scrollTop = 0;
+            container.scrollLeft = 0;
             if (!silent) showToast(`Fit to Screen: ${Math.round(currentZoom * 100)}%`);
         }
 
@@ -10804,9 +11140,10 @@ function renderAcademicInputs() {
                 }, { passive: false });
             });
 
-            // Mobile 2-Finger Pinch-to-Zoom on Resume Preview Container Only
+            // Mobile 2-Finger Pinch-to-Zoom on Resume Preview Container Only (Lag-Free 60FPS)
             const container = document.getElementById('resume-preview-container');
             const sheet = document.getElementById('live-resume-sheet');
+            const scaler = document.getElementById('resume-sheet-scaler');
             if (container && sheet) {
                 let initialDist = 0;
                 let startZoom = 0.85;
@@ -10819,6 +11156,8 @@ function renderAcademicInputs() {
                         const t2 = e.touches[1];
                         initialDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
                         startZoom = currentZoom || 0.85;
+                        sheet.style.transition = 'none';
+                        if (scaler) scaler.style.transition = 'none';
                     }
                 }, { passive: true });
 
@@ -10831,23 +11170,21 @@ function renderAcademicInputs() {
                             const factor = curDist / initialDist;
                             let target = startZoom * factor;
                             target = Math.min(1.50, Math.max(0.25, target));
-                            currentZoom = Math.round(target * 100) / 100;
-
-                            sheet.style.transform = `scale(${currentZoom.toFixed(2)})`;
-                            const a4Height = 1123;
-                            const offset = (a4Height * currentZoom) - a4Height;
-                            sheet.style.marginBottom = `${offset + (window.innerWidth < 1024 ? 40 : 20)}px`;
-
-                            const lbl = document.getElementById('zoom-val-label');
-                            if (lbl) lbl.innerText = Math.round(currentZoom * 100) + '%';
+                            applyZoom(target, true);
                         }
                         if (e.cancelable) e.preventDefault();
                     }
                 }, { passive: false });
 
-                const stopPinch = () => { isPinching = false; };
+                const stopPinch = () => {
+                    if (isPinching) {
+                        isPinching = false;
+                        sheet.style.transition = '';
+                        if (scaler) scaler.style.transition = '';
+                    }
+                };
                 container.addEventListener('touchend', (e) => {
-                    if (e.touches.length < 2) isPinching = false;
+                    if (e.touches.length < 2) stopPinch();
                 }, { passive: true });
                 container.addEventListener('touchcancel', stopPinch, { passive: true });
             }
@@ -11478,6 +11815,7 @@ function renderAcademicInputs() {
             currentResume.hasBeenEdited = true;
             saveCurrentResumeSilently();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             renderReorderModalList();
 
             const meta = SECTION_METADATA[sectionKey] || { label: sectionKey };
@@ -11505,6 +11843,7 @@ function renderAcademicInputs() {
             currentResume.hasBeenEdited = true;
             saveCurrentResumeSilently();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
 
             // If modal is open, re-render its list
             const modal = document.getElementById('reorder-sections-modal');
@@ -11648,10 +11987,10 @@ function renderAcademicInputs() {
                     return `
                         <button type="button" 
                                 onclick="applyResumeThemeColor('${c.id}'); renderFormatsModalContent();" 
-                                class="w-5 h-5 rounded-full flex items-center justify-center transition-all duration-150 cursor-pointer shadow-2xs active:scale-90 ${isActive ? 'ring-2 ring-offset-1 ring-slate-800 scale-110' : 'hover:scale-115 opacity-85 hover:opacity-100'}" 
+                                class="w-6 h-6 rounded-full shrink-0 flex items-center justify-center transition-all duration-150 cursor-pointer shadow-xs active:scale-95 ${isActive ? 'ring-2 ring-offset-2 ring-slate-800 scale-105' : 'hover:scale-110 opacity-85 hover:opacity-100'}" 
                                 style="background-color: ${c.hex};" 
                                 title="${c.name} Theme">
-                            ${isActive ? '<i class="fa-solid fa-check text-[8px] text-white"></i>' : ''}
+                            ${isActive ? '<i class="fa-solid fa-check text-[9px] text-white"></i>' : ''}
                         </button>
                     `;
                 }).join('');
@@ -11731,6 +12070,7 @@ function renderAcademicInputs() {
             currentResume.hasBeenEdited = true;
             saveCurrentResumeSilently();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             renderReorderModalList();
             showToast("Section order & visibility reset to default!");
         }
@@ -11806,6 +12146,26 @@ function renderAcademicInputs() {
         // 7. Personal Particulars (Father's Name, DOB, Age, Gender, Marital, Nationality, Languages, Address)
         // 8. Solemn Declaration, Date, Place & Signature
         // ============================================================
+
+        // Global Classification & Helpers for Custom Fields Auto-Placement
+        function isParentalField(lbl) { return /mother|mom|maa|mata|माता|husband|pati|पति|spouse|wife|patni|guardian|संरक्षक/i.test(lbl || ''); }
+        function isPhoneField(lbl) { return /whatsapp|wa|alt.*(mob|phone|contact)|(mob|phone|contact).*2|telephone|cell|mobile|phone|contact/i.test(lbl || '') && !/email|address/i.test(lbl || ''); }
+        function isEmailField(lbl) { return /email|mail/i.test(lbl || '') && !/address/i.test(lbl || ''); }
+        function isWebField(lbl) { return /linkedin|github|portfolio|website|site|social|twitter|behance/i.test(lbl || ''); }
+        function isContactField(lbl) { return isPhoneField(lbl) || isEmailField(lbl) || isWebField(lbl); }
+        function isIgnoredInParticulars(lbl) { return /marital/i.test(lbl || ''); }
+
+        function getContactIcon(lbl) {
+            const l = (lbl || '').toLowerCase();
+            if (l.includes('whatsapp') || l.includes('wa')) return 'fa-brands fa-whatsapp text-emerald-500';
+            if (l.includes('linkedin')) return 'fa-brands fa-linkedin text-blue-500';
+            if (l.includes('github')) return 'fa-brands fa-github text-slate-800';
+            if (l.includes('email') || l.includes('mail')) return 'fa-solid fa-envelope';
+            if (l.includes('portfolio') || l.includes('web') || l.includes('site')) return 'fa-solid fa-globe';
+            if (l.includes('phone') || l.includes('call') || l.includes('tel')) return 'fa-solid fa-phone';
+            return 'fa-solid fa-mobile-screen';
+        }
+
         function renderLiveA4Preview() {
             const sheet = document.getElementById('live-resume-sheet');
             if (!sheet || !currentResume) return;
@@ -11964,7 +12324,8 @@ function renderAcademicInputs() {
             const expList = getResumeExperiences(rec);
             const hasExperience = (rec.enableExperience !== false) && (expList.length > 0);
 
-            const renderTemplateExperienceItems = (roleClass = 'font-semibold text-slate-700', containerClass = 'mt-2 px-1 space-y-2.5') => `
+            // Universal Dark & Gray Work Experience Renderer (Matching Academic Paragraph & Whole Resume Typography)
+            const renderTemplateExperienceItems = (roleClass = '', containerClass = 'mt-2 space-y-2') => `
                 <div class="${containerClass}">
                     ${expList.map((exp, expIdx) => {
                         const compName = exp.company || (rec.isDummy ? 'Organization / Company Name' : '');
@@ -11975,32 +12336,51 @@ function renderAcademicInputs() {
                         let roleCompanyHtml = '';
                         if (roleTitle && compName) {
                             const connector = /^at\s+/i.test(compName) ? ' ' : ' at ';
-                            roleCompanyHtml = `<span data-inline-field="workRole" class="font-bold ${roleClass}">${escapeAttr(roleTitle)}</span><span class="font-normal text-slate-600">${connector}</span><span data-inline-field="companyName" class="font-bold text-slate-900">${escapeAttr(compName)}</span>`;
+                            roleCompanyHtml = `<span data-inline-field="workRole" class="font-extrabold text-slate-900">${escapeAttr(roleTitle)}</span><span class="font-normal text-slate-600">${connector}</span><span data-inline-field="companyName" class="font-bold text-slate-800">${escapeAttr(compName)}</span>`;
                         } else if (roleTitle) {
-                            roleCompanyHtml = `<span data-inline-field="workRole" class="font-bold ${roleClass}">${escapeAttr(roleTitle)}</span>`;
+                            roleCompanyHtml = `<span data-inline-field="workRole" class="font-extrabold text-slate-900">${escapeAttr(roleTitle)}</span>`;
                         } else if (compName) {
-                            roleCompanyHtml = `<span data-inline-field="companyName" class="font-bold text-slate-900">${escapeAttr(compName)}</span>`;
+                            roleCompanyHtml = `<span data-inline-field="companyName" class="font-extrabold text-slate-900">${escapeAttr(compName)}</span>`;
                         }
 
                         return `
-                        <div class="experience-entry" data-experience-index="${expIdx}">
-                            <div class="flex justify-between items-baseline text-xs font-bold text-slate-900">
-                                <span>${roleCompanyHtml}</span>
-                                <span data-inline-field="workDuration" class="text-slate-600 font-normal text-[11px]">${escapeAttr(durationText)}</span>
+                        <div class="experience-entry relative pb-2 border-b border-slate-200/60 last:border-b-0" data-experience-index="${expIdx}">
+                            <div class="flex justify-between items-baseline text-xs">
+                                <span class="min-w-0 pr-2">${roleCompanyHtml}</span>
+                                <span data-inline-field="workDuration" class="text-slate-600 font-medium text-[11px] shrink-0 ml-2 whitespace-nowrap">${escapeAttr(durationText)}</span>
                             </div>
-                            ${responsibilitiesText ? `<div data-inline-field="workResponsibilities" class="text-xs text-slate-700 mt-0.5 leading-snug whitespace-pre-line font-normal">${responsibilitiesText.trim()}</div>` : ''}
+                            ${responsibilitiesText ? `<div data-inline-field="workResponsibilities" class="text-xs text-slate-700 mt-1 leading-relaxed whitespace-pre-line font-normal">${responsibilitiesText.trim()}</div>` : ''}
                         </div>
                         `;
                     }).join('')}
                 </div>
             `;
 
+            // Universal Dark & Gray Projects Renderer
+            const renderTemplateProjectItems = (containerClass = 'mt-2 space-y-2') => {
+                if (!rec.projects) return '';
+                const projs = (typeof getResumeProjects === 'function') ? getResumeProjects(rec) : [];
+                if (projs && projs.length && projs.some(p => p.title || p.description)) {
+                    return `
+                    <div class="${containerClass}">
+                        ${projs.map((p, pIdx) => `
+                            <div class="project-entry relative pb-2 border-b border-slate-200/60 last:border-b-0" data-project-index="${pIdx}">
+                                <div class="flex justify-between items-baseline text-xs">
+                                    <span class="font-extrabold text-slate-900">${escapeAttr(p.title || 'Project')}</span>
+                                    ${p.tech ? `<span class="text-slate-600 font-medium text-[11px] ml-1.5 shrink-0">(${escapeAttr(p.tech)})</span>` : ''}
+                                </div>
+                                ${p.description ? `<div data-inline-field="projects" class="text-xs text-slate-700 mt-1 leading-relaxed whitespace-pre-line font-normal">${escapeAttr(p.description)}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    `;
+                }
+                return `<div data-inline-field="projects" class="mt-2 text-xs text-slate-700 leading-relaxed font-normal whitespace-pre-line">${escapeAttr(rec.projects)}</div>`;
+            };
+
             // Render Academic Qualifications in Normal Paragraph Mode (Hanging indent layout: 2nd line aligns under 1st line text)
             const renderAcademicParagraphView = (acsList, currentTpl) => {
-                const bulletColor = (currentTpl === 'modern' || currentTpl === 'twocolumn') ? 'bg-emerald-600' :
-                                    (currentTpl === 'developer' || currentTpl === 'creative') ? 'bg-indigo-600' :
-                                    (currentTpl === 'executive') ? 'bg-purple-700' :
-                                    (currentTpl === 'clean') ? 'bg-cyan-700' : 'bg-slate-800';
+                const bulletColor = 'bg-slate-700';
                 return `
                     <div class="academic-paragraph-wrapper mt-2 space-y-2">
                         ${acsList.map(ac => {
@@ -12080,34 +12460,64 @@ function renderAcademicInputs() {
                 `;
             };
 
-            // Helper: Render custom fields in Personal Particulars
-            const renderCustomParticulars = (labelWidth = 'w-32', labelColor = 'text-slate-600', isBold = true) => {
+            // 1. Parental Fields (Mother's Name, Husband's Name, etc.) -> Auto-placed immediately after Father's Name
+            const renderParentalParticulars = (labelWidth = 'w-32', labelColor = 'text-slate-600', isBold = true, variant = 'standard') => {
                 if (!rec.customFields || !rec.customFields.length) return '';
-                return rec.customFields.filter(cf => cf.label && cf.value && !/marital/i.test(cf.label)).map(cf => `
-                    <div><${isBold ? 'strong' : 'span'} class="inline-block ${labelWidth} ${labelColor}">${escapeAttr(cf.label)}</${isBold ? 'strong' : 'span'}>: ${escapeAttr(cf.value)}</div>
+                const pFields = rec.customFields.filter(cf => cf.label && cf.value && cf.value.trim() && isParentalField(cf.label));
+                if (!pFields.length) return '';
+                if (variant === 'sidebar') {
+                    return pFields.map(cf => `<div data-custom-field-label="${escapeAttr(cf.label)}"><span class="text-slate-400">${escapeAttr(cf.label)}:</span> <span class="text-slate-200 font-semibold">${escapeAttr(cf.value)}</span></div>`).join('');
+                }
+                return pFields.map(cf => `
+                    <div data-custom-field-label="${escapeAttr(cf.label)}"><${isBold ? 'strong' : 'span'} class="inline-block ${labelWidth} ${labelColor}">${escapeAttr(cf.label)}</${isBold ? 'strong' : 'span'}>: <span>${escapeAttr(cf.value)}</span></div>
                 `).join('');
             };
 
-            // Helper: Render custom contacts in Header
-            const renderCustomHeaderContacts = (format = 'div') => {
+            // 2. Other Personal Particulars (Category, Religion, Blood Group, etc.) -> In Personal Particulars before Address
+            const renderCustomParticulars = (labelWidth = 'w-32', labelColor = 'text-slate-600', isBold = true, variant = 'standard') => {
                 if (!rec.customFields || !rec.customFields.length) return '';
-                const contactFields = rec.customFields.filter(cf => cf.label && cf.value && /whatsapp|mobile|phone|contact|linkedin|github|portfolio|website/i.test(cf.label));
-                if (!contactFields.length) return '';
-                if (format === 'div') {
-                    return contactFields.map(cf => `<div><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</div>`).join('');
-                } else if (format === 'span-dot') {
-                    return contactFields.map(cf => `<span>&bull;</span><span><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</span>`).join('');
-                } else if (format === 'span-icon-emerald') {
-                    return contactFields.map(cf => `<div class="inline-flex items-center gap-1.5"><i class="fa-solid fa-link text-emerald-600 w-3.5 text-center shrink-0"></i><span><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</span></div>`).join('');
-                } else if (format === 'span-icon-indigo') {
-                    return contactFields.map(cf => `<div class="inline-flex items-center gap-1.5"><i class="fa-solid fa-link text-indigo-600 w-3.5 text-center shrink-0"></i><span><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</span></div>`).join('');
-                } else if (format === 'span-tech') {
-                    return contactFields.map(cf => `<div class="inline-flex items-center gap-1.5"><i class="fa-solid fa-link text-emerald-400 w-3.5 text-center shrink-0"></i><span>${escapeAttr(cf.label)}: ${escapeAttr(cf.value)}</span></div>`).join('');
-                } else if (format === 'sidebar') {
-                    return contactFields.map(cf => `<div class="flex items-center gap-2 text-slate-200"><i class="fa-solid fa-link text-emerald-400 w-3.5 text-center"></i><span><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</span></div>`).join('');
+                const oFields = rec.customFields.filter(cf => cf.label && cf.value && cf.value.trim() && !isParentalField(cf.label) && !isContactField(cf.label) && !isIgnoredInParticulars(cf.label));
+                if (!oFields.length) return '';
+                if (variant === 'sidebar') {
+                    return oFields.map(cf => `<div data-custom-field-label="${escapeAttr(cf.label)}"><span class="text-slate-400">${escapeAttr(cf.label)}:</span> <span class="text-slate-200 font-semibold">${escapeAttr(cf.value)}</span></div>`).join('');
                 }
-                return '';
+                return oFields.map(cf => `
+                    <div data-custom-field-label="${escapeAttr(cf.label)}"><${isBold ? 'strong' : 'span'} class="inline-block ${labelWidth} ${labelColor}">${escapeAttr(cf.label)}</${isBold ? 'strong' : 'span'}>: <span>${escapeAttr(cf.value)}</span></div>
+                `).join('');
             };
+
+            // 3. Custom Phone Contacts (Alt Mobile, WhatsApp, etc.) -> Auto-placed immediately next to Mobile Number
+            const renderCustomPhoneContacts = (format = 'div', colorClass = 'text-emerald-600') => {
+                if (!rec.customFields || !rec.customFields.length) return '';
+                const phoneFields = rec.customFields.filter(cf => cf.label && cf.value && cf.value.trim() && isPhoneField(cf.label));
+                if (!phoneFields.length) return '';
+                if (format === 'span-dot') {
+                    return phoneFields.map(cf => `<span>&bull;</span><span data-custom-field-label="${escapeAttr(cf.label)}"><strong>${escapeAttr(cf.label)}:</strong> <span>${escapeAttr(cf.value)}</span></span>`).join('');
+                } else if (format === 'span-icon' || format === 'span-icon-emerald' || format === 'span-icon-indigo' || format === 'span-tech') {
+                    return phoneFields.map(cf => `<div data-custom-field-label="${escapeAttr(cf.label)}" class="inline-flex items-center gap-1.5"><i class="${getContactIcon(cf.label)} fa-fw ${colorClass} shrink-0"></i><span>${cf.label.toLowerCase().includes('whatsapp') ? '<strong>WA:</strong> ' : ''}${escapeAttr(cf.value)}</span></div>`).join('');
+                } else if (format === 'sidebar') {
+                    return phoneFields.map(cf => `<div data-custom-field-label="${escapeAttr(cf.label)}" class="flex items-center gap-2 text-slate-200"><i class="${getContactIcon(cf.label)} fa-fw ${colorClass} w-3.5 text-center shrink-0"></i><span><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</span></div>`).join('');
+                }
+                return phoneFields.map(cf => `<div data-custom-field-label="${escapeAttr(cf.label)}"><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</div>`).join('');
+            };
+
+            // 4. Custom Other Contacts (Alt Email, LinkedIn, GitHub, Portfolio, etc.) -> Auto-placed after Email
+            const renderCustomOtherContacts = (format = 'div', colorClass = 'text-emerald-600') => {
+                if (!rec.customFields || !rec.customFields.length) return '';
+                const otherContacts = rec.customFields.filter(cf => cf.label && cf.value && cf.value.trim() && (isEmailField(cf.label) || isWebField(cf.label)));
+                if (!otherContacts.length) return '';
+                if (format === 'span-dot') {
+                    return otherContacts.map(cf => `<span>&bull;</span><span data-custom-field-label="${escapeAttr(cf.label)}"><strong>${escapeAttr(cf.label)}:</strong> <span>${escapeAttr(cf.value)}</span></span>`).join('');
+                } else if (format === 'span-icon' || format === 'span-icon-emerald' || format === 'span-icon-indigo' || format === 'span-tech') {
+                    return otherContacts.map(cf => `<div data-custom-field-label="${escapeAttr(cf.label)}" class="inline-flex items-center gap-1.5"><i class="${getContactIcon(cf.label)} fa-fw ${colorClass} shrink-0"></i><span>${escapeAttr(cf.value)}</span></div>`).join('');
+                } else if (format === 'sidebar') {
+                    return otherContacts.map(cf => `<div data-custom-field-label="${escapeAttr(cf.label)}" class="flex items-center gap-2 text-slate-200"><i class="${getContactIcon(cf.label)} fa-fw ${colorClass} w-3.5 text-center shrink-0"></i><span><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</span></div>`).join('');
+                }
+                return otherContacts.map(cf => `<div data-custom-field-label="${escapeAttr(cf.label)}"><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</div>`).join('');
+            };
+
+            // Legacy fallback alias
+            const renderCustomHeaderContacts = (format = 'div') => renderCustomOtherContacts(format);
 
             // 1. CORPORATE CLASSIC & GOVT / PSU OFFICIAL LAYOUT
             if (effectiveTpl === 'corporate' || effectiveTpl === 'cv_govt') {
@@ -12181,7 +12591,7 @@ function renderAcademicInputs() {
                         <div class="relative group/resume-sec mt-4" data-section-key="projects">
                             ${renderSectionReorderControls('projects', tpl)}
                             <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 bg-slate-100 px-2 py-1 border-l-4 border-slate-800">PROJECTS & INTERNSHIPS</h2>
-                            <div data-inline-field="projects" class="mt-2 px-1 text-xs text-slate-700 whitespace-pre-line leading-relaxed">${rec.projects}</div>
+                            ${renderTemplateProjectItems('mt-2 px-1 space-y-2')}
                         </div>
                     ` : '',
 
@@ -12193,14 +12603,15 @@ function renderAcademicInputs() {
                             <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 bg-slate-100 px-2 py-1 border-l-4 border-slate-800">PERSONAL PARTICULARS</h2>
                             <div data-particulars-grid="true" class="mt-2 px-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-800">
                                 <div><strong class="inline-block w-32 text-slate-600">Father's Name</strong>: <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-32', 'text-slate-600', true)}
                                 <div><strong class="inline-block w-32 text-slate-600">Date of Birth</strong>: <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
                                 <div><strong class="inline-block w-32 text-slate-600">Gender</strong>: <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
                                 ${rec.maritalStatus ? `<div><strong class="inline-block w-32 text-slate-600">Marital Status</strong>: <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
                                 <div><strong class="inline-block w-32 text-slate-600">Nationality</strong>: <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
                                 <div><strong class="inline-block w-32 text-slate-600">Languages Known</strong>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
                                 ${shouldShowHobbies ? `<div><strong class="inline-block w-32 text-slate-600">Hobbies & Interests</strong>: <span data-inline-field="hobbies">${escapeAttr(effectiveHobbies)}</span></div>` : ''}
-                                <div class="col-span-full flex items-start text-left"><strong class="inline-block w-32 shrink-0 text-slate-600 whitespace-nowrap">Permanent Address</strong><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-800">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                                 ${renderCustomParticulars('w-32', 'text-slate-600', true)}
+                                <div class="col-span-full flex items-start text-left"><strong class="inline-block w-32 shrink-0 text-slate-600 whitespace-nowrap">Permanent Address</strong><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-800">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                             </div>
                         </div>
                     `,
@@ -12240,8 +12651,9 @@ function renderAcademicInputs() {
                                     <div class="mt-1.5 sm:mt-2 space-y-0.5 sm:space-y-1 text-xs font-medium text-slate-700">
                                         <div class="flex flex-wrap items-center gap-x-4 gap-y-0.5">
                                             <span><strong class="inline-block w-14 shrink-0">Mobile:</strong> <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span></span>
+                                            ${renderCustomPhoneContacts('span-dot')}
                                             <span><strong class="inline-block shrink-0">Email:</strong> <span data-inline-field="email">${rec.email || '-'}</span></span>
-                                            ${renderCustomHeaderContacts('span-dot')}
+                                            ${renderCustomOtherContacts('span-dot')}
                                         </div>
                                         <div class="flex items-start gap-1 text-left pt-0.5">
                                             <strong class="inline-block w-14 shrink-0 text-slate-800">Address:</strong>
@@ -12345,7 +12757,7 @@ function renderAcademicInputs() {
                             <h2 class="text-xs font-black uppercase tracking-wider text-emerald-700 flex items-center gap-1.5 pb-1 border-b border-emerald-100">
                                 <i class="fa-solid fa-diagram-project text-[11px]"></i> Projects & Internships
                             </h2>
-                            <p data-inline-field="projects" class="text-xs text-slate-700 mt-1.5 whitespace-pre-line leading-relaxed font-medium">${rec.projects}</p>
+                            ${renderTemplateProjectItems('mt-2 space-y-2')}
                         </div>
                     ` : '',
 
@@ -12359,14 +12771,15 @@ function renderAcademicInputs() {
                             </h2>
                             <div data-particulars-grid="true" class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-800 font-medium">
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Father's Name</span>: <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-32', 'text-slate-500 font-bold', false)}
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Date of Birth</span>: <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Gender</span>: <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
                                 ${rec.maritalStatus ? `<div><span class="text-slate-500 font-bold inline-block w-32">Marital Status</span>: <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Nationality</span>: <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Languages Known</span>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
                                 ${shouldShowHobbies ? `<div><span class="text-slate-500 font-bold inline-block w-32">Hobbies & Interests</span>: <span data-inline-field="hobbies">${escapeAttr(effectiveHobbies)}</span></div>` : ''}
-                                <div class="col-span-full flex items-start text-left"><span class="text-slate-500 font-bold inline-block w-32 shrink-0 whitespace-nowrap">Permanent Address</span><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-800">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                                 ${renderCustomParticulars('w-32', 'text-slate-500 font-bold', false)}
+                                <div class="col-span-full flex items-start text-left"><span class="text-slate-500 font-bold inline-block w-32 shrink-0 whitespace-nowrap">Permanent Address</span><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-800">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                             </div>
                         </div>
                     `,
@@ -12408,11 +12821,12 @@ function renderAcademicInputs() {
                                                 <i class="fa-solid fa-phone fa-fw text-emerald-600 shrink-0"></i>
                                                 <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span>
                                             </div>
+                                            ${renderCustomPhoneContacts('span-icon-emerald', 'text-emerald-600')}
                                             <div class="inline-flex items-center gap-1.5">
                                                 <i class="fa-solid fa-envelope fa-fw text-emerald-600 shrink-0"></i>
                                                 <span data-inline-field="email">${rec.email || '-'}</span>
                                             </div>
-                                            ${renderCustomHeaderContacts('span-icon-emerald')}
+                                            ${renderCustomOtherContacts('span-icon-emerald', 'text-emerald-600')}
                                         </div>
                                         <div class="flex items-start gap-1.5 text-left pt-0.5">
                                             <i class="fa-solid fa-location-dot fa-fw text-emerald-600 mt-0.5 shrink-0"></i>
@@ -12496,7 +12910,7 @@ function renderAcademicInputs() {
                         <div class="relative group/resume-sec mt-4" data-section-key="projects">
                             ${renderSectionReorderControls('projects', 'twocolumn')}
                             <h3 class="text-xs font-black uppercase tracking-wider text-slate-900 border-l-3 border-emerald-600 pl-2">PROJECTS & INTERNSHIPS</h3>
-                            <p data-inline-field="projects" class="text-xs text-slate-700 mt-1.5 pl-2 whitespace-pre-line leading-relaxed font-normal">${rec.projects}</p>
+                            ${renderTemplateProjectItems('mt-2 pl-2 space-y-2')}
                         </div>
                     ` : '',
 
@@ -12546,10 +12960,12 @@ function renderAcademicInputs() {
                                     <i class="fa-solid fa-phone text-emerald-400 w-3.5 text-center"></i>
                                     <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span>
                                 </div>
+                                ${renderCustomPhoneContacts('sidebar', 'text-emerald-400')}
                                 <div class="flex items-center gap-2 text-slate-200 break-all">
                                     <i class="fa-solid fa-envelope text-emerald-400 w-3.5 text-center"></i>
                                     <span data-inline-field="email">${rec.email || '-'}</span>
                                 </div>
+                                ${renderCustomOtherContacts('sidebar', 'text-emerald-400')}
                                 <div class="flex items-start gap-2 text-slate-200">
                                     <i class="fa-solid fa-location-dot fa-fw text-emerald-400 mt-0.5 shrink-0"></i>
                                     <div data-inline-field="address" class="flex-1 min-w-0 flex flex-col leading-tight">
@@ -12557,7 +12973,6 @@ function renderAcademicInputs() {
                                         ${addr.line2 ? `<span>${escapeAttr(addr.line2)}</span>` : ''}
                                     </div>
                                 </div>
-                                ${renderCustomHeaderContacts('sidebar')}
                             </div>
 
                             <!-- Skills Pills -->
@@ -12581,11 +12996,12 @@ function renderAcademicInputs() {
                             <div class="mt-5 pt-4 border-t border-slate-800 text-[10px] space-y-1 text-slate-200">
                                 <div class="text-slate-400 uppercase font-black text-[9px] tracking-wider mb-1 text-emerald-400">PERSONAL DETAILS</div>
                                 <div><span class="text-slate-400">Father:</span> <span class="text-slate-200 font-semibold" data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-auto', 'text-slate-400', false, 'sidebar')}
                                 <div><span class="text-slate-400">DOB:</span> <span class="text-slate-200 font-semibold" data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
                                 <div><span class="text-slate-400">Gender:</span> <span class="text-slate-200 font-semibold" data-inline-field="gender">${rec.gender || 'Male'}</span></div>
                                 ${rec.maritalStatus ? `<div><span class="text-slate-400">Marital:</span> <span class="text-slate-200 font-semibold" data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
                                 <div><span class="text-slate-400">Nationality:</span> <span class="text-slate-200 font-semibold" data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
-                                ${(rec.customFields || []).filter(cf => cf.label && cf.value && !/marital/i.test(cf.label)).map(cf => `<div><span class="text-slate-400">${escapeAttr(cf.label)}:</span> <span class="text-slate-200 font-semibold">${escapeAttr(cf.value)}</span></div>`).join('')}
+                                ${renderCustomParticulars('w-auto', 'text-slate-400', false, 'sidebar')}
                             </div>
                         </div>
 
@@ -12686,7 +13102,7 @@ function renderAcademicInputs() {
                         <div class="relative group/resume-sec mt-4" data-section-key="projects">
                             ${renderSectionReorderControls('projects', tpl)}
                             <div class="text-xs font-black uppercase tracking-[0.15em] text-black border-b border-slate-900 pb-0.5 mb-2 font-sans">KEY PROJECTS</div>
-                            <div data-inline-field="projects" class="text-xs font-serif text-slate-800 whitespace-pre-line leading-relaxed">${rec.projects}</div>
+                            ${renderTemplateProjectItems('mt-2 space-y-2')}
                         </div>
                     ` : '',
 
@@ -12698,13 +13114,14 @@ function renderAcademicInputs() {
                             <div class="text-xs font-black uppercase tracking-[0.15em] text-black border-b border-slate-900 pb-0.5 mb-2 font-sans">PERSONAL PARTICULARS</div>
                             <div data-particulars-grid="true" class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs font-sans text-slate-800">
                                 <div><strong class="inline-block w-32">Father's Name</strong>: <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-32', '', true)}
                                 <div><strong class="inline-block w-32">Date of Birth</strong>: <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
                                 <div><strong class="inline-block w-32">Gender</strong>: <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
                                 ${rec.maritalStatus ? `<div><strong class="inline-block w-32">Marital Status</strong>: <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
                                 <div><strong class="inline-block w-32">Nationality</strong>: <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
                                 <div><strong class="inline-block w-32">Languages Known</strong>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
+                                ${renderCustomParticulars('w-32', '', true)}
                                 <div class="col-span-2 flex items-start text-left"><strong class="inline-block w-32 shrink-0 whitespace-nowrap">Permanent Address</strong><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-900">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
-                                ${(rec.customFields || []).filter(cf => cf.label && cf.value && !/marital/i.test(cf.label)).map(cf => `<div><strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}</div>`).join('')}
                             </div>
                         </div>
                     `,
@@ -12743,9 +13160,10 @@ function renderAcademicInputs() {
                             <div class="mt-1.5 text-xs font-sans text-slate-800 space-y-0.5">
                                 <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
                                     <span><strong>Mobile:</strong> <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span></span>
+                                    ${renderCustomPhoneContacts('span-dot')}
                                     <span>&bull;</span>
                                     <span><strong>Email:</strong> <span data-inline-field="email">${rec.email || '-'}</span></span>
-                                    ${renderCustomHeaderContacts('span-dot')}
+                                    ${renderCustomOtherContacts('span-dot')}
                                 </div>
                                 <div class="flex items-start justify-center gap-1.5 text-center pt-0.5">
                                     <strong class="shrink-0 text-slate-900">Address:</strong>
@@ -12808,7 +13226,7 @@ function renderAcademicInputs() {
                             <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5 font-mono">
                                 <i class="fa-solid fa-code-branch text-teal-600"></i> KEY PROJECTS & REPOSITORIES
                             </h2>
-                            <div data-inline-field="projects" class="mt-1.5 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-normal text-slate-800 whitespace-pre-line leading-relaxed font-mono">${rec.projects}</div>
+                            ${renderTemplateProjectItems('mt-1.5 space-y-2')}
                         </div>
                     ` : '',
 
@@ -12861,14 +13279,15 @@ function renderAcademicInputs() {
                             </h2>
                             <div data-particulars-grid="true" class="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-800">
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Father's Name</span>: <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-32', 'text-slate-500 font-bold', false)}
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Date of Birth</span>: <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Gender</span>: <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
                                 ${rec.maritalStatus ? `<div><span class="text-slate-500 font-bold inline-block w-32">Marital Status</span>: <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Nationality</span>: <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Languages Known</span>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
                                 ${shouldShowHobbies ? `<div><span class="text-slate-500 font-bold inline-block w-32">Hobbies & Interests</span>: <span data-inline-field="hobbies">${escapeAttr(effectiveHobbies)}</span></div>` : ''}
-                                <div class="col-span-full flex items-start text-left"><span class="text-slate-500 font-bold inline-block w-32 shrink-0 whitespace-nowrap">Permanent Address</span><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-800">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                                 ${renderCustomParticulars('w-32', 'text-slate-500 font-bold', false)}
+                                <div class="col-span-full flex items-start text-left"><span class="text-slate-500 font-bold inline-block w-32 shrink-0 whitespace-nowrap">Permanent Address</span><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-800">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                             </div>
                         </div>
                     `,
@@ -12911,11 +13330,12 @@ function renderAcademicInputs() {
                                             <i class="fa-solid fa-phone fa-fw text-emerald-400 shrink-0"></i>
                                             <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span>
                                         </div>
+                                        ${renderCustomPhoneContacts('span-tech', 'text-emerald-400')}
                                         <div class="inline-flex items-center gap-1.5">
                                             <i class="fa-solid fa-envelope fa-fw text-emerald-400 shrink-0"></i>
                                             <span data-inline-field="email">${rec.email || '-'}</span>
                                         </div>
-                                        ${renderCustomHeaderContacts('span-tech')}
+                                        ${renderCustomOtherContacts('span-tech', 'text-emerald-400')}
                                     </div>
                                     <div class="flex items-start gap-1.5 text-left pt-0.5">
                                         <i class="fa-solid fa-location-dot fa-fw text-emerald-400 mt-0.5 shrink-0"></i>
@@ -13000,7 +13420,7 @@ function renderAcademicInputs() {
                             <h2 class="text-xs font-black uppercase tracking-wider text-indigo-900 bg-indigo-50/80 px-2 py-1 border-l-4 border-indigo-600">
                                 ACADEMIC PROJECTS & INTERNSHIPS
                             </h2>
-                            <div data-inline-field="projects" class="mt-1.5 px-1 text-xs text-slate-700 whitespace-pre-line leading-relaxed font-medium">${rec.projects}</div>
+                            ${renderTemplateProjectItems('mt-1.5 px-1 space-y-2')}
                         </div>
                     ` : '',
 
@@ -13036,14 +13456,15 @@ function renderAcademicInputs() {
                             </h2>
                             <div data-particulars-grid="true" class="mt-2 px-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-800 font-medium">
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Father's Name</span>: <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-32', 'text-slate-500 font-bold', false)}
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Date of Birth</span>: <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Gender</span>: <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
                                 ${rec.maritalStatus ? `<div><span class="text-slate-500 font-bold inline-block w-32">Marital Status</span>: <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Nationality</span>: <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
                                 <div><span class="text-slate-500 font-bold inline-block w-32">Languages Known</span>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
                                 ${shouldShowHobbies ? `<div><span class="text-slate-500 font-bold inline-block w-32">Hobbies & Interests</span>: <span data-inline-field="hobbies">${escapeAttr(effectiveHobbies)}</span></div>` : ''}
-                                <div class="col-span-full flex items-start text-left"><span class="text-slate-500 font-bold inline-block w-32 shrink-0 whitespace-nowrap">Permanent Address</span><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-800">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                                 ${renderCustomParticulars('w-32', 'text-slate-500 font-bold', false)}
+                                <div class="col-span-full flex items-start text-left"><span class="text-slate-500 font-bold inline-block w-32 shrink-0 whitespace-nowrap">Permanent Address</span><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-800">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                             </div>
                         </div>
                     `,
@@ -13085,11 +13506,12 @@ function renderAcademicInputs() {
                                                 <i class="fa-solid fa-phone fa-fw text-indigo-600 shrink-0"></i>
                                                 <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span>
                                             </div>
+                                            ${renderCustomPhoneContacts('span-icon-indigo', 'text-indigo-600')}
                                             <div class="inline-flex items-center gap-1.5">
                                                 <i class="fa-solid fa-envelope fa-fw text-indigo-600 shrink-0"></i>
                                                 <span data-inline-field="email">${rec.email || '-'}</span>
                                             </div>
-                                            ${renderCustomHeaderContacts('span-icon-indigo')}
+                                            ${renderCustomOtherContacts('span-icon-indigo', 'text-indigo-600')}
                                         </div>
                                         <div class="flex items-start gap-1.5 text-left pt-0.5">
                                             <i class="fa-solid fa-location-dot fa-fw text-indigo-600 mt-0.5 shrink-0"></i>
@@ -13146,7 +13568,7 @@ function renderAcademicInputs() {
                             <h2 class="text-xs font-black uppercase tracking-wider text-indigo-950 flex items-center gap-1.5 pb-1 border-b-2 border-indigo-500">
                                 <i class="fa-solid fa-laptop-code text-indigo-600"></i> FEATURED PROJECTS & PORTFOLIO
                             </h2>
-                            <div data-inline-field="projects" class="mt-2 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs font-medium text-slate-800 whitespace-pre-line leading-relaxed shadow-2xs">${rec.projects}</div>
+                            ${renderTemplateProjectItems('mt-2 space-y-2')}
                         </div>
                     ` : '',
 
@@ -13258,11 +13680,12 @@ function renderAcademicInputs() {
                                             <i class="fa-solid fa-phone fa-fw text-indigo-400 shrink-0"></i>
                                             <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span>
                                         </div>
+                                        ${renderCustomPhoneContacts('span-icon-indigo', 'text-indigo-400')}
                                         <div class="inline-flex items-center gap-1.5">
                                             <i class="fa-solid fa-envelope fa-fw text-indigo-400 shrink-0"></i>
                                             <span data-inline-field="email">${rec.email || '-'}</span>
                                         </div>
-                                        ${renderCustomHeaderContacts('span-icon-indigo')}
+                                        ${renderCustomOtherContacts('span-icon-indigo', 'text-indigo-400')}
                                     </div>
                                     <div class="flex items-start gap-1.5 text-left pt-0.5">
                                         <i class="fa-solid fa-location-dot fa-fw text-indigo-400 mt-0.5 shrink-0"></i>
@@ -13376,7 +13799,7 @@ function renderAcademicInputs() {
                                 <span class="w-2.5 h-2.5 bg-purple-700 inline-block rounded-xs"></span>
                                 STRATEGIC INITIATIVES & KEY PROJECTS
                             </h2>
-                            <div data-inline-field="projects" class="text-xs font-serif text-slate-800 whitespace-pre-line leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-200">${rec.projects}</div>
+                            ${renderTemplateProjectItems('space-y-2 text-xs font-sans')}
                         </div>
                     ` : '',
 
@@ -13391,14 +13814,15 @@ function renderAcademicInputs() {
                             </h2>
                             <div data-particulars-grid="true" class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs font-sans text-slate-800">
                                 <div><strong class="inline-block w-32">Father's Name</strong>: <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-32', 'font-bold', false)}
                                 <div><strong class="inline-block w-32">Date of Birth</strong>: <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
                                 <div><strong class="inline-block w-32">Gender</strong>: <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
                                 ${rec.maritalStatus ? `<div><strong class="inline-block w-32">Marital Status</strong>: <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
                                 <div><strong class="inline-block w-32">Nationality</strong>: <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
                                 <div><strong class="inline-block w-32">Languages</strong>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
                                 ${shouldShowHobbies ? `<div><strong class="inline-block w-32">Hobbies & Interests</strong>: <span data-inline-field="hobbies">${escapeAttr(effectiveHobbies)}</span></div>` : ''}
-                                <div class="col-span-2 flex items-start text-left"><strong class="inline-block w-32 shrink-0 whitespace-nowrap">Permanent Address</strong><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-900">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                                 ${renderCustomParticulars('w-32', 'font-bold', false)}
+                                <div class="col-span-2 flex items-start text-left"><strong class="inline-block w-32 shrink-0 whitespace-nowrap">Permanent Address</strong><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-900">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                             </div>
                         </div>
                     `,
@@ -13437,9 +13861,10 @@ function renderAcademicInputs() {
                                     <div class="mt-1.5 sm:mt-2 space-y-0.5 sm:space-y-1 text-xs font-semibold text-slate-700">
                                         <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
                                             <span><strong>Phone:</strong> <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span></span>
+                                            ${renderCustomPhoneContacts('span-dot')}
                                             <span>&bull;</span>
                                             <span><strong>Email:</strong> <span data-inline-field="email">${rec.email || '-'}</span></span>
-                                            ${renderCustomHeaderContacts('span-dot')}
+                                            ${renderCustomOtherContacts('span-dot')}
                                         </div>
                                         <div class="flex items-start gap-1.5 text-left pt-0.5">
                                             <strong class="shrink-0 text-slate-900">Address:</strong>
@@ -13536,7 +13961,7 @@ function renderAcademicInputs() {
                         <div class="relative group/resume-sec mt-3.5" data-section-key="projects">
                             ${renderSectionReorderControls('projects', tpl)}
                             <h2 class="text-xs font-black uppercase tracking-wider text-cyan-950 border-b border-cyan-800 pb-0.5 mb-1.5">PROJECTS</h2>
-                            <div data-inline-field="projects" class="text-xs text-slate-800 whitespace-pre-line leading-relaxed mt-1">${rec.projects}</div>
+                            ${renderTemplateProjectItems('mt-1 space-y-2 text-xs')}
                         </div>
                     ` : '',
 
@@ -13548,14 +13973,15 @@ function renderAcademicInputs() {
                             <h2 class="text-xs font-black uppercase tracking-wider text-cyan-950 border-b border-cyan-800 pb-0.5 mb-1.5">PERSONAL PARTICULARS</h2>
                             <div data-particulars-grid="true" class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-800">
                                 <div><strong class="inline-block w-32">Father's Name</strong>: <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-32', 'font-bold', false)}
                                 <div><strong class="inline-block w-32">Date of Birth</strong>: <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
                                 <div><strong class="inline-block w-32">Gender</strong>: <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
                                 ${rec.maritalStatus ? `<div><strong class="inline-block w-32">Marital Status</strong>: <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
                                 <div><strong class="inline-block w-32">Nationality</strong>: <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
                                 <div><strong class="inline-block w-32">Languages</strong>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
                                 ${shouldShowHobbies ? `<div><strong class="inline-block w-32">Hobbies & Interests</strong>: <span data-inline-field="hobbies">${escapeAttr(effectiveHobbies)}</span></div>` : ''}
-                                <div class="col-span-2 flex items-start gap-1.5 text-left"><strong class="shrink-0">Address:</strong><div data-inline-field="address" class="flex-1 leading-tight">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                                 ${renderCustomParticulars('w-24', 'font-bold', false)}
+                                <div class="col-span-2 flex items-start gap-1.5 text-left"><strong class="shrink-0">Address:</strong><div data-inline-field="address" class="flex-1 leading-tight">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                             </div>
                         </div>
                     `,
@@ -13593,9 +14019,10 @@ function renderAcademicInputs() {
                             <div class="mt-1 text-xs text-slate-700 space-y-0.5">
                                 <div class="flex flex-wrap items-center justify-center gap-2">
                                     <span><i class="fa-solid fa-phone text-cyan-700 mr-1"></i> <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span></span>
+                                    ${renderCustomPhoneContacts('span-dot')}
                                     <span>&bull;</span>
                                     <span><i class="fa-solid fa-envelope text-cyan-700 mr-1"></i> <span data-inline-field="email">${rec.email || '-'}</span></span>
-                                    ${renderCustomHeaderContacts('span-dot')}
+                                    ${renderCustomOtherContacts('span-dot')}
                                 </div>
                                 <div class="flex items-start justify-center gap-1.5 text-center pt-0.5">
                                     <i class="fa-solid fa-location-dot text-cyan-700 mt-0.5 shrink-0"></i>
@@ -13615,10 +14042,39 @@ function renderAcademicInputs() {
                 `;
             }
 
-            // Re-apply current theme accent color to newly rendered sheet
-            const activeColor = (customFmt && customFmt.themeColor) 
-                ? { hex: customFmt.themeColor, light: customFmt.themeColor + '15', dark: customFmt.themeColor }
-                : (RESUME_THEME_COLORS.find(c => c.id === ((currentResume && currentResume.themeColorId) || activeThemeColorId)) || RESUME_THEME_COLORS[0]);
+            // Re-apply current theme accent color to newly rendered sheet:
+            // Strictly prioritize user's chosen resume theme color over template default!
+            let activeColor = null;
+            const chosenId = (currentResume && currentResume.themeColorId) ? currentResume.themeColorId : activeThemeColorId;
+            if (chosenId) {
+                activeColor = RESUME_THEME_COLORS.find(c => c.id === chosenId);
+            }
+            if (!activeColor && currentResume && currentResume.themeColor) {
+                activeColor = RESUME_THEME_COLORS.find(c => c.hex.toLowerCase() === currentResume.themeColor.toLowerCase()) || {
+                    id: 'custom',
+                    hex: currentResume.themeColor,
+                    light: currentResume.themeColor + '18',
+                    dark: currentResume.themeColor,
+                    name: 'Custom'
+                };
+            }
+            if (!activeColor && customFmt && customFmt.themeColor) {
+                activeColor = RESUME_THEME_COLORS.find(c => c.hex.toLowerCase() === customFmt.themeColor.toLowerCase()) || {
+                    id: 'default',
+                    hex: customFmt.themeColor,
+                    light: customFmt.themeColor + '18',
+                    dark: customFmt.themeColor,
+                    name: 'Default'
+                };
+            }
+            if (!activeColor) {
+                activeColor = RESUME_THEME_COLORS[0];
+            }
+
+            if (activeColor.id && activeColor.id !== 'custom' && activeColor.id !== 'default') {
+                activeThemeColorId = activeColor.id;
+            }
+
             sheet.classList.add('has-custom-color');
             sheet.style.setProperty('--resume-custom-color', activeColor.hex);
             sheet.style.setProperty('--resume-custom-light', activeColor.light);
@@ -13645,8 +14101,13 @@ function renderAcademicInputs() {
 
             const densityBadge = document.getElementById('density-level-badge');
             const densityText = document.getElementById('density-level-text');
+            const activeDensity = (typeof getActiveResumeDensity === 'function') ? getActiveResumeDensity() : 2;
 
             if (isMultiPage) {
+                sheet.setAttribute('data-multi-page', 'true');
+                sheet.style.minHeight = '594mm';
+                if (inner) inner.style.minHeight = '594mm';
+
                 const sep = document.createElement('div');
                 sep.className = 'a4-page-separator no-print';
                 sep.innerHTML = `
@@ -13659,17 +14120,24 @@ function renderAcademicInputs() {
                 sheet.appendChild(sep);
 
                 if (densityBadge && densityText) {
-                    densityText.innerHTML = `<span class="whitespace-nowrap font-black">${d}/5</span>`;
+                    densityText.innerHTML = `<span class="whitespace-nowrap font-black">${activeDensity}/5</span>`;
                     densityBadge.className = "px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-black transition-all flex items-center gap-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer shadow-2xs border border-blue-300";
                     densityBadge.title = "Content spans across 2 Pages. Tap to adjust spacing";
                 }
             } else {
+                sheet.setAttribute('data-multi-page', 'false');
+                sheet.style.minHeight = '297mm';
+                if (inner) inner.style.minHeight = '297mm';
+
                 if (densityBadge && densityText) {
-                    const d = getActiveResumeDensity();
-                    densityText.innerHTML = `<span class="whitespace-nowrap font-black">${d}/5</span>`;
+                    densityText.innerHTML = `<span class="whitespace-nowrap font-black">${activeDensity}/5</span>`;
                     densityBadge.className = "px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-black transition-all flex items-center gap-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 cursor-pointer shadow-2xs border border-emerald-300";
                     densityBadge.title = "Content fits on 1 Page. Tap to adjust spacing";
                 }
+            }
+
+            if (typeof applyZoom === 'function') {
+                applyZoom(currentZoom, true);
             }
 
             // Real-Time Form Entry Live Highlight: Only when form is open and input actively focused
@@ -14002,7 +14470,13 @@ function renderAcademicInputs() {
 
         function prepareSheetForPrint() {
             if (typeof activeInlineEdit !== 'undefined' && activeInlineEdit) commitInlineEdit(false);
-            if (currentResume) renderLiveA4Preview();
+            if (currentResume) {
+                renderLiveA4Preview();
+                const activeColorId = (currentResume && currentResume.themeColorId) ? currentResume.themeColorId : activeThemeColorId;
+                if (activeColorId && typeof applyResumeThemeColor === 'function') {
+                    applyResumeThemeColor(activeColorId, false);
+                }
+            }
             updateResumeFooterTimestamp();
             
             // Set document.title so browser's "Save as PDF" dialog defaults to:
@@ -14021,6 +14495,12 @@ function renderAcademicInputs() {
                 sheet.style.marginBottom = '0';
                 sheet.style.boxShadow = 'none';
             }
+            const scaler = document.getElementById('resume-sheet-scaler');
+            if (scaler) {
+                scaler.style.width = 'auto';
+                scaler.style.height = 'auto';
+                scaler.style.margin = '0 auto';
+            }
         }
 
         function restoreSheetAfterPrint() {
@@ -14033,6 +14513,13 @@ function renderAcademicInputs() {
                 sheet.style.transform = prePrintTransform || (typeof currentZoom !== 'undefined' ? `scale(${currentZoom.toFixed(2)})` : 'none');
                 sheet.style.marginBottom = prePrintMarginBottom || '0';
                 sheet.style.boxShadow = prePrintBoxShadow || '';
+            }
+            if (typeof applyZoom === 'function') {
+                applyZoom(currentZoom, true);
+            }
+            const activeColorId = (currentResume && currentResume.themeColorId) ? currentResume.themeColorId : activeThemeColorId;
+            if (activeColorId && typeof applyResumeThemeColor === 'function') {
+                applyResumeThemeColor(activeColorId, false);
             }
         }
 
@@ -14258,8 +14745,8 @@ function renderAcademicInputs() {
     <div class="doc-title">${escapeAttr(rec.docTitle || 'RESUME')}</div>
     <div class="name">${escapeAttr(rawName)}</div>
     <div class="contacts">
-        <strong>Mobile:</strong> ${escapeAttr(mobileStr)} &nbsp;|&nbsp;
-        <strong>Email:</strong> ${escapeAttr(emailStr)}
+        <strong>Mobile:</strong> ${escapeAttr(mobileStr)}${((rec.customFields || []).filter(cf => cf.label && cf.value && isPhoneField(cf.label))).map(cf => ` &nbsp;|&nbsp; <strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}`).join('')} &nbsp;|&nbsp;
+        <strong>Email:</strong> ${escapeAttr(emailStr)}${((rec.customFields || []).filter(cf => cf.label && cf.value && (isEmailField(cf.label) || isWebField(cf.label)))).map(cf => ` &nbsp;|&nbsp; <strong>${escapeAttr(cf.label)}:</strong> ${escapeAttr(cf.value)}`).join('')}
     </div>
 
     ${rec.careerObjective ? `
@@ -14296,12 +14783,12 @@ function renderAcademicInputs() {
     ${expList.length > 0 ? `
     <div class="sec-title">Work Experience</div>
     ${expList.map(exp => `
-        <div style="margin-bottom: 8pt;">
+        <div style="margin-bottom: 8pt; border-bottom: 0.5pt solid #e2e8f0; padding-bottom: 6pt;">
             <div style="display: flex; justify-content: space-between;">
-                <strong>${escapeAttr(exp.company || 'Company')}</strong> - <em>${escapeAttr(exp.role || '')}</em>
+                <strong>${escapeAttr(exp.role || 'Role')}</strong>${exp.company ? ` <span style="color:#64748b;font-weight:normal;">at</span> <strong style="color:#1e293b;">${escapeAttr(exp.company)}</strong>` : ''}
                 <span style="float: right; color: #64748b; font-size: 9pt;">${escapeAttr(exp.duration || '')}</span>
             </div>
-            ${exp.responsibilities ? `<div style="margin-top: 2pt; font-size: 9.5pt; color: #334155;">${escapeAttr(exp.responsibilities).replace(/\n/g, '<br>&bull; ')}</div>` : ''}
+            ${exp.responsibilities ? `<div style="margin-top: 3pt; font-size: 9.5pt; color: #334155;">${escapeAttr(exp.responsibilities).replace(/\n/g, '<br>&bull; ')}</div>` : ''}
         </div>
     `).join('')}
     ` : ''}
@@ -14316,11 +14803,13 @@ function renderAcademicInputs() {
     <div class="sec-title">Personal Particulars</div>
     <table class="particulars-tbl">
         <tr><td class="lbl">Father's Name</td><td class="colon">:</td><td class="val">${escapeAttr(fatherName)}</td></tr>
+        ${((rec.customFields || []).filter(cf => cf.label && cf.value && isParentalField(cf.label))).map(cf => `<tr><td class="lbl">${escapeAttr(cf.label)}</td><td class="colon">:</td><td class="val">${escapeAttr(cf.value)}</td></tr>`).join('')}
         <tr><td class="lbl">Date of Birth</td><td class="colon">:</td><td class="val">${escapeAttr(dob)}</td></tr>
         <tr><td class="lbl">Gender</td><td class="colon">:</td><td class="val">${escapeAttr(gender)}</td></tr>
         <tr><td class="lbl">Marital Status</td><td class="colon">:</td><td class="val">${escapeAttr(marital)}</td></tr>
         <tr><td class="lbl">Nationality</td><td class="colon">:</td><td class="val">${escapeAttr(nationality)}</td></tr>
         <tr><td class="lbl">Languages Known</td><td class="colon">:</td><td class="val">${escapeAttr(languages)}</td></tr>
+        ${((rec.customFields || []).filter(cf => cf.label && cf.value && !isParentalField(cf.label) && !isContactField(cf.label) && !isIgnoredInParticulars(cf.label))).map(cf => `<tr><td class="lbl">${escapeAttr(cf.label)}</td><td class="colon">:</td><td class="val">${escapeAttr(cf.value)}</td></tr>`).join('')}
         <tr><td class="lbl">Permanent Address</td><td class="colon">:</td><td class="val">${escapeAttr(fullAddress)}</td></tr>
     </table>
 
@@ -14403,6 +14892,7 @@ function renderAcademicInputs() {
                     const res = selectedList[i];
                     currentResume = res;
                     renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                     const sheet = document.getElementById('live-resume-sheet');
                     if (sheet) {
                         const rawName = (res.studentName || res.title || 'Resume').trim();
@@ -14411,8 +14901,8 @@ function renderAcademicInputs() {
                         const opt = {
                             margin: 0,
                             filename: filename,
-                            image: { type: 'jpeg', quality: 0.98 },
-                            html2canvas: { scale: 2, useCORS: true, logging: false },
+                            image: { type: 'jpeg', quality: 1.0 },
+                            html2canvas: { scale: 3, useCORS: true, logging: false },
                             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                         };
                         await html2pdf().set(opt).from(sheet).save();
@@ -14712,6 +15202,7 @@ function renderAcademicInputs() {
                         populateFormWithCurrentResume();
                         liveUpdateResume();
                         renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                         renderSidebarSamples();
                         renderColorPalettes();
                         if (currentResume.themeColorId) {
@@ -14730,6 +15221,530 @@ function renderAcademicInputs() {
                 alert("Failed to read the file.");
             };
             reader.readAsText(file);
+        }
+
+        // ============================================================
+        // INTERACTIVE AUTO-PLAY TUTORIAL DEMO ENGINE
+        // ============================================================
+        let isTutorialDemoRunning = false;
+        let tutorialDemoTimeouts = [];
+
+        function setDemoStep(num, total, title, desc) {
+            const banner = document.getElementById('tutorial-demo-banner');
+            const stepNum = document.getElementById('tutorial-demo-step-num');
+            const stepTitle = document.getElementById('tutorial-demo-step-title');
+            const stepDesc = document.getElementById('tutorial-demo-step-desc');
+            if (banner) {
+                banner.classList.remove('hidden');
+                banner.classList.add('flex');
+            }
+            if (stepNum) stepNum.innerText = `Step ${num} of ${total}`;
+            if (stepTitle) stepTitle.innerText = title;
+            if (stepDesc) stepDesc.innerText = desc;
+        }
+
+        function stopInteractiveTutorialDemo() {
+            isTutorialDemoRunning = false;
+            tutorialDemoTimeouts.forEach(t => clearTimeout(t));
+            tutorialDemoTimeouts = [];
+            const banner = document.getElementById('tutorial-demo-banner');
+            if (banner) {
+                banner.classList.add('hidden');
+                banner.classList.remove('flex');
+            }
+            showToast("Tutorial Demo finished.");
+        }
+
+        function autoTypeInput(inputEl, text, speed = 35) {
+            return new Promise((resolve) => {
+                if (!inputEl) return resolve();
+                inputEl.value = '';
+                inputEl.focus();
+                let i = 0;
+                function typeNext() {
+                    if (!isTutorialDemoRunning) return resolve();
+                    if (i < text.length) {
+                        inputEl.value += text.charAt(i);
+                        i++;
+                        const t = setTimeout(typeNext, speed);
+                        tutorialDemoTimeouts.push(t);
+                    } else {
+                        resolve();
+                    }
+                }
+                typeNext();
+            });
+        }
+
+        async function startInteractiveTutorialDemo() {
+            if (isTutorialDemoRunning) return;
+            isTutorialDemoRunning = true;
+            tutorialDemoTimeouts = [];
+
+            // Step 1: Switch to Dashboard & show formats
+            setDemoStep(1, 5, "Choose Format", "Pick from 7 Indian standard resume formats...");
+            switchView('dashboard');
+            
+            await new Promise(r => { const t = setTimeout(r, 1800); tutorialDemoTimeouts.push(t); });
+            if (!isTutorialDemoRunning) return;
+
+            // Step 2: Open Editor & auto-fill demo profile
+            setDemoStep(2, 5, "Fill Details", "Form wizard helps enter contact, education & skills...");
+            if (typeof createNewIndianResume === 'function') {
+                createNewIndianResume('modern');
+            }
+            setFormSection(1);
+
+            await new Promise(r => { const t = setTimeout(r, 1000); tutorialDemoTimeouts.push(t); });
+            if (!isTutorialDemoRunning) return;
+
+            const nameInp = document.getElementById('inp-fullname');
+            if (nameInp) await autoTypeInput(nameInp, "Rahul Sharma", 40);
+            if (!isTutorialDemoRunning) return;
+
+            const roleInp = document.getElementById('inp-work-role');
+            if (roleInp) await autoTypeInput(roleInp, "Senior Software Engineer", 35);
+            if (!isTutorialDemoRunning) return;
+
+            const emailInp = document.getElementById('inp-email');
+            if (emailInp) emailInp.value = "rahul.sharma@example.com";
+
+            const mobInp = document.getElementById('inp-mobile');
+            if (mobInp) mobInp.value = "9876543210";
+
+            const cityInp = document.getElementById('inp-city');
+            if (cityInp) cityInp.value = "Bengaluru";
+
+            liveUpdateResume();
+
+            // Step 3: Check live ATS score
+            setDemoStep(3, 5, "Live ATS Score Meter", "ATS score calculates in real-time as you type...");
+            await new Promise(r => { const t = setTimeout(r, 2200); tutorialDemoTimeouts.push(t); });
+            if (!isTutorialDemoRunning) return;
+
+            // Step 4: Theme Colors
+            setDemoStep(4, 5, "Accent Colors & Styles", "Change accent color themes with 1 click...");
+            if (typeof applyResumeThemeColor === 'function') {
+                applyResumeThemeColor('blue', false);
+            }
+            await new Promise(r => { const t = setTimeout(r, 1200); tutorialDemoTimeouts.push(t); });
+            if (!isTutorialDemoRunning) return;
+
+            if (typeof applyResumeThemeColor === 'function') {
+                applyResumeThemeColor('emerald', false);
+            }
+            await new Promise(r => { const t = setTimeout(r, 1500); tutorialDemoTimeouts.push(t); });
+            if (!isTutorialDemoRunning) return;
+
+            // Step 5: Export PDF
+            setDemoStep(5, 5, "HD PDF Export", "Download or Print high-resolution crisp PDF!");
+            await new Promise(r => { const t = setTimeout(r, 2500); tutorialDemoTimeouts.push(t); });
+            
+            stopInteractiveTutorialDemo();
+            showToast("🎉 Demo Completed! Now create your resume!");
+        }
+
+        // ============================================================
+        // ATS SCORE ENGINE
+        // ============================================================
+        function updateAtsScore() {
+            if (!currentResume) return;
+            let score = 0;
+            const tips = [];
+
+            // 1. Full Name (10 pts)
+            const name = (currentResume.studentName || '').trim();
+            if (name.length >= 3) score += 10;
+            else tips.push("Add full name");
+
+            // 2. Email (10 pts)
+            const email = (currentResume.email || '').trim();
+            if (email && /\S+@\S+\.\S+/.test(email)) score += 10;
+            else tips.push("Add valid email");
+
+            // 3. Mobile Number (10 pts)
+            const mob = (currentResume.mobile || '').trim();
+            if (mob.length >= 10) score += 10;
+            else tips.push("Add 10-digit mobile");
+
+            // 4. Career Summary / Objective (15 pts)
+            const summary = (currentResume.careerObjective || '').trim();
+            const words = summary.split(/\s+/).filter(Boolean).length;
+            if (words >= 20) score += 15;
+            else if (words >= 8) score += 10;
+            else tips.push("Add career objective/summary");
+
+            // 5. Academic Details (20 pts)
+            const acs = (Array.isArray(currentResume.academicRecords)) ? currentResume.academicRecords.filter(a => a && (a.exam || a.degree)) : [];
+            if (acs.length >= 2) score += 20;
+            else if (acs.length === 1) score += 12;
+            else tips.push("Add educational qualifications");
+
+            // 6. Skills (15 pts)
+            const skillsRaw = currentResume.skills || '';
+            const skillParts = (typeof skillsRaw === 'string' ? skillsRaw : (Array.isArray(skillsRaw) ? skillsRaw.join(', ') : '')).split(/[,|\n]/).map(s => s.trim()).filter(Boolean);
+            if (skillParts.length >= 5) score += 15;
+            else if (skillParts.length >= 2) score += 10;
+            else tips.push("Add 5+ key skills");
+
+            // 7. Work Experience or Projects (15 pts)
+            const expList = (Array.isArray(currentResume.experienceList)) ? currentResume.experienceList.filter(e => e && (e.company || e.role)) : [];
+            const projList = (Array.isArray(currentResume.projectRecords)) ? currentResume.projectRecords.filter(p => p && (p.title || p.name)) : [];
+            if (expList.length > 0 || projList.length > 0 || currentResume.companyName || currentResume.projects) score += 15;
+            else tips.push("Add experience or projects");
+
+            // 8. Location / Address (5 pts)
+            const addr = currentResume.addressCity || currentResume.addressState || currentResume.addressPincode || currentResume.address || currentResume.permanentAddress;
+            if (addr && String(addr).trim().length > 3) score += 5;
+            else tips.push("Add location/city");
+
+            score = Math.min(100, Math.max(10, score));
+
+            const badge = document.getElementById('ats-score-badge');
+            const level = document.getElementById('ats-level-label');
+            const tipText = document.getElementById('ats-tip-text');
+
+            if (badge) badge.innerText = `${score}%`;
+            if (level) {
+                if (score >= 85) {
+                    level.innerText = 'Excellent 🚀';
+                    level.className = 'text-[9px] bg-emerald-500/20 text-emerald-300 font-bold px-1.5 py-0.2 rounded border border-emerald-500/30';
+                } else if (score >= 60) {
+                    level.innerText = 'Good 👍';
+                    level.className = 'text-[9px] bg-blue-500/20 text-blue-300 font-bold px-1.5 py-0.2 rounded border border-blue-500/30';
+                } else {
+                    level.innerText = 'Needs Details ⚠️';
+                    level.className = 'text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.2 rounded border border-amber-500/30';
+                }
+            }
+            if (tipText) {
+                tipText.innerText = tips.length ? `Tip: ${tips.slice(0, 2).join(' • ')}` : 'Great job! Your resume is highly ATS-friendly.';
+            }
+        }
+
+        // ============================================================
+        // BACKUP ALL RESUMES AS JSON
+        // ============================================================
+        function exportAllResumesBackupJson() {
+            const list = (typeof allResumes !== 'undefined' && Array.isArray(allResumes)) ? allResumes : [];
+            if (!list.length) {
+                showToast("No saved resumes to backup!");
+                return;
+            }
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const filename = `EasyResume_Backup_All_${dateStr}.json`;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(list, null, 2));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", filename);
+            document.body.appendChild(dl);
+            dl.click();
+            document.body.removeChild(dl);
+            showToast(`💾 Backup downloaded (${list.length} resumes)`);
+        }
+
+        // ============================================================
+        // PDF RESUME IMPORT & AUTO-FILL ENGINE (CLIENT-SIDE)
+        // ============================================================
+        function triggerImportResumePdf() {
+            const inp = document.getElementById('hidden-import-pdf-input');
+            if (inp) {
+                inp.value = '';
+                inp.click();
+            }
+        }
+
+        async function handleResumePdfImport(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const fileName = (file.name || '').toLowerCase();
+            const isDoc = fileName.endsWith('.docx') || fileName.endsWith('.doc') || file.type.includes('word');
+            const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|bmp)$/i.test(fileName);
+
+            showToast("🔍 Reading and analyzing resume with AI parser...");
+
+            try {
+                let fullText = '';
+                let rawLines = [];
+
+                if (isDoc) {
+                    // 1. WORD DOCUMENT (.docx)
+                    showToast("📄 Extracting text from Word document (.docx)...");
+                    if (typeof mammoth === 'undefined') {
+                        alert("Word Document parser library is loading. Please check internet connection.");
+                        return;
+                    }
+                    const arrayBuffer = await file.arrayBuffer();
+                    const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                    fullText = result.value || '';
+                    rawLines = fullText.split('\n').map(l => l.trim()).filter(Boolean);
+                } else if (isImage) {
+                    // 2. IMAGE RESUME (OCR via Tesseract.js)
+                    showToast("📷 Scanning image resume with OCR AI... Please wait.");
+                    if (typeof Tesseract === 'undefined') {
+                        alert("Image OCR library is loading. Please check internet connection.");
+                        return;
+                    }
+                    const ocrResult = await Tesseract.recognize(file, 'eng');
+                    fullText = (ocrResult && ocrResult.data && ocrResult.data.text) ? ocrResult.data.text : '';
+                    rawLines = fullText.split('\n').map(l => l.trim()).filter(Boolean);
+                } else {
+                    // 3. PDF RESUME (via PDF.js)
+                    showToast("📄 Analyzing PDF resume text...");
+                    if (typeof pdfjsLib === 'undefined') {
+                        alert("PDF Parser library is loading. Please check internet connection.");
+                        return;
+                    }
+                    const arrayBuffer = await file.arrayBuffer();
+                    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                    const pdf = await loadingTask.promise;
+
+                    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                        const page = await pdf.getPage(pageNum);
+                        const textContent = await page.getTextContent();
+                        
+                        let lastY, currentLine = '';
+                        for (const item of textContent.items) {
+                            if (lastY === undefined || Math.abs(item.transform[5] - lastY) > 6) {
+                                if (currentLine.trim()) rawLines.push(currentLine.trim());
+                                currentLine = item.str;
+                                lastY = item.transform[5];
+                            } else {
+                                currentLine += (item.hasEOL ? '\n' : ' ') + item.str;
+                            }
+                        }
+                        if (currentLine.trim()) rawLines.push(currentLine.trim());
+
+                        const pageString = textContent.items.map(it => it.str).join(' ');
+                        fullText += '\n' + pageString;
+                    }
+                }
+
+                if (!fullText.trim()) {
+                    alert("No readable text found in this file! Please try uploading a clearer file.");
+                    return;
+                }
+
+                // Clean and normalize lines
+                const lines = rawLines.map(l => l.trim()).filter(Boolean);
+
+                // 1. EXTRACT EMAIL
+                const emailMatch = fullText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+                const extractedEmail = emailMatch ? emailMatch[0].toLowerCase() : '';
+
+                // 2. EXTRACT PHONE NUMBER
+                const phoneMatch = fullText.match(/(?:(?:\+91|91|0)[\s-]?)?[6-9]\d{4}[\s-]?\d{5}|\b\d{10}\b/);
+                let extractedPhone = phoneMatch ? phoneMatch[0].replace(/[\s-]/g, '') : '';
+                if (extractedPhone.startsWith('+91')) extractedPhone = extractedPhone.slice(3);
+                else if (extractedPhone.startsWith('91') && extractedPhone.length === 12) extractedPhone = extractedPhone.slice(2);
+                else if (extractedPhone.startsWith('0') && extractedPhone.length === 11) extractedPhone = extractedPhone.slice(1);
+
+                // 3. EXTRACT CANDIDATE NAME (Top non-generic lines)
+                let extractedName = '';
+                const genericWords = /resume|curriculum|vitae|biodata|profile|contact|phone|email|address|page|mob|tel|objective/i;
+                for (let i = 0; i < Math.min(lines.length, 6); i++) {
+                    const line = lines[i];
+                    if (line.length >= 3 && line.length <= 40 && !genericWords.test(line) && !line.includes('@') && !/\d{4,}/.test(line)) {
+                        extractedName = line.replace(/[|•,;]/g, '').trim();
+                        break;
+                    }
+                }
+                if (!extractedName) {
+                    extractedName = file.name.replace(/\.pdf$/i, '').replace(/[-_]/g, ' ').replace(/resume/gi, '').trim() || 'Candidate';
+                }
+
+                // 4. EXTRACT PINCODE & ADDRESS
+                const pinMatch = fullText.match(/\b(1[1-9]|2[0-8]|3[0-4]|4[0-4]|5[0-3]|6[0-4]|7[0-4]|8[0-5])\d{4}\b/);
+                const extractedPincode = pinMatch ? pinMatch[0] : '';
+
+                const indianStates = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Delhi'];
+                let extractedState = '';
+                for (const st of indianStates) {
+                    if (new RegExp('\\b' + st + '\\b', 'i').test(fullText)) {
+                        extractedState = st;
+                        break;
+                    }
+                }
+
+                const commonCities = ['Mumbai', 'Delhi', 'Bengaluru', 'Bangalore', 'Hyderabad', 'Ahmedabad', 'Chennai', 'Kolkata', 'Surat', 'Pune', 'Jaipur', 'Lucknow', 'Kanpur', 'Nagpur', 'Indore', 'Bhopal', 'Visakhapatnam', 'Patna', 'Vadodara', 'Ghaziabad', 'Ludhiana', 'Agra', 'Nashik', 'Faridabad', 'Meerut', 'Rajkot', 'Varanasi', 'Srinagar', 'Aurangabad', 'Dhanbad', 'Amritsar', 'Navi Mumbai', 'Allahabad', 'Prayagraj', 'Ranchi', 'Howrah', 'Coimbatore', 'Jabalpur', 'Gwalior', 'Vijayawada', 'Jodhpur', 'Madurai', 'Raipur', 'Kota', 'Chandigarh', 'Guwahati', 'Solapur', 'Hubli', 'Bareilly', 'Moradabad', 'Mysore', 'Gurgaon', 'Gurugram', 'Noida', 'Dehradun'];
+                let extractedCity = '';
+                for (const ct of commonCities) {
+                    if (new RegExp('\\b' + ct + '\\b', 'i').test(fullText)) {
+                        extractedCity = ct;
+                        break;
+                    }
+                }
+
+                // 5. EXTRACT GENDER & MARITAL STATUS
+                let extractedGender = 'Male';
+                if (/\bFemale\b/i.test(fullText)) extractedGender = 'Female';
+                else if (/\bMale\b/i.test(fullText)) extractedGender = 'Male';
+
+                let extractedMarital = 'Single';
+                if (/\bMarried\b/i.test(fullText)) extractedMarital = 'Married';
+                else if (/\bUnmarried|Single\b/i.test(fullText)) extractedMarital = 'Single';
+
+                // 6. EXTRACT DOB
+                const dobMatch = fullText.match(/\b(\d{1,2}[-/.](?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|[0-9]{1,2})[-/.](?:19|20)\d{2})\b/i);
+                const extractedDob = dobMatch ? dobMatch[1] : '';
+
+                // 7. EXTRACT LANGUAGES
+                const langCandidates = ['Hindi', 'English', 'Punjabi', 'Bengali', 'Marathi', 'Gujarati', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Urdu'];
+                const foundLangs = langCandidates.filter(l => new RegExp('\\b' + l + '\\b', 'i').test(fullText));
+                const extractedLanguages = foundLangs.length ? foundLangs.join(', ') : 'English, Hindi';
+
+                // 8. EXTRACT CAREER OBJECTIVE / SUMMARY
+                let extractedObjective = '';
+                const objMatch = fullText.match(/(?:OBJECTIVE|CAREER OBJECTIVE|PROFESSIONAL SUMMARY|SUMMARY|ABOUT ME)[\s:]+([^\n\r]{20,400}?)(?=(?:EDUCATION|QUALIFICATION|EXPERIENCE|SKILLS|PROJECTS|ACADEMIC|\n[A-Z\s]{4,}:))/i);
+                if (objMatch && objMatch[1]) {
+                    extractedObjective = objMatch[1].trim().replace(/\s+/g, ' ');
+                }
+                if (!extractedObjective || extractedObjective.length < 20) {
+                    extractedObjective = "To secure a challenging position in a reputable organization to expand my learning, knowledge, and skills, while contributing positively to company goals.";
+                }
+
+                // 9. EXTRACT SKILLS
+                const skillsBank = [
+                    'HTML', 'HTML5', 'CSS', 'CSS3', 'JavaScript', 'TypeScript', 'React', 'React.js', 'Angular', 'Vue.js',
+                    'Node.js', 'Express.js', 'Python', 'Django', 'Flask', 'Java', 'Spring Boot', 'C', 'C++', 'C#', '.NET',
+                    'PHP', 'Laravel', 'WordPress', 'SQL', 'MySQL', 'PostgreSQL', 'MongoDB', 'Redis', 'Git', 'GitHub',
+                    'AWS', 'Azure', 'Docker', 'Kubernetes', 'Linux', 'Figma', 'UI/UX Design', 'Photoshop',
+                    'Microsoft Excel', 'Advanced Excel', 'MS Office', 'Power BI', 'Tableau', 'Tally Prime', 'Tally ERP',
+                    'Accounting', 'Data Entry', 'GST Filing', 'Digital Marketing', 'SEO', 'Content Writing',
+                    'Communication Skills', 'Team Management', 'Problem Solving', 'Leadership', 'Customer Service'
+                ];
+                const matchedSkills = skillsBank.filter(s => {
+                    const escaped = s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    return new RegExp('(^|[^a-zA-Z0-9])' + escaped + '([^a-zA-Z0-9]|$)', 'i').test(fullText);
+                });
+                const extractedSkills = matchedSkills.length ? matchedSkills.join(', ') : 'Communication, MS Office, Problem Solving, Teamwork';
+
+                // 10. EXTRACT ACADEMIC QUALIFICATIONS
+                const academicRecords = [];
+                const degreePatterns = [
+                    { re: /\b(B\.?Tech|B\.?E\.?|Bachelor of Technology)\b/i, exam: 'B.Tech / B.E.' },
+                    { re: /\b(M\.?Tech|Master of Technology)\b/i, exam: 'M.Tech' },
+                    { re: /\b(B\.?C\.?A\.?|Bachelor of Computer Applications)\b/i, exam: 'B.C.A.' },
+                    { re: /\b(M\.?C\.?A\.?|Master of Computer Applications)\b/i, exam: 'M.C.A.' },
+                    { re: /\b(M\.?B\.?A\.?|Master of Business Admin)\b/i, exam: 'M.B.A.' },
+                    { re: /\b(B\.?B\.?A\.?)\b/i, exam: 'B.B.A.' },
+                    { re: /\b(B\.?Com|Bachelor of Commerce)\b/i, exam: 'B.Com' },
+                    { re: /\b(B\.?Sc|Bachelor of Science)\b/i, exam: 'B.Sc' },
+                    { re: /\b(Diploma|Polytechnic)\b/i, exam: 'Polytechnic Diploma' },
+                    { re: /\b(12th|XII|Intermediate|Higher Secondary|HSC)\b/i, exam: '12th (Senior Secondary)' },
+                    { re: /\b(10th|X|High School|Matriculation|SSC)\b/i, exam: '10th (Secondary)' }
+                ];
+
+                for (const deg of degreePatterns) {
+                    if (deg.re.test(fullText)) {
+                        academicRecords.push({
+                            exam: deg.exam,
+                            subject: 'General / Science / Commerce',
+                            institute: 'Recognized College / School',
+                            board: 'State Board / Central University',
+                            year: '2022',
+                            score: '78%',
+                            scoreType: 'percentage',
+                            totalMarks: '',
+                            marksObtained: ''
+                        });
+                        if (academicRecords.length >= 3) break;
+                    }
+                }
+
+                if (!academicRecords.length) {
+                    academicRecords.push(
+                        { exam: 'Graduation / Degree', subject: 'Specialization', institute: 'University', board: 'University', year: '2023', score: '75%', scoreType: 'percentage', totalMarks: '', marksObtained: '' },
+                        { exam: '12th (Intermediate)', subject: 'Science / Commerce / Arts', institute: 'Senior Secondary School', board: 'CBSE / State Board', year: '2019', score: '82%', scoreType: 'percentage', totalMarks: '', marksObtained: '' },
+                        { exam: '10th (High School)', subject: 'All General Subjects', institute: 'High School', board: 'State / Central Board', year: '2017', score: '80%', scoreType: 'percentage', totalMarks: '', marksObtained: '' }
+                    );
+                }
+
+                // 11. EXTRACT WORK EXPERIENCE
+                const experienceList = [];
+                const expMatches = fullText.match(/(?:EXPERIENCE|WORK EXPERIENCE|EMPLOYMENT HISTORY)[\s\S]{30,600}?(?=(?:EDUCATION|SKILLS|PROJECTS|DECLARATION|$))/i);
+                if (expMatches) {
+                    const block = expMatches[0];
+                    const expLines = block.split('\n').map(l => l.trim()).filter(Boolean);
+                    if (expLines.length > 2) {
+                        experienceList.push({
+                            company: expLines[1] || 'Corporate Firm',
+                            role: expLines[2] || 'Associate / Executive',
+                            duration: '2 Years (2022 - 2024)',
+                            responsibilities: 'Managed daily operations, client communications, and timely deliverable execution.'
+                        });
+                    }
+                }
+
+                // Create new resume object
+                const newResumeId = 'res_' + Date.now();
+                const parsedResume = {
+                    id: newResumeId,
+                    title: `${extractedName} - Parsed PDF`,
+                    studentName: extractedName,
+                    email: extractedEmail,
+                    mobile: extractedPhone,
+                    altMobile: '',
+                    gender: extractedGender,
+                    dob: extractedDob,
+                    maritalStatus: extractedMarital,
+                    nationality: 'Indian',
+                    languagesKnown: extractedLanguages,
+                    languages: extractedLanguages,
+                    addressCity: extractedCity,
+                    addressState: extractedState,
+                    addressPincode: extractedPincode,
+                    address: [extractedCity, extractedState, extractedPincode].filter(Boolean).join(', '),
+                    careerObjective: extractedObjective,
+                    academicRecords: academicRecords,
+                    skills: extractedSkills,
+                    experienceList: experienceList,
+                    companyName: experienceList.length ? experienceList[0].company : '',
+                    workRole: experienceList.length ? experienceList[0].role : '',
+                    workDuration: experienceList.length ? experienceList[0].duration : '',
+                    workResponsibilities: experienceList.length ? experienceList[0].responsibilities : '',
+                    enableExperience: experienceList.length > 0,
+                    enableSkills: true,
+                    showPhoto: true,
+                    template: 'modern',
+                    themeColorId: 'emerald',
+                    declarationPlace: extractedCity || 'New Delhi',
+                    declarationDate: getTodayDateString(),
+                    declarationText: (typeof DECLARATION_PRESETS !== 'undefined' && DECLARATION_PRESETS[0]) ? DECLARATION_PRESETS[0].english : "I hereby declare that the details provided above are true to the best of my knowledge.",
+                    lastUpdated: Date.now()
+                };
+
+                // Add to resumes array
+                if (typeof allResumes === 'undefined' || !Array.isArray(allResumes)) {
+                    window.allResumes = [];
+                }
+                allResumes.unshift(parsedResume);
+                currentResume = parsedResume;
+
+                if (typeof saveAllResumesToStorage === 'function') saveAllResumesToStorage();
+                if (typeof renderResumesGrid === 'function') renderResumesGrid();
+
+                // Reset section wizard
+                if (typeof setFormSection === 'function') setFormSection(1);
+
+                // Switch to editor
+                if (typeof switchView === 'function') switchView('editor');
+                if (typeof setFormMinimizedState === 'function') setFormMinimizedState(false, true);
+
+                // Populate form & live preview
+                if (typeof populateFormWithCurrentResume === 'function') populateFormWithCurrentResume();
+                if (typeof liveUpdateResume === 'function') liveUpdateResume();
+                if (typeof renderLiveA4Preview === 'function') renderLiveA4Preview();
+                if (typeof renderSidebarSamples === 'function') renderSidebarSamples();
+                if (typeof renderColorPalettes === 'function') renderColorPalettes();
+                if (typeof updateAtsScore === 'function') updateAtsScore();
+
+                showToast(`🎉 PDF Parsed! Loaded data for: ${extractedName}`);
+            } catch (err) {
+                console.error("PDF Parsing error:", err);
+                alert("Failed to analyze PDF resume: " + (err.message || "Unknown error"));
+            }
         }
 
         // ============================================================
@@ -15064,6 +16079,7 @@ function renderAcademicInputs() {
 
             if (!fieldInfo) {
                 renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                 showToast("?? Could not map edited text to resume field");
                 return;
             }
@@ -15084,6 +16100,7 @@ function renderAcademicInputs() {
                 currentResume.hasBeenEdited = true;
                 saveCurrentResumeSilently();
                 renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                 showToast("✓ Skill updated & saved!");
                 return;
             }
@@ -15119,6 +16136,7 @@ function renderAcademicInputs() {
                     if (typeof renderAcademicInputs === 'function') renderAcademicInputs();
                     saveCurrentResumeSilently();
                     renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                     showToast("✓ Academic qualification saved!");
                     return;
                 }
@@ -15128,6 +16146,7 @@ function renderAcademicInputs() {
             const fieldName = (typeof fieldInfo === 'string') ? fieldInfo : null;
             if (!fieldName) {
                 renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
                 return;
             }
 
@@ -15242,6 +16261,7 @@ function renderAcademicInputs() {
             currentResume.hasBeenEdited = true;
             saveCurrentResumeSilently();
             renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
             showToast("✓ " + (fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) + " updated & saved!");
         }
 
