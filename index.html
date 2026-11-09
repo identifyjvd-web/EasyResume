@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
@@ -41,6 +41,7 @@
             background-color: #f1f5f9;
             margin: 0;
             padding: 0;
+            touch-action: pan-x pan-y;
         }
 
         /* Full Software Encapsulated in One Premium Card */
@@ -1504,11 +1505,28 @@
             #header-btn-minimize-form:not(.hidden),
             #toggle-form-btn,
             #header-menu-container,
-            #header-doc-type-filter:not(.hidden),
-            #header-zoom-controls:not(.hidden) {
+            #header-doc-type-filter:not(.hidden) {
                 height: 34px !important;
                 min-height: 34px !important;
                 max-height: 34px !important;
+            }
+
+            /* Floating Zoom Controls at Bottom Right in Mobile Mode */
+            #header-zoom-controls:not(.hidden) {
+                position: fixed !important;
+                bottom: 56px !important;
+                right: 12px !important;
+                z-index: 40 !important;
+                background: rgba(255, 255, 255, 0.96) !important;
+                backdrop-filter: blur(12px) !important;
+                -webkit-backdrop-filter: blur(12px) !important;
+                border: 1px solid rgba(16, 185, 129, 0.5) !important;
+                box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.25), 0 2px 6px -1px rgba(15, 23, 42, 0.12) !important;
+                border-radius: 9999px !important;
+                padding: 2px 4px !important;
+                height: 36px !important;
+                display: inline-flex !important;
+                align-items: center !important;
             }
         }
 
@@ -1707,7 +1725,7 @@
             </button>
 
             <!-- 6. Reorder Sections Modal -->
-            <button type="button" onclick="openReorderSectionsModal(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-slate-200">
+            <button type="button" onclick="openSectionReorderModal(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-slate-200">
                 <i class="fa-solid fa-arrows-up-down text-sm w-4 text-center text-teal-400"></i>
                 <span>Reorder / Hide Sections</span>
             </button>
@@ -2081,10 +2099,10 @@
                                             <span class="text-[10px] text-slate-500 font-medium">Resume के ऊपर क्या लिखा जाए चुनिए</span>
                                         </div>
                                         <div class="grid grid-cols-4 gap-1 p-1 bg-white rounded-lg border border-slate-200 text-xs">
-                                            <button type="button" onclick="setHeaderDocTitle('RESUME')" id="btn-doc-title-resume" class="py-1 px-1 rounded-md font-bold text-center transition cursor-pointer text-[10px] sm:text-[11px]">RESUME</button>
-                                            <button type="button" onclick="setHeaderDocTitle('CURRICULUM VITAE')" id="btn-doc-title-cv" class="py-1 px-1 rounded-md font-bold text-center transition cursor-pointer text-[10px] sm:text-[11px]" title="Curriculum Vitae (CV)">CV</button>
-                                            <button type="button" onclick="setHeaderDocTitle('BIO-DATA')" id="btn-doc-title-biodata" class="py-1 px-1 rounded-md font-bold text-center transition cursor-pointer text-[10px] sm:text-[11px]">BIO-DATA</button>
-                                            <button type="button" onclick="setHeaderDocTitle('NONE')" id="btn-doc-title-none" class="py-1 px-1 rounded-md font-bold text-center transition cursor-pointer text-[10px] sm:text-[11px]">Hide</button>
+                                            <button type="button" onclick="setHeaderDocTitle('RESUME')" id="btn-doc-title-resume" class="py-1 px-1 rounded-md font-bold text-center text-[10px] sm:text-[11px] bg-emerald-600 text-white shadow-xs">RESUME</button>
+                                            <button type="button" onclick="setHeaderDocTitle('CURRICULUM VITAE')" id="btn-doc-title-cv" class="py-1 px-1 rounded-md font-bold text-center text-[10px] sm:text-[11px] text-slate-600 hover:bg-slate-100 transition cursor-pointer" title="Curriculum Vitae (CV)">CV</button>
+                                            <button type="button" onclick="setHeaderDocTitle('BIO-DATA')" id="btn-doc-title-biodata" class="py-1 px-1 rounded-md font-bold text-center text-[10px] sm:text-[11px] text-slate-600 hover:bg-slate-100 transition cursor-pointer">BIO-DATA</button>
+                                            <button type="button" onclick="setHeaderDocTitle('NONE')" id="btn-doc-title-none" class="py-1 px-1 rounded-md font-bold text-center text-[10px] sm:text-[11px] text-slate-600 hover:bg-slate-100 transition cursor-pointer">Hide</button>
                                         </div>
                                     </div>
 
@@ -3254,8 +3272,8 @@
         </div>
 
         <!-- Toast -->
-        <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-extrabold transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
-            <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-[99999] bg-white/95 text-slate-800 border border-emerald-400/60 px-5 py-3 rounded-2xl shadow-2xl backdrop-blur-md flex items-center gap-2.5 text-xs sm:text-sm font-bold transition-all duration-300 opacity-0 pointer-events-none -translate-y-4 max-w-[92vw]">
+            <i class="fa-solid fa-circle-check text-emerald-600 text-base shrink-0"></i>
             <span id="toast-msg">Action completed!</span>
         </div>
 
@@ -6375,14 +6393,9 @@
                                         <i class="fa-solid fa-file-lines text-base"></i>
                                     </div>
                                 `}
-                                <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${fmtBadgeColor}">
-                                        ${fmtBadge}
-                                    </span>
-                                    <button type="button" onclick="event.stopPropagation(); deleteResume('${res.id}', event);" class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-500 hover:text-rose-700 border border-rose-200/80 flex items-center justify-center transition active:scale-90 cursor-pointer text-xs" title="Delete Resume">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </div>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${fmtBadgeColor}">
+                                    ${fmtBadge}
+                                </span>
                             </div>
 
                             <!-- Title: Candidate Name -->
@@ -6420,7 +6433,7 @@
                                 <button type="button" onclick="duplicateResume('${res.id}')" class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition active:scale-90 cursor-pointer text-xs" title="Duplicate Resume">
                                     <i class="fa-solid fa-copy"></i>
                                 </button>
-                                <button type="button" onclick="event.stopPropagation(); deleteResume('${res.id}', event);" class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-500 hover:text-rose-700 border border-rose-200/80 flex items-center justify-center transition active:scale-90 cursor-pointer text-xs" title="Delete Resume">
+                                <button type="button" onclick="event.stopPropagation(); deleteResume('${res.id}', event);" class="w-7 h-7 rounded-lg hover:bg-rose-50 text-rose-500 hover:text-rose-700 flex items-center justify-center transition active:scale-90 cursor-pointer text-xs" title="Delete Resume">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                                 <!-- Checkbox (Shown on Select All or Batch Mode) -->
@@ -6705,6 +6718,7 @@
             renderCareerObjectivePresets();
             updateDeclarationHindiMeaning();
             renderDeclarationPresets();
+            updateHeaderDocTitleButtons();
             setFormSection(currentFormSection || 1);
         }
 
@@ -10788,7 +10802,7 @@ function renderAcademicInputs() {
             if (!silent) showToast(`Fit to Screen: ${Math.round(currentZoom * 100)}%`);
         }
 
-        // Setup Ctrl + Mouse Wheel Zoom and Ctrl Keyboard Shortcuts in Editor Mode
+        // Setup Ctrl + Mouse Wheel Zoom and Mobile 2-Finger Pinch Zoom
         function setupCtrlZoomListeners() {
             window.addEventListener('wheel', (e) => {
                 if (e.ctrlKey || e.metaKey) {
@@ -10822,6 +10836,61 @@ function renderAcademicInputs() {
                     }
                 }
             });
+
+            // Prevent browser viewport pinch-zoom on iOS/Safari so only the resume sheet zooms
+            ['gesturestart', 'gesturechange', 'gestureend'].forEach(evt => {
+                document.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                }, { passive: false });
+            });
+
+            // Mobile 2-Finger Pinch-to-Zoom on Resume Preview Container Only
+            const container = document.getElementById('resume-preview-container');
+            const sheet = document.getElementById('live-resume-sheet');
+            if (container && sheet) {
+                let initialDist = 0;
+                let startZoom = 0.85;
+                let isPinching = false;
+
+                container.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 2) {
+                        isPinching = true;
+                        const t1 = e.touches[0];
+                        const t2 = e.touches[1];
+                        initialDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+                        startZoom = currentZoom || 0.85;
+                    }
+                }, { passive: true });
+
+                container.addEventListener('touchmove', (e) => {
+                    if (isPinching && e.touches.length === 2) {
+                        const t1 = e.touches[0];
+                        const t2 = e.touches[1];
+                        const curDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+                        if (initialDist > 8) {
+                            const factor = curDist / initialDist;
+                            let target = startZoom * factor;
+                            target = Math.min(1.50, Math.max(0.25, target));
+                            currentZoom = Math.round(target * 100) / 100;
+
+                            sheet.style.transform = `scale(${currentZoom.toFixed(2)})`;
+                            const a4Height = 1123;
+                            const offset = (a4Height * currentZoom) - a4Height;
+                            sheet.style.marginBottom = `${offset + (window.innerWidth < 1024 ? 40 : 20)}px`;
+
+                            const lbl = document.getElementById('zoom-val-label');
+                            if (lbl) lbl.innerText = Math.round(currentZoom * 100) + '%';
+                        }
+                        if (e.cancelable) e.preventDefault();
+                    }
+                }, { passive: false });
+
+                const stopPinch = () => { isPinching = false; };
+                container.addEventListener('touchend', (e) => {
+                    if (e.touches.length < 2) isPinching = false;
+                }, { passive: true });
+                container.addEventListener('touchcancel', stopPinch, { passive: true });
+            }
         }
 
         // ============================================================
@@ -11533,6 +11602,7 @@ function renderAcademicInputs() {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
+        const openReorderSectionsModal = openSectionReorderModal;
 
         function closeSectionReorderModal() {
             const modal = document.getElementById('reorder-sections-modal');
@@ -12544,14 +12614,14 @@ function renderAcademicInputs() {
                             </div>
 
                             <!-- Personal Particulars in Sidebar -->
-                            <div class="mt-5 pt-4 border-t border-slate-800 text-[10px] space-y-1">
+                            <div class="mt-5 pt-4 border-t border-slate-800 text-[10px] space-y-1 text-slate-200">
                                 <div class="text-slate-400 uppercase font-black text-[9px] tracking-wider mb-1 text-emerald-400">PERSONAL DETAILS</div>
-                                <div><span class="text-slate-400">Father:</span> <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
-                                <div><span class="text-slate-400">DOB:</span> <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
-                                <div><span class="text-slate-400">Gender:</span> <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
-                                ${rec.maritalStatus ? `<div><span class="text-slate-400">Marital:</span> <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
-                                <div><span class="text-slate-400">Nationality:</span> <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
-                                ${(rec.customFields || []).filter(cf => cf.label && cf.value && !/marital/i.test(cf.label)).map(cf => `<div><span class="text-slate-400">${escapeAttr(cf.label)}:</span> ${escapeAttr(cf.value)}</div>`).join('')}
+                                <div><span class="text-slate-400">Father:</span> <span class="text-slate-200 font-semibold" data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                <div><span class="text-slate-400">DOB:</span> <span class="text-slate-200 font-semibold" data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
+                                <div><span class="text-slate-400">Gender:</span> <span class="text-slate-200 font-semibold" data-inline-field="gender">${rec.gender || 'Male'}</span></div>
+                                ${rec.maritalStatus ? `<div><span class="text-slate-400">Marital:</span> <span class="text-slate-200 font-semibold" data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
+                                <div><span class="text-slate-400">Nationality:</span> <span class="text-slate-200 font-semibold" data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
+                                ${(rec.customFields || []).filter(cf => cf.label && cf.value && !/marital/i.test(cf.label)).map(cf => `<div><span class="text-slate-400">${escapeAttr(cf.label)}:</span> <span class="text-slate-200 font-semibold">${escapeAttr(cf.value)}</span></div>`).join('')}
                             </div>
                         </div>
 
@@ -12574,9 +12644,8 @@ function renderAcademicInputs() {
                             <!-- Dynamic Reorderable Sections in Right Column -->
                             ${getResumeSectionOrder('twocolumn').map(k => twocolumnRightSections[k] || '').join('')}
                         </div>
-
+                        ${renderResumeDocumentFooter()}
                     </div>
-                    ${renderResumeDocumentFooter()}
                 </div>
                 `;
             }
@@ -12888,6 +12957,7 @@ function renderAcademicInputs() {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                             ${renderPassportPhoto('border-2 border-emerald-400')}
                         </div>
 
@@ -13230,6 +13300,7 @@ function renderAcademicInputs() {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                             ${renderPassportPhoto('border-2 border-indigo-400 shadow-md')}
                         </div>
 
@@ -15187,17 +15258,19 @@ function renderAcademicInputs() {
         }
 
         // Toast
+        let _toastTimer = null;
         function showToast(msg) {
             const toast = document.getElementById('toast');
             const msgEl = document.getElementById('toast-msg');
             if (!toast || !msgEl) return;
             msgEl.innerText = msg;
-            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+            if (_toastTimer) clearTimeout(_toastTimer);
+            toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
             toast.classList.add('opacity-100', 'translate-y-0');
-            setTimeout(() => {
+            _toastTimer = setTimeout(() => {
                 toast.classList.remove('opacity-100', 'translate-y-0');
-                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-            }, 2300);
+                toast.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
+            }, 2500);
         }
 
         // Security: Robust HTML Entity Encoder to prevent DOM-based XSS (CWE-79)
