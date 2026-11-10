@@ -1,0 +1,100 @@
+/* Responsive editor canvas and predictable resume-page footer placement. */
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+}
+
+#app-container {
+  min-width: 0;
+  min-height: 0;
+}
+
+#resume-preview-container {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+#resume-sheet-scaler {
+  margin-inline: auto;
+}
+
+/* Keep the footer anchored to each physical A4 page, independently of the
+   amount of resume content or the preview zoom level. */
+.a4-page-card {
+  position: relative !important;
+}
+
+.a4-page-card .sheet-root-inner {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100% !important;
+  box-sizing: border-box !important;
+  padding-bottom: 12mm !important;
+}
+
+.a4-page-card .resume-sheet-footer {
+  position: absolute !important;
+  left: 10mm !important;
+  right: 10mm !important;
+  bottom: 5mm !important;
+  width: auto !important;
+  margin: 0 !important;
+  z-index: 2;
+}
+
+@media (max-width: 1023px) {
+  html,
+  body {
+    width: 100%;
+    min-height: 100%;
+  }
+
+  #app-container {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  #resume-preview-container {
+    width: 100%;
+    max-width: 100%;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-inline: 8px;
+  }
+
+  #resume-sheet-scaler {
+    margin-inline: auto;
+  }
+
+  .a4-page-card .resume-sheet-footer {
+    left: 8mm !important;
+    right: 8mm !important;
+    bottom: 4mm !important;
+    font-size: 7px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .a4-page-card .resume-sheet-footer {
+    font-size: 6.5px !important;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media print {
+  .a4-page-card .resume-sheet-footer {
+    position: absolute !important;
+    left: 10mm !important;
+    right: 10mm !important;
+    bottom: 5mm !important;
+  }
+}
