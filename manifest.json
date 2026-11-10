@@ -1,18 +1,32 @@
 {
-  "name": "EasyResume - Desktop Resume Builder",
+  "name": "EasyResume",
   "short_name": "EasyResume",
-  "description": "Professional Desktop Resume Builder (Indian Standard)",
+  "description": "Professional Resume Builder",
+  "id": "./",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#05996c",
   "theme_color": "#05996c",
   "orientation": "any",
   "icons": [
     {
-      "src": "logo.png",
-      "sizes": "192x192 512x512",
+      "src": "logo-192.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

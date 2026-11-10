@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#05996c">
-    <title id="page-title">EasyResume&deg; - Desktop Resume Builder (Indian Standard)</title>
+    <title id="page-title">EasyResume&deg;</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="manifest" href="manifest.json">
 
@@ -20,22 +20,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
     <!-- Cropper.js for Passport Photo Cropping -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- PeerJS for Real-time Mobile Camera P2P Sync -->
-    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+    <script defer src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <!-- QRCode.js for Scanning Mobile Sync Link -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- PDF.js for Resume PDF Extraction & Auto-Fill -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <!-- Mammoth.js for Word (.docx) Extraction -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <!-- Tesseract.js for Image Resume OCR Extraction -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script>
-        if (typeof pdfjsLib !== 'undefined') {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        }
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof pdfjsLib !== 'undefined') {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+        });
     </script>
 
     <style>
@@ -512,6 +514,37 @@
             -webkit-user-select: text !important;
         }
 
+        .inline-tool-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #334155;
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.12s ease;
+            font-size: 11.5px;
+            flex-shrink: 0;
+        }
+        .inline-tool-btn:hover {
+            background: #f1f5f9;
+            color: #047857;
+            border-color: #cbd5e1;
+        }
+        .inline-tool-btn:active {
+            transform: scale(0.92);
+        }
+        @media (max-width: 640px) {
+            .inline-tool-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+        }
+
         #live-resume-sheet [data-inline-field],
         #live-resume-sheet [data-academic-col],
         #live-resume-sheet [data-skill-pill] {
@@ -536,26 +569,57 @@
             display: flex !important;
             flex-direction: column !important;
             flex-shrink: 0 !important;
-            background: #ffffff;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
             margin: 0;
             position: absolute;
             top: 0;
             left: 0;
             transform-origin: top left;
-            transition: transform 0.15s ease-out;
             box-sizing: border-box;
             color: #1e293b;
         }
 
-        #live-resume-sheet:not([data-multi-page="true"]),
-        #live-resume-sheet:not([data-multi-page="true"]) .sheet-root-inner {
+        /* Authentic Physical A4 Page Card (Individual paper sheets with realistic 4-sided shadows & borders) */
+        .a4-page-card {
+            width: 210mm !important;
+            min-width: 210mm !important;
+            max-width: 210mm !important;
+            height: 297mm !important;
             min-height: 297mm !important;
+            max-height: 297mm !important;
+            background: #ffffff !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-radius: 2px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-sizing: border-box !important;
+            position: relative !important;
+            overflow: hidden !important;
+            flex-shrink: 0 !important;
+            color: #1e293b;
         }
 
-        #live-resume-sheet[data-multi-page="true"],
-        #live-resume-sheet[data-multi-page="true"] .sheet-root-inner {
-            min-height: 594mm !important;
+        /* Real Physical Desk Canvas Gap between Page 1 and Page 2 (No artificial divider lines) */
+        .a4-page-card-gap {
+            width: 210mm !important;
+            height: 28px !important;
+            min-height: 28px !important;
+            flex-shrink: 0 !important;
+            pointer-events: none !important;
+            background: transparent !important;
+        }
+
+        .a4-page-card .sheet-root-inner {
+            height: 100% !important;
+            min-height: 100% !important;
+            max-height: 100% !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
         }
 
         /* Scaler wrapper matches visual dimensions precisely so horizontal scroll reaches 0 without left clipping */
@@ -563,43 +627,6 @@
             position: relative;
             flex-shrink: 0;
             transform-origin: top left;
-            transition: width 0.15s ease-out, height 0.15s ease-out;
-        }
-
-        /* Visual A4 Page Break Divider (Shows Page 2 boundary at 297mm on screen preview) */
-        .a4-page-separator {
-            position: absolute;
-            top: 297mm;
-            left: -16px;
-            right: -16px;
-            height: 28px;
-            margin-top: -14px;
-            z-index: 28;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            user-select: none;
-        }
-        .a4-page-separator-line {
-            flex: 1;
-            border-top: 2px dashed #10b981;
-            opacity: 0.75;
-        }
-        .a4-page-separator-badge {
-            padding: 3px 12px;
-            background: #0f172a;
-            color: #ffffff;
-            font-size: 10px;
-            font-weight: 800;
-            border-radius: 9999px;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-            text-transform: uppercase;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid rgba(52, 211, 153, 0.5);
-            letter-spacing: 0.05em;
         }
 
         /* Real-Time Form Entry Live Highlight: Exact Field / Cell Being Filled */
@@ -665,6 +692,47 @@
             row-gap: 0.25rem !important;
         }
 
+        /* ============================================================ */
+        /* PERSONAL PARTICULARS DYNAMIC ELASTIC NO-OVERLAP ENGINE       */
+        /* Prevents label text, colon (:), and value from overlapping   */
+        /* when font size is increased (A+) or customized               */
+        /* ============================================================ */
+        #live-resume-sheet [data-particulars-grid="true"] > div {
+            display: flex !important;
+            align-items: baseline !important;
+            min-width: 0 !important;
+            line-height: calc(1.35 * var(--line-height-mult, 1.25)) !important;
+        }
+
+        #live-resume-sheet [data-particulars-grid="true"] strong.inline-block,
+        #live-resume-sheet [data-particulars-grid="true"] span.inline-block,
+        #live-resume-sheet [data-particulars-grid="true"] .w-32,
+        #live-resume-sheet [data-particulars-grid="true"] [class*="w-32"],
+        #live-resume-sheet [data-particulars-grid="true"] .w-24,
+        #live-resume-sheet [data-particulars-grid="true"] [class*="w-24"],
+        #live-resume-sheet [data-section-key="particulars"] .w-32,
+        #live-resume-sheet [data-section-key="particulars"] [class*="w-32"] {
+            width: auto !important;
+            min-width: calc(125px * var(--resume-font-scale, 1)) !important;
+            max-width: calc(185px * var(--resume-font-scale, 1)) !important;
+            display: inline-flex !important;
+            align-items: baseline !important;
+            flex-shrink: 0 !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            box-sizing: border-box !important;
+            margin-right: 2px !important;
+        }
+
+        #live-resume-sheet [data-particulars-grid="true"] > div > span:last-child,
+        #live-resume-sheet [data-particulars-grid="true"] > div > div:last-child,
+        #live-resume-sheet [data-particulars-grid="true"] > div > [data-inline-field] {
+            flex: 1 1 0% !important;
+            min-width: 0 !important;
+            word-break: break-word !important;
+            padding-left: 4px !important;
+        }
+
         /* Resume Page Footer (Left: Generated Date Time | Right: Clickable Hyperlink - Strictly pinned to bottom) */
         .resume-sheet-footer {
             margin-top: auto !important;
@@ -702,8 +770,8 @@
             max-width: 100% !important;
             table-layout: fixed !important;
             border-collapse: collapse !important;
-            margin-top: 6px;
-            margin-bottom: 8px;
+            margin-top: 3px !important;
+            margin-bottom: 4px !important;
             box-sizing: border-box !important;
         }
         .academic-table-wrapper {
@@ -720,20 +788,21 @@
             overflow-wrap: break-word !important;
             word-wrap: break-word !important;
             word-break: break-word !important;
+            line-height: 1.2 !important;
         }
         .indian-academic-table th {
             background-color: #f1f5f9;
             color: #0f172a;
             font-weight: 800;
             border: 1px solid #cbd5e1;
-            padding: 6px 6px;
+            padding: 3.5px 6px !important;
             text-align: left;
             vertical-align: middle;
             box-sizing: border-box !important;
         }
         .indian-academic-table td {
             border: 1px solid #cbd5e1;
-            padding: 5px 6px;
+            padding: 2.5px 6px !important;
             color: #334155;
             font-weight: 600;
             vertical-align: middle;
@@ -835,12 +904,12 @@
         #live-resume-sheet .academic-table-wrapper .indian-academic-table-minimal th,
         #live-resume-sheet .academic-table-wrapper .indian-academic-table-minimal td {
             box-sizing: border-box !important;
-            padding-top: calc(var(--table-cell-pad-y, 5px) * var(--academic-scale, 1)) !important;
-            padding-bottom: calc(var(--table-cell-pad-y, 5px) * var(--academic-scale, 1)) !important;
+            padding-top: calc(var(--table-cell-pad-y, 3px) * var(--academic-scale, 1)) !important;
+            padding-bottom: calc(var(--table-cell-pad-y, 3px) * var(--academic-scale, 1)) !important;
             padding-left: calc(5px * var(--academic-scale, 1)) !important;
             padding-right: calc(5px * var(--academic-scale, 1)) !important;
             font-size: calc(var(--table-font-size, 11px) * var(--academic-scale, 1)) !important;
-            line-height: 1.25 !important;
+            line-height: 1.2 !important;
             word-break: break-word !important;
             overflow-wrap: break-word !important;
         }
@@ -1029,17 +1098,17 @@
 
         .section-reorder-dock {
             position: absolute;
-            top: -10px;
-            right: 2px;
+            top: -12px;
+            right: 4px;
             z-index: 25;
             display: inline-flex;
             align-items: center;
-            gap: 2px;
-            padding: 2px 5px;
+            gap: 3px;
+            padding: 3px 6px;
             border-radius: 9999px;
-            background: #0f172a;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+            background: #ffffff;
+            border: 1.5px solid var(--resume-custom-color, #059669);
+            box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.16), 0 2px 6px -1px rgba(0, 0, 0, 0.1);
             opacity: 0;
             pointer-events: none;
             transform: translateY(2px) scale(0.95);
@@ -1049,6 +1118,7 @@
 
         .group\/resume-sec:hover .section-reorder-dock,
         .group\/resume-sec:focus-within .section-reorder-dock,
+        .group\/resume-sec.active-touch-sec .section-reorder-dock,
         .section-reorder-dock:hover {
             opacity: 1;
             pointer-events: auto;
@@ -1056,23 +1126,24 @@
         }
 
         .section-move-btn {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border-radius: 9999px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.14);
-            color: #ffffff;
-            font-size: 10px;
-            border: none;
+            background: #f8fafc;
+            color: #334155;
+            font-size: 10.5px;
+            border: 1px solid #cbd5e1;
             cursor: pointer;
             transition: all 0.15s ease;
         }
 
         .section-move-btn:hover:not(:disabled) {
-            background: #059669;
+            background: var(--resume-custom-color, #059669);
             color: #ffffff;
+            border-color: var(--resume-custom-color, #059669);
             transform: scale(1.12);
         }
 
@@ -1082,9 +1153,39 @@
 
         .section-move-btn:disabled,
         .section-move-btn.btn-disabled {
-            opacity: 0.3;
+            opacity: 0.35;
             cursor: not-allowed;
             pointer-events: none;
+            background: #f8fafc;
+            color: #94a3b8;
+            border-color: #e2e8f0;
+        }
+
+        /* Mobile Screen Scaled Touch Dock for Section Controls */
+        @media (max-width: 768px) {
+            .section-reorder-dock {
+                top: -16px;
+                right: 2px;
+                padding: 4px 8px;
+                gap: 5px;
+                border-width: 2px;
+            }
+            .section-move-btn {
+                width: 28px !important;
+                height: 28px !important;
+                font-size: 12px !important;
+            }
+            .section-reorder-dock .sec-dock-label {
+                font-size: 11px !important;
+                padding-left: 2px !important;
+                padding-right: 2px !important;
+            }
+            .section-academic-toggle-btn {
+                height: 26px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+                font-size: 10.5px !important;
+            }
         }
 
         @keyframes sectionPulseFlash {
@@ -1195,7 +1296,7 @@
             --sec-margin-top: 14px;
             --sec-title-pad-y: 3px;
             --sec-font-size: 11.5px;
-            --table-cell-pad-y: 5px;
+            --table-cell-pad-y: 3px;
             --table-cell-pad-x: 8px;
             --table-font-size: 11px;
             --line-height-mult: 1.4;
@@ -1208,7 +1309,7 @@
             --sec-margin-top: 8px;
             --sec-title-pad-y: 1.5px;
             --sec-font-size: 10px;
-            --table-cell-pad-y: 2.5px;
+            --table-cell-pad-y: 1.5px;
             --table-cell-pad-x: 5px;
             --table-font-size: 9.5px;
             --line-height-mult: 1.25;
@@ -1221,7 +1322,7 @@
             --sec-margin-top: 11px;
             --sec-title-pad-y: 2.5px;
             --sec-font-size: 11px;
-            --table-cell-pad-y: 4px;
+            --table-cell-pad-y: 2.5px;
             --table-cell-pad-x: 6.5px;
             --table-font-size: 10.5px;
             --line-height-mult: 1.34;
@@ -1234,7 +1335,7 @@
             --sec-margin-top: 15px;
             --sec-title-pad-y: 3px;
             --sec-font-size: 11.5px;
-            --table-cell-pad-y: 5px;
+            --table-cell-pad-y: 3.5px;
             --table-cell-pad-x: 8px;
             --table-font-size: 11px;
             --line-height-mult: 1.4;
@@ -1247,7 +1348,7 @@
             --sec-margin-top: 18px;
             --sec-title-pad-y: 4px;
             --sec-font-size: 12px;
-            --table-cell-pad-y: 6.5px;
+            --table-cell-pad-y: 4.5px;
             --table-cell-pad-x: 9px;
             --table-font-size: 11.5px;
             --line-height-mult: 1.5;
@@ -1260,7 +1361,7 @@
             --sec-margin-top: 22px;
             --sec-title-pad-y: 5px;
             --sec-font-size: 12.5px;
-            --table-cell-pad-y: 7.5px;
+            --table-cell-pad-y: 5.5px;
             --table-cell-pad-x: 10px;
             --table-font-size: 12px;
             --line-height-mult: 1.6;
@@ -1471,21 +1572,21 @@
 
             /* Printable Sheet Formats - Clean white page without shadow or software backgrounds */
             #live-resume-sheet, .a4-sheet {
-                display: flex !important;
-                flex-direction: column !important;
+                display: block !important;
                 position: static !important;
                 width: 210mm !important;
                 max-width: 210mm !important;
                 min-width: 210mm !important;
-                max-height: none !important;
+                height: auto !important;
+                min-height: 0 !important;
                 box-shadow: none !important;
                 border: none !important;
                 outline: none !important;
                 margin: 0 auto !important;
                 padding: 0 !important;
                 transform: none !important;
-                background: #ffffff !important;
-                background-color: #ffffff !important;
+                background: transparent !important;
+                background-color: transparent !important;
                 background-image: none !important;
                 page-break-before: avoid !important;
                 break-before: avoid !important;
@@ -1499,16 +1600,39 @@
                 box-sizing: border-box !important;
             }
 
-            #live-resume-sheet:not([data-multi-page="true"]),
-            .a4-sheet:not([data-multi-page="true"]) {
-                min-height: 296.5mm !important;
+            .a4-page-card {
+                width: 210mm !important;
+                max-width: 210mm !important;
+                min-width: 210mm !important;
                 height: 296.5mm !important;
+                min-height: 296.5mm !important;
+                max-height: 296.5mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                outline: none !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+                display: flex !important;
+                flex-direction: column !important;
             }
 
-            #live-resume-sheet[data-multi-page="true"],
-            .a4-sheet[data-multi-page="true"] {
-                min-height: 593mm !important;
-                height: auto !important;
+            .a4-page-card:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
+
+            .a4-page-card-gap {
+                display: none !important;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
             #live-resume-sheet .sheet-root-inner {
@@ -1693,10 +1817,184 @@
         #header-dropdown-menu button:hover {
             background-color: #f1f5f9 !important;
         }
+
+        /* ============================================================ */
+        /* MOBILE SCREEN FONT & ICON SIZE ACCURACY CALIBRATION ENGINE   */
+        /* (Perfect proportions for 360px - 640px mobile viewports)     */
+        /* ============================================================ */
+        @media (max-width: 640px) {
+            /* 1. Header Navbar */
+            .home-header {
+                padding: 6px 10px !important;
+            }
+            #header-brand-container {
+                gap: 8px !important;
+            }
+            #header-brand-container .text-lg {
+                font-size: 18px !important;
+            }
+            #header-brand-container span.tracking-wide {
+                font-size: 8.5px !important;
+            }
+
+            /* Header Action Buttons on Mobile */
+            #mobile-search-toggle-btn,
+            #header-btn-menu,
+            #toggle-form-btn,
+            #header-btn-minimize-form {
+                height: 32px !important;
+                font-size: 11.5px !important;
+            }
+            #mobile-search-toggle-btn i,
+            #header-btn-menu i,
+            #toggle-form-btn i {
+                font-size: 11.5px !important;
+            }
+
+            /* 2. Form Labels & Icons */
+            .premium-label {
+                font-size: 11px !important;
+                gap: 4.5px !important;
+                margin-bottom: 3.5px !important;
+                min-height: 16px !important;
+                letter-spacing: -0.01em;
+            }
+            .premium-label i,
+            .premium-label svg {
+                font-size: 11px !important;
+                width: 12px !important;
+                margin-right: 1px !important;
+            }
+
+            /* 3. Form Inputs, Selects & Textareas */
+            .premium-input {
+                height: 38px !important;
+                min-height: 38px !important;
+                max-height: 38px !important;
+                padding: 0 10px !important;
+                font-size: 12px !important;
+                border-radius: 8px !important;
+            }
+            .premium-input::placeholder {
+                font-size: 11px !important;
+            }
+            select.premium-input {
+                height: 38px !important;
+                min-height: 38px !important;
+                font-size: 12px !important;
+                padding: 0 8px !important;
+                padding-right: 1.8rem !important;
+                background-size: 1.25em 1.25em !important;
+            }
+            textarea.premium-input {
+                font-size: 12px !important;
+                padding: 8px 10px !important;
+                min-height: 60px !important;
+                border-radius: 8px !important;
+            }
+
+            /* 4. Form Step Header */
+            #form-step-title {
+                font-size: 11.5px !important;
+            }
+            #form-step-title i {
+                font-size: 11px !important;
+            }
+
+            /* 5. Fixed Form Navigation Dock (Bottom Prev / Step / Next) */
+            #form-bottom-fixed-dock {
+                padding: 6px 10px !important;
+            }
+            #bottom-btn-prev {
+                padding: 6px 10px !important;
+                font-size: 11px !important;
+            }
+            #bottom-btn-prev i {
+                font-size: 10px !important;
+            }
+            #form-step-badge {
+                font-size: 10px !important;
+                padding: 2px 8px !important;
+            }
+            #bottom-btn-next {
+                padding: 6px 12px !important;
+                font-size: 11px !important;
+            }
+            #bottom-btn-next i {
+                font-size: 10px !important;
+            }
+
+            /* 6. Preview Bottom Dock (Formats, Density, Font Size, Sections) */
+            #preview-density-dock {
+                padding: 4px 6px !important;
+                gap: 4px !important;
+            }
+            #preview-density-dock button {
+                font-size: 10px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+                height: 28px !important;
+            }
+            #preview-density-dock button i {
+                font-size: 9.5px !important;
+            }
+
+            /* 7. Dashboard Saved Resumes & Cards */
+            #saved-resumes-container {
+                padding: 12px !important;
+            }
+            #saved-resumes-container h2,
+            #saved-resumes-container .text-slate-900 {
+                font-size: 13.5px !important;
+            }
+            #btn-batch-select-all {
+                font-size: 10.5px !important;
+                padding: 4px 8px !important;
+            }
+            #resumes-count {
+                font-size: 10.5px !important;
+                padding: 1px 6px !important;
+            }
+
+            /* 8. Dashboard Formats Gallery Cards */
+            #section-resumes h2 {
+                font-size: 14.5px !important;
+            }
+            #section-resumes p {
+                font-size: 11px !important;
+            }
+        }
     </style>
 </head>
 
-<body class="bg-slate-900 text-slate-800 antialiased font-sans flex flex-col h-screen overflow-hidden select-none">
+<body class="bg-slate-50 text-slate-800 antialiased font-sans flex flex-col h-screen overflow-hidden select-none">
+    <!-- Initial Splash / App Loading Screen -->
+    <div id="initial-splash-screen" class="fixed inset-0 z-[999999] bg-gradient-to-b from-white via-emerald-50/25 to-teal-50/40 flex flex-col items-center justify-center select-none transition-all duration-300 pointer-events-auto">
+        <div class="relative flex flex-col items-center">
+            <!-- Ambient Soft Glow -->
+            <div class="absolute -inset-8 bg-emerald-400/15 rounded-full blur-2xl pointer-events-none"></div>
+
+            <!-- Logo Squircle Card -->
+            <div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white p-2 shadow-[0_12px_36px_rgba(5,153,108,0.18)] border border-emerald-100/80 flex items-center justify-center overflow-hidden transition-transform duration-300">
+                <img src="logo.png" alt="EasyResume Logo" class="w-full h-full object-cover rounded-xl sm:rounded-2xl">
+            </div>
+
+            <!-- Brand Title -->
+            <div class="mt-4 flex items-center leading-none text-2xl sm:text-[28px] font-black tracking-tight text-slate-900">
+                <span>Easy</span><span class="text-emerald-700 ml-0.5">Resume&deg;</span>
+            </div>
+            <span class="text-[9.5px] sm:text-[10px] font-extrabold text-emerald-700 tracking-wider uppercase mt-1.5">Smart Resume Builder</span>
+
+            <!-- Sleek Ultra-Thin Progress Line -->
+            <div class="w-36 sm:w-44 h-1.5 bg-emerald-100/80 rounded-full overflow-hidden mt-5 relative shadow-inner">
+                <div id="splash-progress-bar" class="bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-500 h-full rounded-full transition-all duration-300 ease-out" style="width: 35%;"></div>
+            </div>
+            <div class="mt-2.5 flex items-center gap-1.5 text-[11px] font-semibold text-slate-400">
+                <span id="splash-status-text">Preparing your workspace...</span>
+            </div>
+        </div>
+    </div>
+
     <div id="app-container" class="flex flex-col h-full w-full min-h-0 overflow-hidden relative">
 
         <!-- ========================================== -->
@@ -1925,7 +2223,8 @@
                             <div class="flex items-center justify-between sm:justify-start gap-2.5">
                                 <h2 class="text-base sm:text-lg md:text-xl font-black text-slate-900 tracking-tight flex items-center gap-1.5 sm:gap-2">
                                     <i class="fa-solid fa-shapes text-emerald-600"></i>
-                                    <span>Choose a Resume Format</span>
+                                    <span class="sm:hidden">Resume Formats</span>
+                                    <span class="hidden sm:inline">Choose a Resume Format</span>
                                 </h2>
                                 <span class="hidden sm:inline-flex text-xs font-black text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-300/80">7 Formats</span>
                                 <!-- Mobile Only: Upload Old Resume in place of 7 Formats badge -->
@@ -1934,7 +2233,10 @@
                                     <span>Upload Old Resume</span>
                                 </button>
                             </div>
-                            <p class="text-xs text-slate-500 font-medium mt-0.5">Click any format to start customizing with your details &amp; live preview</p>
+                            <p class="text-xs text-slate-500 font-medium mt-0.5">
+                                <span class="sm:hidden">Select any format to preview &amp; edit</span>
+                                <span class="hidden sm:inline">Click any format to start customizing with your details &amp; live preview</span>
+                            </p>
                         </div>
 
                         <!-- Theme Actions: Desktop only (Upload Old Resume & Create New) -->
@@ -1959,30 +2261,25 @@
                     </div>
                 </section>
 
-                <!-- Saved Drafts Section (Collapsible & High-End) -->
+                <!-- Saved Resumes Section (Fixed Open) -->
                 <div class="pt-6 sm:pt-7 border-t border-slate-200/90">
-                    <details id="saved-resumes-details" class="group bg-slate-50/70 rounded-2xl border border-slate-200/90 p-4 sm:p-5 transition-all" open>
-                        <summary class="flex items-center justify-between flex-wrap gap-2.5 cursor-pointer list-none py-1 text-slate-700 hover:text-slate-900 select-none">
-                            <div class="flex items-center gap-2 sm:gap-2.5 text-sm sm:text-base font-black tracking-tight text-slate-900">
+                    <div id="saved-resumes-container" class="bg-slate-50/70 rounded-2xl border border-slate-200/90 p-4 sm:p-5 transition-all">
+                        <div class="flex items-center justify-between gap-2.5 py-1 text-slate-700 select-none">
+                            <div class="flex items-center gap-2 sm:gap-2.5 text-sm sm:text-base font-black tracking-tight text-slate-900 min-w-0">
                                 <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0">
                                     <i class="fa-solid fa-folder-open"></i>
                                 </div>
-                                <span>Saved Resumes &amp; Drafts</span>
-                                <span id="resumes-count" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-white text-emerald-700 border border-emerald-300 shadow-2xs">0</span>
+                                <span class="truncate">Saved Resumes</span>
+                                <span id="resumes-count" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-white text-emerald-700 border border-emerald-300 shadow-2xs shrink-0">0</span>
                             </div>
-                            <div class="flex items-center gap-2 sm:gap-2.5" onclick="event.stopPropagation()">
-                                <!-- Select All Button (Upar hi rahega) -->
+                            <div class="flex items-center gap-2 shrink-0">
+                                <!-- Select All Button (Label text ke side me fix) -->
                                 <button type="button" id="btn-batch-select-all" onclick="toggleSelectAllBtnClick()" class="px-2.5 py-1 rounded-lg bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-300 font-bold text-xs transition flex items-center gap-1.5 shadow-2xs cursor-pointer select-none" title="Select all saved resumes">
                                     <i id="batch-select-all-icon" class="hidden text-xs"></i>
                                     <span id="batch-select-all-text">Select All</span>
                                 </button>
-
-                                <!-- Hide/Unhide Toggle Button (Label line me hi rahega) -->
-                                <button type="button" class="w-8 h-8 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition cursor-pointer shadow-2xs" onclick="const det = document.getElementById('saved-resumes-details'); if(det) det.open = !det.open;" title="Toggle section">
-                                    <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 group-open:rotate-180"></i>
-                                </button>
                             </div>
-                        </summary>
+                        </div>
 
                         <!-- Selection Mode Action Bar (Just label text ke niche selection mode on hone par) -->
                         <div id="saved-resumes-selection-bar" class="hidden items-center justify-between flex-wrap gap-2 pt-3 pb-1 border-t border-slate-200/80 mt-2.5">
@@ -2013,7 +2310,7 @@
                         <div id="resumes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 pt-4 pb-2">
                             <!-- Dynamic Saved Resume Cards -->
                         </div>
-                    </details>
+                    </div>
                 </div>
 
             </div>
@@ -2105,18 +2402,119 @@
                         
 
 
-                        <!-- Floating Inline Editing Toolbar -->
-                        <div id="preview-inline-toolbar" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 bg-slate-900/95 text-white px-3.5 py-2 rounded-2xl shadow-2xl items-center gap-3 backdrop-blur-md border border-emerald-500/40 text-xs transition-all duration-200">
-                            <span class="flex items-center gap-1.5 text-emerald-400 font-extrabold text-[11px]">
-                                <i class="fa-solid fa-pen-to-square"></i> Editing
-                            </span>
-                            <span class="text-slate-300 text-[10px] hidden md:inline">Tap outside or press Done to save</span>
-                            <div class="flex items-center gap-1.5">
-                                <button type="button" onmousedown="event.preventDefault()" onclick="commitInlineEdit(true)" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-lg font-bold text-xs flex items-center gap-1 transition shadow-xs cursor-pointer">
-                                    <i class="fa-solid fa-check"></i> Done
+                        <!-- Floating Inline Rich Editing Toolbar (Light Mode, Vertical Dock on Screen Right/Left) -->
+                        <div id="preview-inline-toolbar" onmouseenter="window._inlineInteractingWithToolbar = true" onmouseleave="window._inlineInteractingWithToolbar = false" ontouchstart="window._inlineInteractingWithToolbar = true" ontouchend="setTimeout(() => { window._inlineInteractingWithToolbar = false; }, 800)" onmousedown="window._inlineInteractingWithToolbar = true" onmouseup="setTimeout(() => { window._inlineInteractingWithToolbar = false; }, 800)" class="hidden absolute z-40 bg-white/95 text-slate-800 p-1.5 rounded-2xl shadow-2xl flex-col items-center gap-1.5 backdrop-blur-md border border-slate-200/90 text-xs transition-all duration-150 select-none max-h-[85vh] overflow-y-auto custom-scroll w-[42px] sm:w-[44px]">
+
+                            <!-- Bold / Italic / Underline (Light grouped) -->
+                            <div class="flex flex-col items-center gap-0.5 shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineToggleFormat('bold')" class="inline-tool-btn" title="Bold (Ctrl+B)">
+                                    <i class="fa-solid fa-bold text-[11px]"></i>
                                 </button>
-                                <button type="button" onmousedown="event.preventDefault()" onclick="cancelInlineEdit()" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 rounded-lg text-xs flex items-center gap-1 transition cursor-pointer">
-                                    <i class="fa-solid fa-xmark"></i>
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineToggleFormat('italic')" class="inline-tool-btn" title="Italic (Ctrl+I)">
+                                    <i class="fa-solid fa-italic text-[11px]"></i>
+                                </button>
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineToggleFormat('underline')" class="inline-tool-btn" title="Underline (Ctrl+U)">
+                                    <i class="fa-solid fa-underline text-[11px]"></i>
+                                </button>
+                            </div>
+
+                            <!-- Font Size Controls (A+ / Value / A-) -->
+                            <div class="flex flex-col items-center gap-0.5 shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineChangeFontSize(1)" class="inline-tool-btn" title="Increase Font Size (A+)">
+                                    <span class="font-black text-[10.5px]">A<sup class="text-[8px]">+</sup></span>
+                                </button>
+                                <span id="inline-tool-size-val" class="text-[9px] font-black text-slate-600 px-0.5 select-none text-center">12</span>
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineChangeFontSize(-1)" class="inline-tool-btn" title="Decrease Font Size (A-)">
+                                    <span class="font-black text-[10px]">A<sub class="text-[8px] -bottom-0.5">-</sub></span>
+                                </button>
+                            </div>
+
+                            <!-- Single Alignment Cycle Button (Left -> Center -> Right -> Left) -->
+                            <div class="shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                                <button type="button" id="inline-tool-align-btn" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineCycleAlignment()" class="inline-tool-btn" title="Alignment (Tap to cycle Left / Center / Right)">
+                                    <i id="inline-tool-align-icon" class="fa-solid fa-align-left text-slate-700"></i>
+                                </button>
+                            </div>
+
+                            <!-- Bullet & Numbering Lists (•, 1.2.3., a.b.c., Remove) -->
+                            <div class="flex flex-col items-center gap-0.5 shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineApplyListFormat('bullet')" class="inline-tool-btn" title="Bullet List (•)">
+                                    <i class="fa-solid fa-list-ul text-[11px]"></i>
+                                </button>
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineApplyListFormat('number')" class="inline-tool-btn" title="Numbered List (1. 2. 3.)">
+                                    <i class="fa-solid fa-list-ol text-[11px]"></i>
+                                </button>
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineApplyListFormat('alpha')" class="inline-tool-btn" title="Alphabet List (a. b. c.)">
+                                    <span class="font-black text-[9.5px] tracking-tight">abc</span>
+                                </button>
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineApplyListFormat('none')" class="inline-tool-btn hover:text-rose-600" title="Remove Bullets / Numbering">
+                                    <i class="fa-solid fa-ban text-[10px] text-rose-500"></i>
+                                </button>
+                            </div>
+
+                            <!-- Single Text Color Button with Rich Floating Popup Palette -->
+                            <div class="relative shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                                <button type="button" id="inline-tool-color-btn" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineToggleColorPalette(event)" class="inline-tool-btn" title="Choose Text Color (16+ Colors)">
+                                    <i class="fa-solid fa-palette text-emerald-600 text-[11px]"></i>
+                                </button>
+
+                                <!-- Rich Floating Color Palette Popup -->
+                                <div id="inline-color-palette-popup" onmousedown="event.stopPropagation(); window._inlineInteractingWithToolbar = true;" ontouchstart="event.stopPropagation(); window._inlineInteractingWithToolbar = true;" class="hidden absolute z-50 bg-white/98 text-slate-800 p-2.5 rounded-2xl shadow-2xl border border-slate-200/90 flex-col gap-2 select-none w-[184px]" style="top: 0; right: calc(100% + 8px);">
+                                    <div class="flex items-center justify-between border-b border-slate-100 pb-1">
+                                        <span class="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider">Text Color</span>
+                                        <button type="button" onclick="inlineToggleColorPalette(event)" class="w-4 h-4 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center text-[10px] cursor-pointer">✕</button>
+                                    </div>
+                                    <!-- 16 Curated Resume Color Swatches (4x4 Grid) -->
+                                    <div class="grid grid-cols-4 gap-1.5">
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#0f172a')" class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-700 hover:scale-110 active:scale-95 transition cursor-pointer" title="Black (#0f172a)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#334155')" class="w-7 h-7 rounded-lg bg-slate-700 border border-slate-500 hover:scale-110 active:scale-95 transition cursor-pointer" title="Charcoal (#334155)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#64748b')" class="w-7 h-7 rounded-lg bg-slate-500 border border-slate-400 hover:scale-110 active:scale-95 transition cursor-pointer" title="Slate Gray (#64748b)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#475569')" class="w-7 h-7 rounded-lg bg-slate-600 border border-slate-400 hover:scale-110 active:scale-95 transition cursor-pointer" title="Dark Slate (#475569)"></button>
+
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#047857')" class="w-7 h-7 rounded-lg bg-emerald-700 border border-emerald-500 hover:scale-110 active:scale-95 transition cursor-pointer" title="Emerald (#047857)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#059669')" class="w-7 h-7 rounded-lg bg-emerald-600 border border-emerald-400 hover:scale-110 active:scale-95 transition cursor-pointer" title="Vibrant Green (#059669)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#0d9488')" class="w-7 h-7 rounded-lg bg-teal-600 border border-teal-400 hover:scale-110 active:scale-95 transition cursor-pointer" title="Teal Cyan (#0d9488)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#166534')" class="w-7 h-7 rounded-lg bg-green-800 border border-green-600 hover:scale-110 active:scale-95 transition cursor-pointer" title="Forest Green (#166534)"></button>
+
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#1e3a8a')" class="w-7 h-7 rounded-lg bg-blue-900 border border-blue-700 hover:scale-110 active:scale-95 transition cursor-pointer" title="Navy Blue (#1e3a8a)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#1d4ed8')" class="w-7 h-7 rounded-lg bg-blue-700 border border-blue-500 hover:scale-110 active:scale-95 transition cursor-pointer" title="Royal Blue (#1d4ed8)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#0284c7')" class="w-7 h-7 rounded-lg bg-sky-600 border border-sky-400 hover:scale-110 active:scale-95 transition cursor-pointer" title="Sky Blue (#0284c7)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#4338ca')" class="w-7 h-7 rounded-lg bg-indigo-700 border border-indigo-500 hover:scale-110 active:scale-95 transition cursor-pointer" title="Indigo (#4338ca)"></button>
+
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#991b1b')" class="w-7 h-7 rounded-lg bg-red-800 border border-red-600 hover:scale-110 active:scale-95 transition cursor-pointer" title="Maroon (#991b1b)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#dc2626')" class="w-7 h-7 rounded-lg bg-red-600 border border-red-400 hover:scale-110 active:scale-95 transition cursor-pointer" title="Crimson Red (#dc2626)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#7e22ce')" class="w-7 h-7 rounded-lg bg-purple-700 border border-purple-500 hover:scale-110 active:scale-95 transition cursor-pointer" title="Purple (#7e22ce)"></button>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#b45309')" class="w-7 h-7 rounded-lg bg-amber-700 border border-amber-500 hover:scale-110 active:scale-95 transition cursor-pointer" title="Amber / Brown (#b45309)"></button>
+                                    </div>
+                                    <!-- Custom Color Picker Row -->
+                                    <div class="pt-1 border-t border-slate-100 flex items-center justify-between">
+                                        <label class="flex items-center gap-1.5 cursor-pointer text-[10.5px] font-bold text-slate-700 hover:text-emerald-700 transition">
+                                            <span class="w-5 h-5 rounded-md border border-slate-300 shadow-2xs relative overflow-hidden flex items-center justify-center bg-gradient-to-tr from-rose-400 via-emerald-400 to-sky-400">
+                                                <input type="color" oninput="inlineSetTextColor(this.value)" onchange="inlinePickColor(this.value)" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" value="#0f172a">
+                                            </span>
+                                            <span>Custom...</span>
+                                        </label>
+                                        <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('inherit')" class="text-[9.5px] font-bold text-slate-500 hover:text-slate-800 hover:underline cursor-pointer">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Case Converter (aA) -->
+                            <div class="shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineCycleTextCase()" class="inline-tool-btn font-black text-[10px]" title="Change Case (UPPERCASE / Title Case / lowercase)">
+                                    <span>aA</span>
+                                </button>
+                            </div>
+
+                            <span class="w-5 h-px bg-slate-200 shrink-0"></span>
+
+                            <!-- Action: Save (Done) / Discard (Cancel) -->
+                            <div class="flex flex-col items-center gap-1 shrink-0">
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="commitInlineEdit(true)" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-lg flex items-center justify-center text-xs transition shadow-xs cursor-pointer" title="Save changes (Enter)">
+                                    <i class="fa-solid fa-check text-[11px]"></i>
+                                </button>
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="cancelInlineEdit()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 hover:text-rose-600 rounded-lg flex items-center justify-center text-xs transition cursor-pointer" title="Cancel changes (Esc)">
+                                    <i class="fa-solid fa-xmark text-[11px]"></i>
                                 </button>
                             </div>
                         </div>
@@ -2168,7 +2566,7 @@
                         <!-- A4 Printable Sheet Area (Strict Fixed Aspect Ratio) -->
                         <div id="resume-preview-container" class="flex-1 overflow-x-auto overflow-y-auto custom-scroll p-2 sm:p-4 pb-14 sm:pb-4 flex items-start">
                             <div id="resume-sheet-scaler" class="relative shrink-0" style="margin: 0 auto; width: 675px; height: 955px;">
-                                <div id="live-resume-sheet" class="a4-sheet shrink-0 shadow-2xl" style="transform-origin: top left; transform: scale(0.85);">
+                                <div id="live-resume-sheet" class="a4-sheet shrink-0" style="transform-origin: top left; transform: scale(0.85);">
                                     <!-- Live rendered Indian Standard Resume -->
                                 </div>
                             </div>
@@ -3133,79 +3531,91 @@
         <input type="file" id="hidden-import-json-input" accept=".json,application/json" class="hidden" onchange="handleResumeJsonImport(event)">
         <input type="file" id="hidden-import-pdf-input" accept=".pdf,.doc,.docx,image/*" class="hidden" onchange="handleResumePdfImport(event)">
 
-        <!-- Resume Section Reorder Modal -->
-        <div id="reorder-sections-modal" class="fixed inset-0 bg-black/75 z-[99999] hidden items-center justify-center p-4 backdrop-blur-xs select-none" onclick="if(event.target === this) closeSectionReorderModal()">
-            <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-lg flex flex-col shadow-2xl relative border border-slate-200 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-hidden">
-                <!-- Modal Header -->
-                <div class="flex items-center justify-between pb-3 border-b border-slate-200 shrink-0">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">
-                            <i class="fa-solid fa-arrows-up-down text-sm"></i>
+        <!-- Resume Section Reorder Right Sidebar Drawer (Slides in from Right Side) -->
+        <div id="reorder-sections-modal" class="fixed inset-0 z-[99999] hidden select-none justify-end" onclick="if(event.target === this) closeSectionReorderModal()">
+            <!-- Backdrop Overlay (Tap to close) -->
+            <div id="reorder-drawer-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-xs opacity-0 transition-opacity duration-250 ease-out" onclick="closeSectionReorderModal()"></div>
+
+            <!-- Right Drawer Sidebar Panel -->
+            <div id="reorder-sections-drawer-panel" class="relative z-10 w-[285px] xs:w-[310px] sm:w-[350px] max-w-[88vw] h-full bg-white shadow-2xl border-l border-slate-200 flex flex-col overflow-hidden translate-x-full transition-transform duration-250 ease-out">
+                <!-- Header (Title & Close Button) -->
+                <div class="h-[52px] px-3.5 border-b border-slate-200 bg-slate-50/95 shrink-0 flex items-center justify-between">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-arrows-up-down text-xs"></i>
                         </div>
-                        <div>
-                            <h3 class="text-base font-black text-slate-900 leading-tight">Reorder Sections</h3>
-                            <p class="text-[11px] font-semibold text-slate-500">Organize and reorder sections up or down</p>
+                        <div class="flex flex-col min-w-0">
+                            <h3 class="text-xs font-black text-slate-900 tracking-tight truncate leading-tight">Reorder Sections</h3>
+                            <span class="text-[9.5px] font-semibold text-slate-500 leading-none">Move up/down or hide</span>
                         </div>
                     </div>
-                    <button type="button" onclick="closeSectionReorderModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center active:scale-95 transition cursor-pointer" title="Close dialog">
-                        <i class="fa-solid fa-xmark text-sm"></i>
+                    <button type="button" onclick="closeSectionReorderModal()" class="w-8 h-8 rounded-full bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center text-xs border border-slate-200/90 shadow-2xs active:scale-90 transition cursor-pointer shrink-0" title="Close Drawer">
+                        <i class="fa-solid fa-xmark text-xs"></i>
                     </button>
                 </div>
 
-                <div class="text-[11px] text-slate-600 bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-2.5 my-3 shrink-0 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-info text-emerald-600 text-xs shrink-0"></i>
-                    <span>Use <i class="fa-solid fa-eye text-emerald-600 text-xs"></i> <strong>Show/Hide</strong> to toggle sections on/off, and <strong>▲ / ▼</strong> to reorder them on your resume sheet.</span>
+                <!-- Info Hint -->
+                <div class="px-3 pt-2.5 pb-1 shrink-0">
+                    <div class="text-[10px] text-slate-600 bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-info text-emerald-600 text-[11px] shrink-0"></i>
+                        <span>Use &uarr; &darr; to move sections. Eye icon hides/shows.</span>
+                    </div>
                 </div>
 
                 <!-- Sections List Container (Scrollable) -->
-                <div id="reorder-modal-sections-list" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scroll min-h-[180px] max-h-[50vh]">
-                    <!-- Dynamically populated -->
+                <div id="reorder-modal-sections-list" class="flex-1 overflow-y-auto space-y-2 p-3 custom-scroll">
+                    <!-- Dynamically populated by renderReorderModalList() -->
                 </div>
 
-                <!-- Modal Footer -->
-                <div class="pt-3 border-t border-slate-200 flex items-center justify-between gap-2 shrink-0 mt-3">
-                    <button type="button" onclick="resetSectionOrderToDefault()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 active:scale-95 transition flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-rotate-left text-[11px]"></i>
-                        <span>Default Order</span>
+                <!-- Drawer Footer (Default Order & Done) -->
+                <div class="p-3 border-t border-slate-200 bg-slate-50/95 flex items-center justify-between gap-2 shrink-0">
+                    <button type="button" onclick="resetSectionOrderToDefault()" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 active:scale-95 transition flex items-center gap-1.5 cursor-pointer shadow-2xs">
+                        <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                        <span>Reset</span>
                     </button>
-                    <button type="button" onclick="closeSectionReorderModal()" class="px-5 py-2 rounded-xl text-xs font-black text-white bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition flex items-center gap-1.5 shadow-md cursor-pointer">
-                        <i class="fa-solid fa-check"></i>
+                    <button type="button" onclick="closeSectionReorderModal()" class="px-4 py-2 rounded-xl text-xs font-black text-white bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition flex items-center gap-1.5 shadow-md cursor-pointer">
+                        <i class="fa-solid fa-check text-xs"></i>
                         <span>Done</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Resume Formats Picker Modal (Accessible on Mobile & Desktop from Bottom Dock) -->
-        <div id="formats-modal" class="fixed inset-0 bg-black/75 z-[99999] hidden items-center justify-center p-3 sm:p-4 backdrop-blur-xs select-none" onclick="if(event.target === this) closeFormatsModal()">
-            <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg sm:max-w-xl max-h-[88vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                <!-- Header -->
-                <div class="p-3.5 sm:p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-black">
-                            <i class="fa-solid fa-shapes"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-sm sm:text-base font-black text-slate-900 leading-tight">Choose Resume Format</h3>
-                            <p class="text-[11px] text-slate-500">Tap any format to instantly preview &amp; apply</p>
+        <!-- Resume Formats Picker Left Sidebar Drawer (Mobile & Quick-Access on Left Side) -->
+        <div id="formats-modal" class="fixed inset-0 z-[99999] hidden select-none" onclick="if(event.target === this) closeFormatsModal()">
+            <!-- Backdrop Overlay (Tap to close) -->
+            <div id="formats-drawer-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-xs opacity-0 transition-opacity duration-250 ease-out" onclick="closeFormatsModal()"></div>
+
+            <!-- Left Drawer Sidebar Panel (Exactly like desktop left sidebar) -->
+            <div id="formats-drawer-panel" class="relative z-10 w-[275px] xs:w-[295px] sm:w-[320px] max-w-[85vw] h-full bg-white shadow-2xl border-r border-slate-200 flex flex-col overflow-hidden -translate-x-full transition-transform duration-250 ease-out">
+                <!-- Header (Left Arrow / Minimize & Format Title) -->
+                <div class="h-[52px] px-2.5 border-b border-slate-200 bg-slate-50/95 shrink-0 flex items-center justify-between">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <button type="button" onclick="closeFormatsModal()" class="w-8 h-8 rounded-full bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center text-xs border border-slate-200/90 shadow-2xs active:scale-90 transition cursor-pointer shrink-0" title="Close Formats Sidebar">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <div class="flex items-center gap-1.5 min-w-0">
+                            <i class="fa-solid fa-file-lines text-emerald-600 text-xs shrink-0"></i>
+                            <h3 class="text-xs font-black text-slate-900 tracking-tight truncate">Resume Formats</h3>
                         </div>
                     </div>
-                    <button type="button" onclick="closeFormatsModal()" class="w-8 h-8 rounded-full bg-slate-200/70 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs active:scale-90 transition cursor-pointer" title="Close">
-                        <i class="fa-solid fa-xmark text-sm"></i>
-                    </button>
+                    <span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300 shrink-0">Choose</span>
                 </div>
 
-                <!-- Formats List Grid (2-Column Visual Thumbnails on Mobile & Desktop) -->
-                <div id="modal-formats-list" class="p-2.5 sm:p-4 overflow-y-auto custom-scroll grid grid-cols-2 gap-2 sm:gap-3">
-                    <!-- Dynamically populated by renderFormatsModalContent() with visual thumbnails -->
+                <!-- Vertical Formats List (Ek ke niche ek - identical to desktop left sidebar) -->
+                <div id="modal-formats-list" class="flex-1 overflow-y-auto custom-scroll p-3 space-y-3 bg-slate-50/50">
+                    <!-- Dynamically populated by renderFormatsModalContent() -->
                 </div>
 
-                <!-- Theme Color Palette Bar -->
-                <div class="px-3.5 py-2.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between gap-2 shrink-0">
-                    <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5 shrink-0">
-                        <i class="fa-solid fa-palette text-emerald-600"></i> Theme Color:
-                    </span>
-                    <div id="modal-color-palette" class="flex items-center gap-2 overflow-x-auto py-2 px-1.5 custom-scroll">
+                <!-- Bottom Theme Color Palette Bar -->
+                <div class="px-3 py-2.5 border-t border-slate-200 bg-slate-50/95 shrink-0 select-none">
+                    <div class="flex items-center justify-between mb-1.5 px-0.5">
+                        <span class="text-[9px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i class="fa-solid fa-palette text-emerald-600 text-[10px]"></i> Theme Color
+                        </span>
+                        <span id="modal-active-theme-color-label" class="text-[9px] font-black text-emerald-700 capitalize">Emerald</span>
+                    </div>
+                    <div id="modal-color-palette" class="flex items-center justify-between gap-1 p-1 bg-white rounded-lg border border-slate-200/90 shadow-2xs">
                         <!-- Rendered dynamically -->
                     </div>
                 </div>
@@ -3468,7 +3878,7 @@
 
         <!-- Toast -->
         <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-[99999] bg-white/95 text-slate-800 border border-emerald-400/60 px-5 py-3 rounded-2xl shadow-2xl backdrop-blur-md flex items-center gap-2.5 text-xs sm:text-sm font-bold transition-all duration-300 opacity-0 pointer-events-none -translate-y-4 max-w-[92vw]">
-            <i class="fa-solid fa-circle-check text-emerald-600 text-base shrink-0"></i>
+            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-600 text-base shrink-0"></i>
             <span id="toast-msg">Action completed!</span>
         </div>
 
@@ -5521,54 +5931,74 @@
         let currentZoom = 0.85;
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if opened on mobile via QR code / link
-            const urlParams = new URLSearchParams(window.location.search);
-            const syncTarget = urlParams.get('sync_peer');
-            if (syncTarget) {
-                activateMobileCameraSyncMode(syncTarget);
-                return;
-            }
-
-            initStorage();
-            renderResumesGrid();
-            renderFormatsGallery();
-            renderSidebarSamples();
-            renderColorPalettes();
-            populateTehsilDatalist();
-            renderCareerObjectivePresets();
-            updateObjectiveHindiMeaning();
-            if (currentResume) {
-                updateActiveFormatBadge(currentResume.template || 'corporate');
-                applyResumeThemeColor(currentResume.themeColorId || 'emerald', false);
-                populateFormWithCurrentResume();
-                renderLiveA4Preview();
-            if (typeof updateAtsScore === 'function') updateAtsScore();
-            }
-
-            setTimeout(() => {
+            const removeSplash = () => {
                 const splash = document.getElementById('initial-splash-screen');
+                const bar = document.getElementById('splash-progress-bar');
+                const status = document.getElementById('splash-status-text');
+                if (bar) bar.style.width = '100%';
+                if (status) status.innerText = 'Ready!';
                 if (splash) {
+                    splash.style.transition = 'opacity 0.32s ease-out, transform 0.32s ease-out';
                     splash.style.opacity = '0';
-                    setTimeout(() => splash.remove(), 400);
+                    splash.style.transform = 'scale(0.97)';
+                    setTimeout(() => splash.remove(), 340);
                 }
-            }, 650);
+            };
 
-            setupCtrlZoomListeners();
-            setupFormAutoClearListeners();
-            setupAutoDateFormatting();
-            setupMobileAutoFormatting();
-            setupResponsibilitiesBulletAuto();
-            setupGenderDropdown();
-            setupPreviewInlineEditing();
-            setupLiveFormEntrySync();
-            setupKeyboardArrowNavigation();
-            setFormSection(1);
-            const savedView = localStorage.getItem('easyresume_active_view');
-            if (savedView === 'editor' && currentResume) {
-                switchView('editor');
+            try {
+                // Check if opened on mobile via QR code / link
+                const urlParams = new URLSearchParams(window.location.search);
+                const syncTarget = urlParams.get('sync_peer');
+                if (syncTarget) {
+                    activateMobileCameraSyncMode(syncTarget);
+                    removeSplash();
+                    return;
+                }
+
+                initStorage();
+                renderResumesGrid();
+                renderFormatsGallery();
+                const splashBar = document.getElementById('splash-progress-bar');
+                if (splashBar) splashBar.style.width = '80%';
+                renderSidebarSamples();
+                renderColorPalettes();
+                populateTehsilDatalist();
+                renderCareerObjectivePresets();
+                updateObjectiveHindiMeaning();
+                if (currentResume) {
+                    updateActiveFormatBadge(currentResume.template || 'corporate');
+                    applyResumeThemeColor(currentResume.themeColorId || 'emerald', false);
+                    populateFormWithCurrentResume();
+                    renderLiveA4Preview();
+                    if (typeof updateAtsScore === 'function') updateAtsScore();
+                }
+
+                setTimeout(removeSplash, 350);
+
+                setupCtrlZoomListeners();
+                setupFormAutoClearListeners();
+                setupAutoDateFormatting();
+                setupMobileAutoFormatting();
+                setupResponsibilitiesBulletAuto();
+                setupGenderDropdown();
+                setupPreviewInlineEditing();
+                setupLiveFormEntrySync();
+                if (typeof setupKeyboardArrowNavigation === 'function') setupKeyboardArrowNavigation();
+                setFormSection(1);
+                const savedView = localStorage.getItem('easyresume_active_view');
+                if (savedView === 'editor' && currentResume) {
+                    switchView('editor');
+                }
+                if (window.lucide) lucide.createIcons();
+            } catch (err) {
+                console.error('App init error:', err);
+                removeSplash();
             }
-            if (window.lucide) lucide.createIcons();
         });
+
+        function setupKeyboardArrowNavigation() {
+            // Safe keyboard navigation stub
+        }
 
         // Helper: Clean street address so village/tehsil/district/pincode do not bleed into Gali / Mohalla
         function cleanStreetAddress(street, city, tehsil, district) {
@@ -6829,7 +7259,7 @@
             }
 
             const badge = document.getElementById('current-resume-name-badge');
-            if (badge) badge.innerText = (r.studentName || 'Resume') + ' (Indian Standard)';
+            if (badge) badge.innerText = (r.studentName || 'Resume');
             if (document.getElementById('inp-fullname')) document.getElementById('inp-fullname').value = r.studentName || '';
             if (document.getElementById('inp-designation')) document.getElementById('inp-designation').value = r.staff_designation || '';
             const targetRoleInp = document.getElementById('target-objective-role');
@@ -6862,13 +7292,7 @@
             if (document.getElementById('inp-designation')) document.getElementById('inp-designation').value = roleVal;
             if (document.getElementById('inp-duration')) document.getElementById('inp-duration').value = r.workDuration || '';
             if (document.getElementById('inp-responsibilities')) {
-                const rawResp = r.workResponsibilities || '';
-                const cleanResp = rawResp
-                    .split(/\r?\n/)
-                    .map(l => l.replace(/^([\u2022\-\u25cf\u25cb\*]|\d+[\.\)])\s*/, '').trim())
-                    .join('\n');
-                document.getElementById('inp-responsibilities').value = cleanResp;
-                r.workResponsibilities = cleanResp;
+                document.getElementById('inp-responsibilities').value = r.workResponsibilities || '';
             }
             if (document.getElementById('inp-skills')) document.getElementById('inp-skills').value = r.skills || '';
             if (document.getElementById('inp-projects')) document.getElementById('inp-projects').value = r.projects || '';
@@ -7069,7 +7493,7 @@
             ac.scoreType = newType;
 
             const lbl = document.getElementById(`ac-score-lbl-${idx}`);
-            if (lbl) lbl.innerText = (newType === 'cgpa') ? 'CGPA' : 'Percentage (%)';
+            if (lbl) lbl.innerText = (newType === 'cgpa') ? 'CGPA' : 'Percentage';
 
             const icon = document.getElementById(`ac-score-icon-${idx}`);
             if (icon) icon.className = `fa-solid ${newType === 'cgpa' ? 'fa-chart-simple' : 'fa-percent'}`;
@@ -7155,7 +7579,7 @@
             updateAcademicDisplayModeUI(currentResume.academicDisplayMode);
             liveUpdateResume();
             saveCurrentResumeSilently();
-            showToast("Academic format: " + (mode === 'paragraph' ? "Normal Paragraph Mode" : "Table Mode"));
+            showToast(mode === 'paragraph' ? "Academic format: Sentence View" : "Academic format: Table View");
         }
 
         function updateAcademicDisplayModeUI(mode) {
@@ -7248,19 +7672,19 @@ function renderAcademicInputs() {
                             </div>
                         </div>
 
-                        <!-- 3 Inputs in Grid: 1st Obtained, 2nd Total, 3rd Percentage / Score -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                            <div>
-                                <label class="premium-label"><i class="fa-solid fa-award"></i> Marks Obtained</label>
-                                <input type="number" id="ac-obtained-${idx}" class="premium-input font-medium" placeholder="e.g. 420" value="${escapeAttr(ac.marksObtained || '')}" oninput="onAcademicMarksCalc(${idx})">
+                        <!-- 3 Inputs in Grid: Side by Side on both Mobile and Desktop (grid-cols-3) -->
+                        <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+                            <div class="min-w-0">
+                                <label class="premium-label !text-[11px] !mb-1 truncate"><i class="fa-solid fa-award shrink-0 text-emerald-600 text-xs"></i> Obtained</label>
+                                <input type="number" id="ac-obtained-${idx}" class="premium-input font-medium !px-1.5 sm:!px-2.5 text-xs sm:text-sm text-center" placeholder="e.g. 420" value="${escapeAttr(ac.marksObtained || '')}" oninput="onAcademicMarksCalc(${idx})">
                             </div>
-                            <div>
-                                <label class="premium-label"><i class="fa-solid fa-list-ol"></i> Total Marks</label>
-                                <input type="number" id="ac-total-${idx}" class="premium-input font-medium" placeholder="e.g. 500" value="${escapeAttr(ac.totalMarks || '')}" oninput="onAcademicMarksCalc(${idx})">
+                            <div class="min-w-0">
+                                <label class="premium-label !text-[11px] !mb-1 truncate"><i class="fa-solid fa-list-ol shrink-0 text-emerald-600 text-xs"></i> Total</label>
+                                <input type="number" id="ac-total-${idx}" class="premium-input font-medium !px-1.5 sm:!px-2.5 text-xs sm:text-sm text-center" placeholder="e.g. 500" value="${escapeAttr(ac.totalMarks || '')}" oninput="onAcademicMarksCalc(${idx})">
                             </div>
-                            <div>
-                                <label class="premium-label"><i id="ac-score-icon-${idx}" class="fa-solid ${isCgpa ? 'fa-chart-simple' : 'fa-percent'}"></i> <span id="ac-score-lbl-${idx}">${isCgpa ? 'CGPA' : 'Percentage (%)'}</span></label>
-                                <input type="text" id="ac-score-${idx}" class="premium-input font-black text-emerald-700" placeholder="${isCgpa ? 'e.g. 8.5 CGPA' : 'e.g. 84%'}" value="${escapeAttr(ac.score || '')}" oninput="onAcademicScoreManualInput(${idx}, this.value)" onblur="onAcademicScoreBlur(${idx})">
+                            <div class="min-w-0">
+                                <label class="premium-label !text-[11px] !mb-1 truncate"><i id="ac-score-icon-${idx}" class="fa-solid ${isCgpa ? 'fa-chart-simple' : 'fa-percent'} shrink-0 text-emerald-600 text-xs"></i> <span id="ac-score-lbl-${idx}">${isCgpa ? 'CGPA' : 'Percentage'}</span></label>
+                                <input type="text" id="ac-score-${idx}" class="premium-input font-black text-emerald-700 !px-1 sm:!px-2 text-xs sm:text-sm text-center" placeholder="${isCgpa ? '8.5' : '84%'}" value="${escapeAttr(ac.score || '')}" oninput="onAcademicScoreManualInput(${idx}, this.value)" onblur="onAcademicScoreBlur(${idx})">
                             </div>
                         </div>
                     </div>
@@ -7948,7 +8372,7 @@ function renderAcademicInputs() {
                 } catch(e) {}
             }
 
-            showToast("Sample data cleared • Enter your details");
+            showToast("Sample data cleared - Enter your details");
 
             setTimeout(() => {
                 isClearingDummyData = false;
@@ -8394,15 +8818,19 @@ function renderAcademicInputs() {
 
 
 
-            renderLiveA4Preview();
-            if (typeof updateAtsScore === 'function') updateAtsScore();
             const idx = allResumes.findIndex(r => r.id === currentResume.id);
             if (idx >= 0) {
                 allResumes[idx] = currentResume;
             } else {
                 allResumes.unshift(currentResume);
             }
-            if (typeof saveCurrentResumeSilently === 'function') saveCurrentResumeSilently();
+
+            if (window._liveUpdateRaf) cancelAnimationFrame(window._liveUpdateRaf);
+            window._liveUpdateRaf = requestAnimationFrame(() => {
+                renderLiveA4Preview();
+                if (typeof updateAtsScore === 'function') updateAtsScore();
+                if (typeof saveCurrentResumeSilently === 'function') saveCurrentResumeSilently();
+            });
         }
 
         function setQuickLanguage(val) {
@@ -8713,7 +9141,7 @@ function renderAcademicInputs() {
 
         function populateTehsilDatalist() {
             const datalist = document.getElementById('list-tehsils');
-            if (!datalist || datalist.children.length > 0) return;
+            if (!datalist || !datalist.children || datalist.children.length > 0) return;
             const fragment = document.createDocumentFragment();
             INDIAN_TEHSIL_DIRECTORY.forEach(item => {
                 const opt = document.createElement('option');
@@ -9020,36 +9448,41 @@ function renderAcademicInputs() {
                 }
             }
 
-            const cleaned = [];
+            const prefixRegex = /^(\s*)(?:([\u2022\u25cf\u25cb\u25aa\u25ab\*\-\+])|((?:\d+|[a-zA-Z]|[ivxlcdmIVXLCDM]+)[\.\)]))\s*/;
+
+            const formatted = [];
             for (let item of items) {
-                let s = item.trim();
+                let s = item.trim().replace(/[,;]+$/, '').trim();
                 if (!s) continue;
-                // Strip trailing comma, semicolon
-                s = s.replace(/[,;]+$/, '').trim();
-                // Strip leading bullet markers, hyphens, numbers
-                s = s.replace(/^([\u2022\-\u25cf\u25cb\*]|\d+[\.\)])\s*/, '').trim();
-                if (s.length > 0) {
-                    cleaned.push(s);
+
+                const match = s.match(prefixRegex);
+                if (match) {
+                    if (match[2]) {
+                        const content = s.replace(prefixRegex, '').trim();
+                        formatted.push(`• ${escapeAttr(content)}`);
+                    } else if (match[3]) {
+                        const prefix = match[3];
+                        const content = s.replace(prefixRegex, '').trim();
+                        formatted.push(`${prefix} ${escapeAttr(content)}`);
+                    }
+                } else {
+                    formatted.push(escapeAttr(s));
                 }
             }
 
-            if (cleaned.length === 0) return '';
-            return cleaned.map(item => `• ${escapeAttr(item)}`).join('\n');
+            return formatted.join('\n');
         }
 
         function setupResponsibilitiesBulletAuto() {
-            // Keep input box completely clean of bullet dots as per user request
-            // Clean text inside input box so dots only appear on the rendered resume
             const respEl = document.getElementById('inp-responsibilities');
             if (!respEl) return;
 
-            // If user pastes text containing bullets or dots at line starts, cleanly strip them
             respEl.addEventListener('paste', function(e) {
                 setTimeout(() => {
                     const lines = this.value.split(/\r?\n/);
-                    const hasBullets = lines.some(l => /^([\u2022\-\u25cf\u25cb\*]|\d+[\.\)])\s*/.test(l.trim()));
-                    if (hasBullets) {
-                        const cleaned = lines.map(l => l.replace(/^([\u2022\-\u25cf\u25cb\*]|\d+[\.\)])\s*/, '').trim()).join('\n');
+                    const hasRawBullets = lines.some(l => /^[\u2022\u25cf\u25cb\*]\s*/.test(l.trim()));
+                    if (hasRawBullets) {
+                        const cleaned = lines.map(l => l.replace(/^[\u2022\u25cf\u25cb\*]\s*/, '').trim()).join('\n');
                         this.value = cleaned;
                         liveUpdateResume();
                     }
@@ -10066,7 +10499,7 @@ function renderAcademicInputs() {
                 renderLiveA4Preview();
             if (typeof updateAtsScore === 'function') updateAtsScore();
                 closeMobileSyncModal();
-                showToast("📸 Photo received from Mobile Camera (3:4)!");
+                showToast("Photo received from Mobile Camera (3:4)!");
             });
         }
 
@@ -10680,7 +11113,7 @@ function renderAcademicInputs() {
             saveCurrentResumeSilently();
             renderLiveA4Preview();
             if (typeof updateAtsScore === 'function') updateAtsScore();
-            showToast("✓ Photo frame reset to default (100x129px)");
+            showToast("Photo frame reset to default (100x129px)");
             const wrapper = document.querySelector('.resume-passport-photo-wrapper');
             if (wrapper) triggerPhotoControls(wrapper);
         }
@@ -11029,8 +11462,7 @@ function renderAcademicInputs() {
 
                 const a4Width = 794;
                 const isMulti = sheet.getAttribute('data-multi-page') === 'true';
-                const baseA4Height = isMulti ? 2246 : 1123;
-                const a4Height = (sheet.offsetHeight && sheet.offsetHeight > 500) ? sheet.offsetHeight : baseA4Height;
+                const a4Height = isMulti ? 2274 : 1123;
                 const scaledWidth = Math.round(a4Width * currentZoom);
                 const scaledHeight = Math.round(a4Height * currentZoom);
 
@@ -11069,9 +11501,7 @@ function renderAcademicInputs() {
 
             // A4 dimensions: ~794px width x 1123px height
             const a4Width = 794;
-            const isMulti = sheet.getAttribute('data-multi-page') === 'true';
-            const baseA4Height = isMulti ? 2246 : 1123;
-            const a4Height = (sheet.offsetHeight && sheet.offsetHeight > 500) ? sheet.offsetHeight : baseA4Height;
+            const a4Height = 1123;
 
             const isMobile = window.innerWidth < 1024;
             const paddingX = isMobile ? 16 : 40;
@@ -11188,6 +11618,17 @@ function renderAcademicInputs() {
                 }, { passive: true });
                 container.addEventListener('touchcancel', stopPinch, { passive: true });
             }
+
+            // Mobile Touch: Tap on any resume section reveals its action dock comfortably
+            document.addEventListener('pointerdown', (e) => {
+                const sec = e.target.closest('.group\\/resume-sec');
+                document.querySelectorAll('.group\\/resume-sec.active-touch-sec').forEach(el => {
+                    if (el !== sec) el.classList.remove('active-touch-sec');
+                });
+                if (sec) {
+                    sec.classList.add('active-touch-sec');
+                }
+            }, { passive: true });
         }
 
         // ============================================================
@@ -11214,18 +11655,22 @@ function renderAcademicInputs() {
             });
         }
 
-        function renderResumeDocumentFooter() {
+        function renderResumeDocumentFooter(pageNumber = 1, totalPages = 1) {
             const timeStr = getFormattedGeneratedDateTime();
+            const pageNoHtml = (totalPages > 1 && pageNumber) 
+                ? `<span class="resume-page-number font-bold text-[9px] text-slate-500 uppercase tracking-wider text-center flex-1">Page ${pageNumber} of ${totalPages}</span>`
+                : '';
             return `
             <div class="resume-sheet-footer">
-                <span class="resume-gen-timestamp flex items-center gap-1">
+                <span class="resume-gen-timestamp flex items-center gap-1 shrink-0">
                     <i class="fa-regular fa-clock text-[8px] opacity-70"></i>
                     <span class="resume-gen-timestamp-text">Generated: ${timeStr}</span>
                 </span>
+                ${pageNoHtml}
                 <a href="https://identifyjvd-web.github.io/EasyResume/" 
                    target="_blank" 
                    rel="noopener noreferrer" 
-                   class="hover:text-emerald-700 hover:underline transition-colors flex items-center gap-1"
+                   class="hover:text-emerald-700 hover:underline transition-colors flex items-center gap-1 shrink-0"
                    title="EasyResume&deg; by Javed Ansari">
                     <span>EasyResume&deg; by Javed Ansari</span>
                     <i class="fa-solid fa-arrow-up-right-from-square text-[7px] opacity-60"></i>
@@ -11318,7 +11763,7 @@ function renderAcademicInputs() {
             currentResume.academicRecords = [...sortedFilled, ...empty];
             if (typeof renderAcademicInputs === 'function') renderAcademicInputs();
             liveUpdateResume();
-            showToast("✓ Qualifications sorted by Year (Latest on top)!");
+            showToast("Qualifications sorted by Year (Latest on top)!");
         }
 
         // ============================================================
@@ -11340,65 +11785,51 @@ function renderAcademicInputs() {
         }
 
         function isFitOnePageActive() {
-            if (currentResume && currentResume.fitOnePage !== undefined) {
-                return !!currentResume.fitOnePage;
+            const sheet = document.getElementById('live-resume-sheet');
+            if (sheet) {
+                return sheet.getAttribute('data-multi-page') !== 'true';
             }
             return true;
         }
 
-        function applyResumeDensity(density, showNotification = true) {
+        function applyResumeDensity(density, showNotification = true, triggerRender = true) {
             const sheet = document.getElementById('live-resume-sheet');
             const d = Math.max(1, Math.min(5, parseInt(density) || 2));
             
-            if (currentResume) {
+            if (currentResume && currentResume.pageDensity !== d) {
                 currentResume.pageDensity = d;
-                if (currentResume.fitOnePage === undefined) {
-                    currentResume.fitOnePage = (d <= 3);
-                }
                 saveAllResumesToStorage();
             }
             
-            const fitOnePage = isFitOnePageActive();
-
             if (sheet) {
                 sheet.setAttribute('data-density', String(d));
-                sheet.setAttribute('data-fit-one-page', fitOnePage ? 'true' : 'false');
             }
             
+            const fitOnePage = isFitOnePageActive();
             updateDensityUI(d, fitOnePage);
+
+            // Immediately re-render preview so new page density & spacing reflows & paginates in real-time
+            if (triggerRender && typeof renderLiveA4Preview === 'function') {
+                renderLiveA4Preview();
+            }
             
             if (showNotification) {
                 const desc = DENSITY_CONFIGS[d] ? DENSITY_CONFIGS[d].name : `Level ${d}`;
-                const mode = fitOnePage ? '1-Page Fit' : '2-Page Mode';
-                showToast(`Layout: ${desc} (${mode})`);
+                showToast(`Page Spacing: ${d}/5 (${desc})`);
             }
         }
 
         function adjustResumeDensity(delta) {
             const current = getActiveResumeDensity();
             let next = Math.max(1, Math.min(5, current + delta));
-            if (currentResume) {
-                if (next >= 4) {
-                    currentResume.fitOnePage = false;
-                } else if (next <= 3) {
-                    currentResume.fitOnePage = true;
-                }
-            }
-            applyResumeDensity(next, true);
+            applyResumeDensity(next, true, true);
         }
 
         function cycleResumeDensity() {
             const current = getActiveResumeDensity();
             let next = current + 1;
             if (next > 5) next = 1;
-            if (currentResume) {
-                if (next >= 4) {
-                    currentResume.fitOnePage = false;
-                } else {
-                    currentResume.fitOnePage = true;
-                }
-            }
-            applyResumeDensity(next, true);
+            applyResumeDensity(next, true, true);
         }
 
         function toggleFitOnePage() {
@@ -11415,10 +11846,10 @@ function renderAcademicInputs() {
 
             if (fitOnePage) {
                 badge.className = "px-2.5 sm:px-3 py-1 sm:py-1 rounded-full text-[10.5px] sm:text-[11px] font-black transition-all flex items-center justify-center gap-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 cursor-pointer shadow-2xs border border-emerald-300 whitespace-nowrap shrink-0 active:scale-95";
-                badge.title = `Page Spacing: ${d}/5 (Tap to change)`;
+                badge.title = `Page Spacing: ${d}/5 (1 Page)`;
             } else {
                 badge.className = "px-2.5 sm:px-3 py-1 sm:py-1 rounded-full text-[10.5px] sm:text-[11px] font-black transition-all flex items-center justify-center gap-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer shadow-2xs border border-blue-300 whitespace-nowrap shrink-0 active:scale-95";
-                badge.title = `Page Spacing: ${d}/5 (Tap to change)`;
+                badge.title = `Page Spacing: ${d}/5 (2 Pages)`;
             }
         }
 
@@ -11433,31 +11864,34 @@ function renderAcademicInputs() {
             return 1.0;
         }
 
-        function applyResumeFontSize(scale, saveToModel = true, showNotification = false) {
+        function applyResumeFontSize(scale, saveToModel = true, showNotification = false, triggerRender = true) {
             const s = Math.max(0.70, Math.min(1.35, Math.round(parseFloat(scale) * 100) / 100));
             const sheet = document.getElementById('live-resume-sheet');
             if (sheet) {
                 sheet.style.setProperty('--resume-font-scale', String(s));
             }
-            if (saveToModel && currentResume) {
+            if (saveToModel && currentResume && currentResume.fontSizeScale !== s) {
                 currentResume.fontSizeScale = s;
                 saveCurrentResumeSilently();
             }
             updateFontSizeUI(s);
+            if (triggerRender && typeof renderLiveA4Preview === 'function') {
+                renderLiveA4Preview();
+            }
             if (showNotification) {
                 const pct = Math.round(s * 100);
-                showToast(`🔤 Font Size: ${pct}%`);
+                showToast(`Font Size: ${pct}%`);
             }
         }
 
         function adjustResumeFontSize(deltaSteps) {
             const current = getResumeFontSizeScale();
             const next = Math.round((current + (deltaSteps * 0.05)) * 100) / 100;
-            applyResumeFontSize(next, true, true);
+            applyResumeFontSize(next, true, true, true);
         }
 
         function resetResumeFontSize() {
-            applyResumeFontSize(1.0, true, true);
+            applyResumeFontSize(1.0, true, true, true);
         }
 
         function updateFontSizeUI(scale) {
@@ -11504,7 +11938,7 @@ function renderAcademicInputs() {
                 currentResume.academicTableScale = s;
                 saveCurrentResumeSilently();
                 if (showNotification) {
-                    showToast(`📏 Academic table size: ${percentStr}`);
+                    showToast(`Academic table size: ${percentStr}`);
                 }
             }
         }
@@ -11681,7 +12115,7 @@ function renderAcademicInputs() {
                     if (colKeyB) currentResume.academicColWidths[colKeyB] = lastPctB;
                     currentResume.hasBeenEdited = true;
                     saveCurrentResumeSilently();
-                    showToast("✓ Column width saved!");
+                    showToast("Column width saved!");
                 }
             }
 
@@ -11863,8 +12297,20 @@ function renderAcademicInputs() {
             }, 60);
 
             const meta = SECTION_METADATA[sectionKey] || { label: sectionKey };
-            const dirText = direction < 0 ? 'Up ?' : 'Down ?';
+            const dirText = direction < 0 ? 'Up' : 'Down';
             showToast(`${meta.label} moved ${dirText}`);
+        }
+
+        // Toggle Academic Details View Mode (Table View <-> Sentence / Paragraph View) directly from Preview
+        function toggleAcademicDisplayMode(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            if (!currentResume) return;
+            const currentMode = currentResume.academicDisplayMode || 'table';
+            const nextMode = (currentMode === 'paragraph') ? 'table' : 'paragraph';
+            setAcademicDisplayMode(nextMode);
         }
 
         function renderSectionReorderControls(sectionKey, tpl) {
@@ -11875,17 +12321,30 @@ function renderAcademicInputs() {
             const meta = SECTION_METADATA[sectionKey] || { label: sectionKey, icon: 'fa-layer-group' };
             const isHidden = isSectionHidden(sectionKey);
 
+            // View Mode Converter for Academic Details (Table Mode <-> Sentence / Paragraph Mode) - Light Theme Aware
+            let academicToggleHtml = '';
+            if (sectionKey === 'academic') {
+                const isPara = (currentResume && currentResume.academicDisplayMode === 'paragraph');
+                academicToggleHtml = `
+                <button type="button" onclick="toggleAcademicDisplayMode(event)" class="section-academic-toggle-btn h-5 sm:h-6 px-2 rounded-full inline-flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 ${isPara ? 'bg-cyan-50 text-cyan-800 hover:bg-cyan-100 border border-cyan-300' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-300'} shadow-2xs font-sans" title="${isPara ? 'Convert to Table Grid View' : 'Convert to Sentence / Paragraph View'}">
+                    <i class="fa-solid ${isPara ? 'fa-table' : 'fa-bars-staggered'} text-[9px] ${isPara ? 'text-cyan-600' : 'text-emerald-600'}"></i>
+                    <span class="text-[9.5px] font-bold whitespace-nowrap">${isPara ? 'Table View' : 'Sentence View'}</span>
+                </button>
+                `;
+            }
+
             return `
-            <div class="section-reorder-dock no-print" onpointerdown="event.stopPropagation()">
+            <div class="section-reorder-dock no-print font-sans" onpointerdown="event.stopPropagation()">
                 <button type="button" onclick="moveResumeSection('${sectionKey}', -1, event)" class="section-move-btn ${isFirst ? 'btn-disabled' : ''}" title="Move ${meta.label} Up" ${isFirst ? 'disabled' : ''}>
                     <i class="fa-solid fa-chevron-up"></i>
                 </button>
-                <span class="text-[9.5px] font-bold text-slate-200 px-1 select-none flex items-center gap-1 cursor-pointer" onclick="openSectionReorderModal()" title="Tap to open Section Reorder Manager">
-                    <i class="fa-solid ${meta.icon} text-emerald-400 text-[9px]"></i>
+                <span class="sec-dock-label text-[10px] font-extrabold text-slate-800 px-1 select-none flex items-center gap-1 cursor-pointer hover:text-emerald-700 transition-colors" onclick="openSectionReorderModal()" title="Tap to open Section Reorder Manager">
+                    <i class="fa-solid ${meta.icon} text-emerald-600 text-[10px]"></i>
                     <span class="hidden sm:inline">${meta.label}</span>
                 </span>
-                <button type="button" onclick="toggleSectionVisibility('${sectionKey}', event)" class="section-move-btn hover:text-amber-300" title="${isHidden ? 'Unhide / Show on Resume' : 'Hide from Resume'}">
-                    <i class="fa-solid ${isHidden ? 'fa-eye-slash text-amber-400' : 'fa-eye'}"></i>
+                ${academicToggleHtml}
+                <button type="button" onclick="toggleSectionVisibility('${sectionKey}', event)" class="section-move-btn btn-hide hover:text-amber-600" title="${isHidden ? 'Unhide / Show on Resume' : 'Hide from Resume'}">
+                    <i class="fa-solid ${isHidden ? 'fa-eye-slash text-amber-500' : 'fa-eye'}"></i>
                 </button>
                 <button type="button" onclick="moveResumeSection('${sectionKey}', 1, event)" class="section-move-btn ${isLast ? 'btn-disabled' : ''}" title="Move ${meta.label} Down" ${isLast ? 'disabled' : ''}>
                     <i class="fa-solid fa-chevron-down"></i>
@@ -11896,83 +12355,125 @@ function renderAcademicInputs() {
 
         function openSectionReorderModal() {
             const modal = document.getElementById('reorder-sections-modal');
+            const drawer = document.getElementById('reorder-sections-drawer-panel');
+            const backdrop = document.getElementById('reorder-drawer-backdrop');
             if (!modal) return;
             renderReorderModalList();
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            requestAnimationFrame(() => {
+                if (backdrop) backdrop.classList.remove('opacity-0');
+                if (drawer) {
+                    drawer.classList.remove('translate-x-full');
+                    drawer.classList.add('translate-x-0');
+                }
+            });
         }
         const openReorderSectionsModal = openSectionReorderModal;
 
         function closeSectionReorderModal() {
             const modal = document.getElementById('reorder-sections-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+            const drawer = document.getElementById('reorder-sections-drawer-panel');
+            const backdrop = document.getElementById('reorder-drawer-backdrop');
+            if (drawer) {
+                drawer.classList.remove('translate-x-0');
+                drawer.classList.add('translate-x-full');
             }
+            if (backdrop) backdrop.classList.add('opacity-0');
+            setTimeout(() => {
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            }, 260);
         }
 
         // ==========================================
-        // FORMATS MODAL PICKER (FOR MOBILE & BOTTOM DOCK)
+        // FORMATS LEFT SIDEBAR DRAWER (FOR MOBILE & BOTTOM DOCK)
         // ==========================================
         function openFormatsModal() {
             renderFormatsModalContent();
             const modal = document.getElementById('formats-modal');
+            const drawer = document.getElementById('formats-drawer-panel');
+            const backdrop = document.getElementById('formats-drawer-backdrop');
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
+                requestAnimationFrame(() => {
+                    if (drawer) {
+                        drawer.classList.remove('-translate-x-full');
+                        drawer.classList.add('translate-x-0');
+                    }
+                    if (backdrop) {
+                        backdrop.classList.remove('opacity-0');
+                        backdrop.classList.add('opacity-100');
+                    }
+                });
             }
         }
 
         function closeFormatsModal() {
             const modal = document.getElementById('formats-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+            const drawer = document.getElementById('formats-drawer-panel');
+            const backdrop = document.getElementById('formats-drawer-backdrop');
+            if (drawer) {
+                drawer.classList.remove('translate-x-0');
+                drawer.classList.add('-translate-x-full');
             }
+            if (backdrop) {
+                backdrop.classList.remove('opacity-100');
+                backdrop.classList.add('opacity-0');
+            }
+            setTimeout(() => {
+                if (modal && drawer && drawer.classList.contains('-translate-x-full')) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            }, 260);
         }
 
         function renderFormatsModalContent() {
             const listEl = document.getElementById('modal-formats-list');
             if (!listEl) return;
-            const currentTpl = (currentResume && currentResume.template) ? currentResume.template : 'modern';
+            const currentTpl = (currentResume && currentResume.template) ? currentResume.template : 'corporate';
 
             listEl.innerHTML = RESUME_FORMATS.map((fmt, idx) => {
-                const isActive = (fmt.id === currentTpl);
+                const isActive = (fmt.id === currentTpl || (fmt.templateId && currentTpl === fmt.templateId && !RESUME_FORMATS.some(x => x.id === currentTpl)));
                 const thumbHtml = (typeof getSidebarThumbnailHtml === 'function')
                     ? getSidebarThumbnailHtml(fmt.mockup || fmt.id)
                     : '<div class="w-full h-[115px] bg-slate-100 rounded-lg"></div>';
 
                 return `
                     <div onclick="applyTemplateFromSidebar('${fmt.id}'); renderFormatsModalContent();"
-                         class="group relative rounded-2xl p-2 sm:p-2.5 cursor-pointer transition-all duration-200 border-2 select-none flex flex-col justify-between ${isActive ? 'bg-emerald-50/90 border-emerald-500 ring-2 ring-emerald-500/25 shadow-sm' : 'bg-white border-slate-200/90 hover:border-emerald-400 hover:shadow-xs'}">
+                         class="group relative rounded-2xl p-2.5 cursor-pointer transition-all duration-200 border-2 select-none mb-3 ${isActive ? 'bg-emerald-50/90 border-emerald-500 ring-2 ring-emerald-500/25 shadow-sm' : 'bg-white border-slate-200/90 hover:border-emerald-400 hover:shadow-xs'}">
                         
-                        <!-- Miniature Preview Thumbnail (Visual Preview as in Desktop Mode) -->
-                        <div class="mb-1.5 overflow-hidden rounded-lg shadow-2xs pointer-events-none">
+                        <!-- Miniature Preview Thumbnail (Identical to Desktop) -->
+                        <div class="mb-2 overflow-hidden rounded-lg shadow-2xs pointer-events-none">
                             ${thumbHtml}
                         </div>
 
                         <!-- Header & Badges -->
                         <div class="flex items-center justify-between gap-1 mb-1">
-                            <span class="text-[8.5px] sm:text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase tracking-wider ${fmt.badgeColor}">
+                            <span class="text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase tracking-wider ${fmt.badgeColor}">
                                 ${(fmt.docType || 'resume').toUpperCase()}
                             </span>
                             ${isActive ? `
-                                <span class="text-[8.5px] sm:text-[9px] font-black text-emerald-700 bg-emerald-100 px-1.5 sm:px-2 py-0.2 rounded-full flex items-center gap-1 border border-emerald-300 shadow-2xs">
+                                <span class="text-[9px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1 border border-emerald-300 shadow-2xs">
                                     <i class="fa-solid fa-circle-check text-emerald-600"></i> Active
                                 </span>
                             ` : `
-                                <span class="text-[8.5px] sm:text-[9px] font-bold text-slate-400 group-hover:text-emerald-600 transition flex items-center gap-0.5">
-                                    Select
+                                <span class="text-[9px] font-bold text-slate-400 group-hover:text-emerald-600 transition flex items-center gap-1">
+                                    <i class="fa-regular fa-hand-pointer"></i> Tap to Apply
                                 </span>
                             `}
                         </div>
 
                         <!-- Template Title & Subtitle -->
                         <div>
-                            <h4 class="text-[11px] sm:text-xs font-black text-slate-800 leading-tight group-hover:text-emerald-700 transition truncate" title="${escapeAttr(fmt.name)}">
+                            <h4 class="text-xs font-black text-slate-800 leading-tight group-hover:text-emerald-700 transition">
                                 ${idx + 1}. ${fmt.name}
                             </h4>
-                            <p class="text-[9.5px] sm:text-[10px] text-slate-500 font-semibold truncate mt-0.5">
+                            <p class="text-[10px] text-slate-500 font-semibold truncate mt-0.5">
                                 ${fmt.subtitle || ''}
                             </p>
                         </div>
@@ -11981,7 +12482,13 @@ function renderAcademicInputs() {
             }).join('');
 
             const colorContainer = document.getElementById('modal-color-palette');
+            const colorLabel = document.getElementById('modal-active-theme-color-label');
             if (colorContainer && typeof RESUME_THEME_COLORS !== 'undefined') {
+                const activeC = RESUME_THEME_COLORS.find(c => c.id === activeThemeColorId) || RESUME_THEME_COLORS[0];
+                if (colorLabel && activeC) {
+                    colorLabel.innerText = activeC.name || 'Emerald';
+                    colorLabel.style.color = activeC.hex;
+                }
                 colorContainer.innerHTML = RESUME_THEME_COLORS.map(c => {
                     const isActive = (c.id === activeThemeColorId);
                     return `
@@ -12166,6 +12673,205 @@ function renderAcademicInputs() {
             return 'fa-solid fa-mobile-screen';
         }
 
+        // ============================================================
+        // REAL-TIME PHYSICAL A4 CARD PAGINATION ENGINE (Page 1 & Page 2)
+        // Two completely separate physical cards with authentic desk gap
+        // Real-time Page 1 of 2 / Page 2 of 2 in center of footer
+        // ============================================================
+        function paginateLiveResumeSheet(sheet, currentResume) {
+            const inner = sheet.querySelector('.sheet-root-inner');
+            if (!inner) return;
+
+            sheet.removeAttribute('data-multi-page');
+            sheet.style.minHeight = '297mm';
+            sheet.querySelectorAll('.page-2-first-section').forEach(el => el.classList.remove('page-2-first-section'));
+            const existingSep = sheet.querySelector('.a4-page-separator');
+            if (existingSep) existingSep.remove();
+
+            // Temporarily unconstrain height to measure true natural content height
+            inner.style.height = 'auto';
+            inner.style.minHeight = 'auto';
+            inner.style.maxHeight = 'none';
+
+            const densityBadge = document.getElementById('density-level-badge');
+            const densityText = document.getElementById('density-level-text');
+            const activeDensity = (typeof getActiveResumeDensity === 'function') ? getActiveResumeDensity() : 2;
+
+            const isTwoCol = inner.classList.contains('flex-row') || !!inner.querySelector('.w-\\[32\\%\\]');
+            const candName = (currentResume && currentResume.studentName) ? currentResume.studentName : 'Candidate Name';
+
+            // Strict Whole-Section Pagination Rule:
+            // Calculate available vertical space on Page 1 before footer and padding.
+            // 1 A4 page at 96 DPI is 1122.5px (297mm).
+            const innerRect = inner.getBoundingClientRect();
+            const currentZ = (typeof currentZoom === 'number' && currentZoom > 0) ? currentZoom : 1;
+            const padBottom = parseFloat(window.getComputedStyle(inner).paddingBottom) || 28;
+            const footerEl = inner.querySelector('.resume-sheet-footer');
+            const footerH = footerEl ? (footerEl.offsetHeight || 30) : 30;
+            const maxPage1ContentBottom = 1122.5 - padBottom - footerH - 6;
+
+            inner.style.position = 'relative';
+
+            const sections = Array.from(inner.querySelectorAll('[data-section-key]'));
+
+            let splitIdx = -1;
+            for (let i = 0; i < sections.length; i++) {
+                const sec = sections[i];
+                const secRect = sec.getBoundingClientRect();
+                const secRectBottom = (secRect.bottom - innerRect.top) / currentZ;
+                const secOffsetBottom = (sec.offsetTop || 0) + (sec.offsetHeight || 0);
+                const secBottom = Math.max(secRectBottom, secOffsetBottom);
+                if (secBottom > maxPage1ContentBottom) {
+                    splitIdx = i;
+                    break;
+                }
+            }
+
+            // Also check declaration block / signature block (which might be the last section or separate div)
+            const declEl = inner.querySelector('[data-section-key="declaration"]') || inner.querySelector('.resume-declaration');
+            let declOverflows = false;
+            if (declEl) {
+                const declRect = declEl.getBoundingClientRect();
+                const declRectBottom = (declRect.bottom - innerRect.top) / currentZ;
+                const declOffsetBottom = (declEl.offsetTop || 0) + (declEl.offsetHeight || 0);
+                const declBottom = Math.max(declRectBottom, declOffsetBottom);
+                if (declBottom > maxPage1ContentBottom) {
+                    declOverflows = true;
+                }
+            }
+
+            const naturalHeight = Math.max(inner.scrollHeight || 0, inner.offsetHeight || 0);
+            const isMultiPage = (splitIdx !== -1) || declOverflows || (naturalHeight > 1125);
+
+            if (!isMultiPage) {
+                sheet.setAttribute('data-multi-page', 'false');
+                sheet.style.minHeight = '297mm';
+
+                inner.style.height = '100%';
+                inner.style.minHeight = '100%';
+                inner.style.maxHeight = '100%';
+
+                const oldFooter = inner.querySelector('.resume-sheet-footer');
+                if (oldFooter) {
+                    oldFooter.outerHTML = renderResumeDocumentFooter(1, 1);
+                }
+
+                const page1Card = document.createElement('div');
+                page1Card.className = 'a4-page-card';
+                page1Card.setAttribute('data-page', '1');
+                page1Card.appendChild(inner);
+
+                sheet.innerHTML = '';
+                sheet.appendChild(page1Card);
+
+                if (densityBadge && densityText) {
+                    densityText.innerHTML = `<span class="whitespace-nowrap font-black">${activeDensity}/5</span>`;
+                    densityBadge.className = "px-2.5 sm:px-3 py-1 sm:py-1 rounded-full text-[10.5px] sm:text-[11px] font-black transition-all flex items-center justify-center gap-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 cursor-pointer shadow-2xs border border-emerald-300 whitespace-nowrap shrink-0 active:scale-95";
+                    densityBadge.title = `Page Spacing: ${activeDensity}/5 (1 Page)`;
+                }
+                return;
+            }
+
+            // Two-page physical card mode
+            sheet.setAttribute('data-multi-page', 'true');
+            sheet.style.minHeight = '594mm';
+
+            if (splitIdx <= 0 && sections.length > 1) {
+                splitIdx = 1;
+            }
+            if (splitIdx === -1) {
+                splitIdx = Math.max(1, sections.length - 1);
+            }
+
+            const page2Sections = sections.slice(splitIdx);
+            page2Sections.forEach(s => s.remove());
+
+            // Page 1 Card
+            const page1Card = document.createElement('div');
+            page1Card.className = 'a4-page-card';
+            page1Card.setAttribute('data-page', '1');
+
+            inner.style.height = '100%';
+            inner.style.minHeight = '100%';
+            inner.style.maxHeight = '100%';
+
+            const oldFooter1 = inner.querySelector('.resume-sheet-footer');
+            if (oldFooter1) {
+                oldFooter1.outerHTML = renderResumeDocumentFooter(1, 2);
+            }
+            page1Card.appendChild(inner);
+
+            // Real physical desk canvas gap between Page 1 and Page 2 (No artificial divider line)
+            const gap = document.createElement('div');
+            gap.className = 'a4-page-card-gap no-print';
+
+            // Page 2 Card
+            const page2Card = document.createElement('div');
+            page2Card.className = 'a4-page-card';
+            page2Card.setAttribute('data-page', '2');
+
+            const page2Inner = document.createElement('div');
+            page2Inner.className = inner.className;
+            page2Inner.style.cssText = inner.style.cssText;
+            page2Inner.style.height = '100%';
+            page2Inner.style.minHeight = '100%';
+            page2Inner.style.maxHeight = '100%';
+
+            if (!isTwoCol) {
+                const page2Content = document.createElement('div');
+                page2Content.innerHTML = `
+                    <div class="page-2-header flex justify-end mb-2 pt-0.5">
+                        <span class="text-[11px] sm:text-xs text-slate-500 italic font-medium tracking-tight">Continued...</span>
+                    </div>
+                `;
+                page2Sections.forEach(s => page2Content.appendChild(s));
+                page2Inner.appendChild(page2Content);
+
+                const p2FooterWrap = document.createElement('div');
+                p2FooterWrap.innerHTML = renderResumeDocumentFooter(2, 2);
+                page2Inner.appendChild(p2FooterWrap.firstElementChild);
+            } else {
+                const leftCol = document.createElement('div');
+                leftCol.className = 'w-[32%] bg-slate-900 text-slate-100 p-6 flex flex-col justify-start shrink-0';
+                leftCol.innerHTML = `
+                    <div class="pt-2 text-right">
+                        <span class="text-[10px] text-slate-400 italic font-medium">Continued...</span>
+                    </div>
+                `;
+
+                const rightCol = document.createElement('div');
+                rightCol.className = 'w-[68%] p-8 flex flex-col justify-between bg-white text-slate-800';
+                const rightContent = document.createElement('div');
+                rightContent.innerHTML = `
+                    <div class="page-2-header flex justify-end mb-2 pt-0.5">
+                        <span class="text-[11px] sm:text-xs text-slate-500 italic font-medium tracking-tight">Continued...</span>
+                    </div>
+                `;
+                page2Sections.forEach(s => rightContent.appendChild(s));
+                rightCol.appendChild(rightContent);
+
+                const p2FooterWrap = document.createElement('div');
+                p2FooterWrap.innerHTML = renderResumeDocumentFooter(2, 2);
+                rightCol.appendChild(p2FooterWrap.firstElementChild);
+
+                page2Inner.appendChild(leftCol);
+                page2Inner.appendChild(rightCol);
+            }
+
+            page2Card.appendChild(page2Inner);
+
+            sheet.innerHTML = '';
+            sheet.appendChild(page1Card);
+            sheet.appendChild(gap);
+            sheet.appendChild(page2Card);
+
+            if (densityBadge && densityText) {
+                densityText.innerHTML = `<span class="whitespace-nowrap font-black">${activeDensity}/5</span>`;
+                densityBadge.className = "px-2.5 sm:px-3 py-1 sm:py-1 rounded-full text-[10.5px] sm:text-[11px] font-black transition-all flex items-center justify-center gap-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer shadow-2xs border border-blue-300 whitespace-nowrap shrink-0 active:scale-95";
+                densityBadge.title = `Page Spacing: ${activeDensity}/5 (2 Pages)`;
+            }
+        }
+
         function renderLiveA4Preview() {
             const sheet = document.getElementById('live-resume-sheet');
             if (!sheet || !currentResume) return;
@@ -12175,12 +12881,12 @@ function renderAcademicInputs() {
             const customFmt = (typeof RESUME_FORMATS !== 'undefined') ? RESUME_FORMATS.find(f => f.id === tpl) : null;
             const effectiveTpl = (tpl === 'corporate' || tpl === 'cv_govt' || tpl === 'modern' || tpl === 'twocolumn' || tpl === 'minimalist' || tpl === 'tech' || tpl === 'fresher' || tpl === 'creative' || tpl === 'executive_bold' || tpl === 'compact_pro') ? tpl : (customFmt?.baseLayout || 'modern');
 
-            // Apply layout density & 1-page fit
-            applyResumeDensity(getActiveResumeDensity(), false);
+            // Apply layout density & 1-page fit (non-recursive)
+            applyResumeDensity(getActiveResumeDensity(), false, false);
 
-            // Apply academic table scale
+            // Apply academic table scale & resume font size (non-recursive)
             applyAcademicTableScale(getAcademicTableScale(), false);
-            applyResumeFontSize(getResumeFontSizeScale(), false);
+            applyResumeFontSize(getResumeFontSizeScale(), false, false, false);
             const getColWidthStyle = (colKey) => {
                 if (!rec.academicColWidths || !rec.academicColWidths[colKey]) return '';
                 const val = rec.academicColWidths[colKey];
@@ -12211,11 +12917,22 @@ function renderAcademicInputs() {
             // Custom Section bullets helper and renderer
             const formatCustomSectionBullets = (content) => {
                 if (!content || typeof content !== 'string') return '';
+                const prefixRegex = /^(\s*)(?:([\u2022\u25cf\u25cb\u25aa\u25ab\*\-\+])|((?:\d+|[a-zA-Z]|[ivxlcdmIVXLCDM]+)[\.\)]))\s*/;
                 return content.split(/\r?\n/).map(line => {
                     let l = line.trim();
                     if (!l) return '';
-                    l = l.replace(/^([\u2022\-\u25cf\u25cb\*\?]|&bull;|\d+[\.\)])\s*/, '').trim();
-                    return `• ${escapeAttr(l)}`;
+                    const match = l.match(prefixRegex);
+                    if (match) {
+                        if (match[2]) {
+                            const c = l.replace(prefixRegex, '').trim();
+                            return `• ${escapeAttr(c)}`;
+                        } else if (match[3]) {
+                            const p = match[3];
+                            const c = l.replace(prefixRegex, '').trim();
+                            return `${p} ${escapeAttr(c)}`;
+                        }
+                    }
+                    return escapeAttr(l);
                 }).filter(Boolean).join('\n');
             };
 
@@ -14089,52 +14806,9 @@ function renderAcademicInputs() {
             autoAdjustParticularsLayout(sheet);
 
             // ============================================================
-            // MULTI-PAGE A4 FLOW & PAGE BREAK SEPARATOR (Page 1 & Page 2)
+            // MULTI-PAGE REAL-TIME PHYSICAL A4 CARD PAGINATION (Page 1 & Page 2)
             // ============================================================
-            const inner = sheet.querySelector('.sheet-root-inner');
-            const a4HeightPx = 1125;
-            const isMultiPage = inner && (inner.scrollHeight > a4HeightPx + 15);
-            
-            // Clear previous page separator
-            const existingSep = sheet.querySelector('.a4-page-separator');
-            if (existingSep) existingSep.remove();
-
-            const densityBadge = document.getElementById('density-level-badge');
-            const densityText = document.getElementById('density-level-text');
-            const activeDensity = (typeof getActiveResumeDensity === 'function') ? getActiveResumeDensity() : 2;
-
-            if (isMultiPage) {
-                sheet.setAttribute('data-multi-page', 'true');
-                sheet.style.minHeight = '594mm';
-                if (inner) inner.style.minHeight = '594mm';
-
-                const sep = document.createElement('div');
-                sep.className = 'a4-page-separator no-print';
-                sep.innerHTML = `
-                    <div class="a4-page-separator-line"></div>
-                    <div class="a4-page-separator-badge">
-                        <i class="fa-solid fa-file-lines text-emerald-400"></i> Page 2
-                    </div>
-                    <div class="a4-page-separator-line"></div>
-                `;
-                sheet.appendChild(sep);
-
-                if (densityBadge && densityText) {
-                    densityText.innerHTML = `<span class="whitespace-nowrap font-black">${activeDensity}/5</span>`;
-                    densityBadge.className = "px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-black transition-all flex items-center gap-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer shadow-2xs border border-blue-300";
-                    densityBadge.title = "Content spans across 2 Pages. Tap to adjust spacing";
-                }
-            } else {
-                sheet.setAttribute('data-multi-page', 'false');
-                sheet.style.minHeight = '297mm';
-                if (inner) inner.style.minHeight = '297mm';
-
-                if (densityBadge && densityText) {
-                    densityText.innerHTML = `<span class="whitespace-nowrap font-black">${activeDensity}/5</span>`;
-                    densityBadge.className = "px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-black transition-all flex items-center gap-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 cursor-pointer shadow-2xs border border-emerald-300";
-                    densityBadge.title = "Content fits on 1 Page. Tap to adjust spacing";
-                }
-            }
+            paginateLiveResumeSheet(sheet, currentResume);
 
             if (typeof applyZoom === 'function') {
                 applyZoom(currentZoom, true);
@@ -14467,8 +15141,13 @@ function renderAcademicInputs() {
         let prePrintMarginBottom = '';
         let prePrintBoxShadow = '';
         let prePrintDocTitle = '';
+        let isPrintingActive = false;
+        let prePrintZoomLevel = 0.85;
 
         function prepareSheetForPrint() {
+            if (isPrintingActive) return; // Prevent double trigger by window.print() + beforeprint
+            isPrintingActive = true;
+
             if (typeof activeInlineEdit !== 'undefined' && activeInlineEdit) commitInlineEdit(false);
             if (currentResume) {
                 renderLiveA4Preview();
@@ -14485,6 +15164,8 @@ function renderAcademicInputs() {
             const rawName = (currentResume?.studentName || currentResume?.title || 'Resume').trim();
             const safeName = rawName.replace(/[/\\?%*:|"<>]/g, '').trim() || 'Resume';
             document.title = `${safeName} EasyResume°`;
+
+            prePrintZoomLevel = (typeof currentZoom === 'number' && currentZoom > 0) ? currentZoom : 0.85;
 
             const sheet = document.getElementById('live-resume-sheet');
             if (sheet) {
@@ -14504,19 +15185,29 @@ function renderAcademicInputs() {
         }
 
         function restoreSheetAfterPrint() {
+            if (!isPrintingActive) return;
+            isPrintingActive = false;
+
             if (prePrintDocTitle) {
                 document.title = prePrintDocTitle;
                 prePrintDocTitle = '';
             }
             const sheet = document.getElementById('live-resume-sheet');
             if (sheet) {
-                sheet.style.transform = prePrintTransform || (typeof currentZoom !== 'undefined' ? `scale(${currentZoom.toFixed(2)})` : 'none');
-                sheet.style.marginBottom = prePrintMarginBottom || '0';
                 sheet.style.boxShadow = prePrintBoxShadow || '';
+                sheet.style.marginBottom = '0px';
             }
+
+            // Fresh render to recalculate clean single/multi-page bounds
+            if (typeof renderLiveA4Preview === 'function') {
+                renderLiveA4Preview();
+            }
+
+            // Strictly restore pre-print zoom scale & exact container geometry
             if (typeof applyZoom === 'function') {
-                applyZoom(currentZoom, true);
+                applyZoom(prePrintZoomLevel, true);
             }
+
             const activeColorId = (currentResume && currentResume.themeColorId) ? currentResume.themeColorId : activeThemeColorId;
             if (activeColorId && typeof applyResumeThemeColor === 'function') {
                 applyResumeThemeColor(activeColorId, false);
@@ -14530,7 +15221,11 @@ function renderAcademicInputs() {
             }
             prepareSheetForPrint();
             window.print();
-            setTimeout(restoreSheetAfterPrint, 1000);
+            setTimeout(() => {
+                if (isPrintingActive) {
+                    restoreSheetAfterPrint();
+                }
+            }, 600);
         }
 
         window.addEventListener('beforeprint', prepareSheetForPrint);
@@ -14868,7 +15563,11 @@ function renderAcademicInputs() {
             currentResume = res;
             prepareSheetForPrint();
             window.print();
-            setTimeout(restoreSheetAfterPrint, 1000);
+            setTimeout(() => {
+                if (isPrintingActive) {
+                    restoreSheetAfterPrint();
+                }
+            }, 600);
         }
 
         // Batch export selected resumes as PDF
@@ -14970,7 +15669,7 @@ function renderAcademicInputs() {
             document.body.appendChild(dl);
             dl.click();
             document.body.removeChild(dl);
-            showToast(`📄 Resume exported: ${filename}`);
+            showToast(`Resume exported: ${filename}`);
         }
 
         // 2. Export Any Resume by ID (from Dashboard card)
@@ -14991,7 +15690,7 @@ function renderAcademicInputs() {
             document.body.appendChild(dl);
             dl.click();
             document.body.removeChild(dl);
-            showToast(`📄 Resume exported: ${filename}`);
+            showToast(`Resume exported: ${filename}`);
         }
 
         // 3. Trigger JSON file picker
@@ -15210,7 +15909,7 @@ function renderAcademicInputs() {
                         }
 
                         const candName = lastImported.studentName || lastImported.title || 'Candidate';
-                        showToast(importCount > 1 ? `📥 ${importCount} Resumes imported successfully!` : `📥 Resume imported: ${candName}`);
+                        showToast(importCount > 1 ? `${importCount} Resumes imported successfully!` : `Resume imported: ${candName}`);
                     }
                 } catch (err) {
                     console.error("Import error:", err);
@@ -15341,7 +16040,7 @@ function renderAcademicInputs() {
             await new Promise(r => { const t = setTimeout(r, 2500); tutorialDemoTimeouts.push(t); });
             
             stopInteractiveTutorialDemo();
-            showToast("🎉 Demo Completed! Now create your resume!");
+            showToast("Demo Completed! Now create your resume!");
         }
 
         // ============================================================
@@ -15407,13 +16106,13 @@ function renderAcademicInputs() {
             if (badge) badge.innerText = `${score}%`;
             if (level) {
                 if (score >= 85) {
-                    level.innerText = 'Excellent 🚀';
+                    level.innerText = 'Excellent';
                     level.className = 'text-[9px] bg-emerald-500/20 text-emerald-300 font-bold px-1.5 py-0.2 rounded border border-emerald-500/30';
                 } else if (score >= 60) {
-                    level.innerText = 'Good 👍';
+                    level.innerText = 'Good';
                     level.className = 'text-[9px] bg-blue-500/20 text-blue-300 font-bold px-1.5 py-0.2 rounded border border-blue-500/30';
                 } else {
-                    level.innerText = 'Needs Details ⚠️';
+                    level.innerText = 'Needs Details';
                     level.className = 'text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.2 rounded border border-amber-500/30';
                 }
             }
@@ -15440,7 +16139,7 @@ function renderAcademicInputs() {
             document.body.appendChild(dl);
             dl.click();
             document.body.removeChild(dl);
-            showToast(`💾 Backup downloaded (${list.length} resumes)`);
+            showToast(`Backup downloaded (${list.length} resumes)`);
         }
 
         // ============================================================
@@ -15462,7 +16161,7 @@ function renderAcademicInputs() {
             const isDoc = fileName.endsWith('.docx') || fileName.endsWith('.doc') || file.type.includes('word');
             const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|bmp)$/i.test(fileName);
 
-            showToast("🔍 Reading and analyzing resume with AI parser...");
+            showToast("Reading and analyzing resume with AI parser...");
 
             try {
                 let fullText = '';
@@ -15470,7 +16169,7 @@ function renderAcademicInputs() {
 
                 if (isDoc) {
                     // 1. WORD DOCUMENT (.docx)
-                    showToast("📄 Extracting text from Word document (.docx)...");
+                    showToast("Extracting text from Word document (.docx)...");
                     if (typeof mammoth === 'undefined') {
                         alert("Word Document parser library is loading. Please check internet connection.");
                         return;
@@ -15481,7 +16180,7 @@ function renderAcademicInputs() {
                     rawLines = fullText.split('\n').map(l => l.trim()).filter(Boolean);
                 } else if (isImage) {
                     // 2. IMAGE RESUME (OCR via Tesseract.js)
-                    showToast("📷 Scanning image resume with OCR AI... Please wait.");
+                    showToast("Scanning image resume with OCR AI... Please wait.");
                     if (typeof Tesseract === 'undefined') {
                         alert("Image OCR library is loading. Please check internet connection.");
                         return;
@@ -15491,7 +16190,7 @@ function renderAcademicInputs() {
                     rawLines = fullText.split('\n').map(l => l.trim()).filter(Boolean);
                 } else {
                     // 3. PDF RESUME (via PDF.js)
-                    showToast("📄 Analyzing PDF resume text...");
+                    showToast("Analyzing PDF resume text...");
                     if (typeof pdfjsLib === 'undefined') {
                         alert("PDF Parser library is loading. Please check internet connection.");
                         return;
@@ -15740,7 +16439,7 @@ function renderAcademicInputs() {
                 if (typeof renderColorPalettes === 'function') renderColorPalettes();
                 if (typeof updateAtsScore === 'function') updateAtsScore();
 
-                showToast(`🎉 PDF Parsed! Loaded data for: ${extractedName}`);
+                showToast(`PDF Parsed! Loaded data for: ${extractedName}`);
             } catch (err) {
                 console.error("PDF Parsing error:", err);
                 alert("Failed to analyze PDF resume: " + (err.message || "Unknown error"));
@@ -15749,30 +16448,39 @@ function renderAcademicInputs() {
 
         // ============================================================
         // LIVE PREVIEW DOUBLE-TAP & DOUBLE-CLICK INLINE EDITING ENGINE
+                // ============================================================
+        // LIVE PREVIEW DOUBLE-TAP & DOUBLE-CLICK INLINE EDITING ENGINE
         // ============================================================
         let activeInlineEdit = null;
         let lastPreviewTouchEnd = 0;
         let lastPreviewTouchPos = { x: 0, y: 0 };
         let isHandlingInlineDoubleTap = false;
+        window._inlineInteractingWithToolbar = false;
 
         function setupPreviewInlineEditing() {
-            const sheet = document.getElementById('live-resume-sheet');
-            if (!sheet) return;
+            const container = document.getElementById('resume-preview-container') || document.getElementById('preview-pane');
+            if (!container) return;
 
-            // 1. Desktop: Double Click
-            sheet.addEventListener('dblclick', (e) => {
+            // 1. Desktop: Double Click anywhere inside preview container (covers Page 1 & Page 2)
+            container.addEventListener('dblclick', (e) => {
                 if (isHandlingInlineDoubleTap) return;
+                const toolbar = document.getElementById('preview-inline-toolbar');
+                if (toolbar && toolbar.contains(e.target)) return;
                 handleInlineEditStart(e.target);
             });
 
             // 2. Mobile / Touch: Double Tap Detector (380ms threshold)
-            sheet.addEventListener('touchstart', (e) => {
+            container.addEventListener('touchstart', (e) => {
+                const toolbar = document.getElementById('preview-inline-toolbar');
+                if (toolbar && toolbar.contains(e.target)) return;
                 if (e.touches && e.touches.length === 1) {
                     lastPreviewTouchPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
                 }
             }, { passive: true });
 
-            sheet.addEventListener('touchend', (e) => {
+            container.addEventListener('touchend', (e) => {
+                const toolbar = document.getElementById('preview-inline-toolbar');
+                if (toolbar && toolbar.contains(e.target)) return;
                 const now = Date.now();
                 const delta = now - lastPreviewTouchEnd;
                 const changed = e.changedTouches ? e.changedTouches[0] : null;
@@ -15782,30 +16490,98 @@ function renderAcademicInputs() {
                 }
 
                 if (delta > 0 && delta < 380 && dist < 32) {
-                    // Confirmed double tap on touch screen
                     isHandlingInlineDoubleTap = true;
                     setTimeout(() => { isHandlingInlineDoubleTap = false; }, 600);
-                    e.preventDefault(); // Stop mobile browser zoom
+                    e.preventDefault();
                     handleInlineEditStart(e.target);
                 }
                 lastPreviewTouchEnd = now;
             }, { passive: false });
 
-            // Commit inline edit on click outside preview sheet
+            // Scroll container adjusts floating toolbar position
+            const prevContainer = document.getElementById('resume-preview-container');
+            if (prevContainer) {
+                prevContainer.addEventListener('scroll', () => {
+                    if (activeInlineEdit && activeInlineEdit.element) {
+                        positionInlineToolbar(activeInlineEdit.element);
+                    }
+                }, { passive: true });
+            }
+
+            // Window resize adjusts floating toolbar position
+            window.addEventListener('resize', () => {
+                if (activeInlineEdit && activeInlineEdit.element) {
+                    positionInlineToolbar(activeInlineEdit.element);
+                }
+            }, { passive: true });
+
+            // Commit inline edit on click/touch outside preview sheet & toolbar
             document.addEventListener('mousedown', (e) => {
                 if (!activeInlineEdit || !activeInlineEdit.element) return;
                 const toolbar = document.getElementById('preview-inline-toolbar');
-                if (toolbar && toolbar.contains(e.target)) return; // clicked toolbar button
-                if (activeInlineEdit.element.contains(e.target)) return; // clicked inside editable
+                const colorPopup = document.getElementById('inline-color-palette-popup');
+                if (toolbar && toolbar.contains(e.target)) return;
+                if (colorPopup && colorPopup.contains(e.target)) return;
+                if (activeInlineEdit.element.contains(e.target)) return;
+                commitInlineEdit(false);
+            });
+
+            document.addEventListener('touchend', (e) => {
+                if (!activeInlineEdit || !activeInlineEdit.element) return;
+                const touch = e.changedTouches ? e.changedTouches[0] : null;
+                const target = touch ? document.elementFromPoint(touch.clientX, touch.clientY) : e.target;
+                if (!target) return;
+                const toolbar = document.getElementById('preview-inline-toolbar');
+                const colorPopup = document.getElementById('inline-color-palette-popup');
+                if (toolbar && toolbar.contains(target)) return;
+                if (colorPopup && colorPopup.contains(target)) return;
+                if (activeInlineEdit.element.contains(target)) return;
                 commitInlineEdit(false);
             });
         }
 
-        function showInlineToolbar() {
+        function positionInlineToolbar(targetEl) {
+            const tb = document.getElementById('preview-inline-toolbar');
+            const pane = document.getElementById('preview-pane');
+            if (!tb || !pane) return;
+
+            const paneRect = pane.getBoundingClientRect();
+            const tbH = tb.offsetHeight || 380;
+
+            let top = 40;
+            if (targetEl) {
+                const targetRect = targetEl.getBoundingClientRect();
+                const targetCenterY = (targetRect.top - paneRect.top) + (targetRect.height / 2);
+                top = targetCenterY - (tbH / 3);
+            }
+
+            const bottomMargin = window.innerWidth < 640 ? 58 : 16;
+            const maxTop = Math.max(10, pane.clientHeight - tbH - bottomMargin);
+            top = Math.max(10, Math.min(maxTop, top));
+
+            tb.style.top = `${Math.round(top)}px`;
+            tb.style.bottom = 'auto';
+            tb.style.transform = 'none';
+            tb.style.right = '10px';
+            tb.style.left = 'auto';
+
+            const colorPopup = document.getElementById('inline-color-palette-popup');
+            if (colorPopup) {
+                colorPopup.style.right = 'calc(100% + 8px)';
+                colorPopup.style.left = 'auto';
+            }
+        }
+
+        function showInlineToolbar(targetEl) {
             const tb = document.getElementById('preview-inline-toolbar');
             if (tb) {
                 tb.classList.remove('hidden');
                 tb.classList.add('flex');
+                updateInlineToolbarState();
+                const el = targetEl || (activeInlineEdit ? activeInlineEdit.element : null);
+                if (el) {
+                    setTimeout(() => positionInlineToolbar(el), 15);
+                }
             }
         }
 
@@ -15815,15 +16591,310 @@ function renderAcademicInputs() {
                 tb.classList.add('hidden');
                 tb.classList.remove('flex');
             }
+            const colorPopup = document.getElementById('inline-color-palette-popup');
+            if (colorPopup) {
+                colorPopup.classList.add('hidden');
+                colorPopup.classList.remove('flex');
+            }
+        }
+
+        function inlineToggleFormat(cmd) {
+            window._inlineInteractingWithToolbar = true;
+            if (!activeInlineEdit || !activeInlineEdit.element) return;
+            const el = activeInlineEdit.element;
+            const comp = window.getComputedStyle(el);
+
+            if (cmd === 'bold') {
+                const isBold = comp.fontWeight === 'bold' || parseInt(comp.fontWeight, 10) >= 600 ||
+                               el.classList.contains('font-bold') || el.classList.contains('font-black') || el.classList.contains('font-semibold') ||
+                               el.style.fontWeight === 'bold' || parseInt(el.style.fontWeight, 10) >= 600;
+                const newWeight = isBold ? 'normal' : 'bold';
+                el.style.setProperty('font-weight', newWeight, 'important');
+                if (isBold) {
+                    el.classList.remove('font-bold', 'font-black', 'font-semibold', 'font-medium');
+                    el.classList.add('font-normal');
+                } else {
+                    el.classList.remove('font-normal', 'font-light');
+                    el.classList.add('font-bold');
+                }
+                el.querySelectorAll('*').forEach(child => {
+                    child.style.setProperty('font-weight', newWeight, 'important');
+                    if (isBold) {
+                        child.classList.remove('font-bold', 'font-black', 'font-semibold');
+                    } else {
+                        child.classList.add('font-bold');
+                    }
+                });
+                if (typeof showToast === 'function') {
+                    showToast(isBold ? 'Bold removed' : 'Bold applied');
+                }
+            } else if (cmd === 'italic') {
+                const isItalic = comp.fontStyle === 'italic' || el.classList.contains('italic') || el.style.fontStyle === 'italic';
+                const newStyle = isItalic ? 'normal' : 'italic';
+                el.style.setProperty('font-style', newStyle, 'important');
+                if (isItalic) {
+                    el.classList.remove('italic');
+                    el.classList.add('not-italic');
+                } else {
+                    el.classList.remove('not-italic');
+                    el.classList.add('italic');
+                }
+                el.querySelectorAll('*').forEach(child => {
+                    child.style.setProperty('font-style', newStyle, 'important');
+                    if (isItalic) child.classList.remove('italic');
+                    else child.classList.add('italic');
+                });
+                if (typeof showToast === 'function') {
+                    showToast(isItalic ? 'Italic removed' : 'Italic applied');
+                }
+            } else if (cmd === 'underline') {
+                const isUnderline = (comp.textDecoration && comp.textDecoration.includes('underline')) ||
+                                    (el.style.textDecoration && el.style.textDecoration.includes('underline')) ||
+                                    el.classList.contains('underline');
+                const newDec = isUnderline ? 'none' : 'underline';
+                el.style.setProperty('text-decoration', newDec, 'important');
+                if (isUnderline) {
+                    el.classList.remove('underline');
+                    el.classList.add('no-underline');
+                } else {
+                    el.classList.remove('no-underline');
+                    el.classList.add('underline');
+                }
+                el.querySelectorAll('*').forEach(child => {
+                    child.style.setProperty('text-decoration', newDec, 'important');
+                });
+                if (typeof showToast === 'function') {
+                    showToast(isUnderline ? 'Underline removed' : 'Underline applied');
+                }
+            }
+            updateInlineToolbarState();
+        }
+
+        function inlineChangeFontSize(delta) {
+            window._inlineInteractingWithToolbar = true;
+            if (!activeInlineEdit || !activeInlineEdit.element) return;
+            const el = activeInlineEdit.element;
+            const comp = window.getComputedStyle(el);
+            let currentPx = parseFloat(el.style.fontSize) || parseFloat(comp.fontSize) || 12;
+            let newPx = Math.max(7, Math.min(48, Math.round(currentPx + delta)));
+            el.style.setProperty('font-size', `${newPx}px`, 'important');
+            el.style.setProperty('line-height', `${Math.max(12, Math.round(newPx * 1.35))}px`, 'important');
+            el.querySelectorAll('*').forEach(child => {
+                child.style.setProperty('font-size', `${newPx}px`, 'important');
+                child.style.setProperty('line-height', `${Math.max(12, Math.round(newPx * 1.35))}px`, 'important');
+            });
+            const sizeLbl = document.getElementById('inline-tool-size-val');
+            if (sizeLbl) sizeLbl.innerText = `${newPx}`;
+        }
+
+        function inlineCycleAlignment() {
+            window._inlineInteractingWithToolbar = true;
+            if (!activeInlineEdit || !activeInlineEdit.element) return;
+            const el = activeInlineEdit.element;
+            const comp = window.getComputedStyle(el);
+            const currentAlign = (el.style.textAlign || comp.textAlign || 'left').toLowerCase();
+
+            let nextAlign = 'left';
+            if (currentAlign === 'left' || currentAlign === 'start') {
+                nextAlign = 'center';
+            } else if (currentAlign === 'center') {
+                nextAlign = 'right';
+            } else {
+                nextAlign = 'left';
+            }
+
+            el.style.setProperty('text-align', nextAlign, 'important');
+            if (comp.display === 'inline') {
+                el.style.setProperty('display', 'block', 'important');
+            }
+            if (comp.display.includes('flex')) {
+                const jc = nextAlign === 'center' ? 'center' : (nextAlign === 'right' ? 'flex-end' : 'flex-start');
+                el.style.setProperty('justify-content', jc, 'important');
+            }
+
+            el.querySelectorAll('*').forEach(child => {
+                child.style.setProperty('text-align', nextAlign, 'important');
+                const ccomp = window.getComputedStyle(child);
+                if (ccomp.display.includes('flex')) {
+                    const jc = nextAlign === 'center' ? 'center' : (nextAlign === 'right' ? 'flex-end' : 'flex-start');
+                    child.style.setProperty('justify-content', jc, 'important');
+                }
+            });
+
+            const alignIcon = document.getElementById('inline-tool-align-icon');
+            if (alignIcon) {
+                alignIcon.className = `fa-solid fa-align-${nextAlign} text-slate-700`;
+            }
+            const alignBtn = document.getElementById('inline-tool-align-btn');
+            if (alignBtn) {
+                const caps = nextAlign.charAt(0).toUpperCase() + nextAlign.slice(1);
+                alignBtn.setAttribute('title', `Alignment: ${caps} (Tap to cycle)`);
+            }
+
+            if (typeof showToast === 'function') {
+                showToast(`Alignment: ${nextAlign.charAt(0).toUpperCase() + nextAlign.slice(1)}`);
+            }
+        }
+
+        function inlineToggleColorPalette(e) {
+            if (e) e.stopPropagation();
+            window._inlineInteractingWithToolbar = true;
+            const popup = document.getElementById('inline-color-palette-popup');
+            if (!popup) return;
+            const isHidden = popup.classList.contains('hidden');
+            if (isHidden) {
+                popup.classList.remove('hidden');
+                popup.classList.add('flex');
+            } else {
+                popup.classList.add('hidden');
+                popup.classList.remove('flex');
+            }
+        }
+
+        function inlineSetTextColor(color) {
+            window._inlineInteractingWithToolbar = true;
+            if (!activeInlineEdit || !activeInlineEdit.element) return;
+            const el = activeInlineEdit.element;
+            if (color === 'inherit') {
+                el.style.removeProperty('color');
+                el.querySelectorAll('*').forEach(c => c.style.removeProperty('color'));
+            } else {
+                el.style.setProperty('color', color, 'important');
+                el.querySelectorAll('*').forEach(c => {
+                    c.style.setProperty('color', color, 'important');
+                });
+            }
+            const paletteIcon = document.querySelector('#inline-tool-color-btn i');
+            if (paletteIcon) {
+                paletteIcon.style.color = (color === 'inherit' ? '#059669' : color);
+            }
+        }
+
+        function inlinePickColor(color) {
+            inlineSetTextColor(color);
+            const popup = document.getElementById('inline-color-palette-popup');
+            if (popup) {
+                popup.classList.add('hidden');
+                popup.classList.remove('flex');
+            }
+            if (typeof showToast === 'function') {
+                showToast(color === 'inherit' ? "Text color reset" : "Text color applied");
+            }
+        }
+
+        function inlineCycleTextCase() {
+            window._inlineInteractingWithToolbar = true;
+            if (!activeInlineEdit || !activeInlineEdit.element) return;
+            const el = activeInlineEdit.element;
+            const text = el.innerText || '';
+            if (!text.trim()) return;
+
+            const isAllUpper = (text === text.toUpperCase() && text !== text.toLowerCase());
+            const isAllLower = (text === text.toLowerCase() && text !== text.toUpperCase());
+
+            if (isAllUpper) {
+                el.innerText = text.toLowerCase().replace(/(^|\s|-)\S/g, l => l.toUpperCase());
+            } else if (isAllLower) {
+                el.innerText = text.toUpperCase();
+            } else {
+                el.innerText = text.toLowerCase();
+            }
+            if (typeof showToast === 'function') {
+                showToast("Text case toggled");
+            }
+        }
+
+        function inlineApplyListFormat(type) {
+            window._inlineInteractingWithToolbar = true;
+            if (!activeInlineEdit || !activeInlineEdit.element) return;
+            const el = activeInlineEdit.element;
+            const listPrefixRegex = /^(\s*)(?:[\u2022\u25cf\u25cb\u25aa\u25ab\*\-\+]\s*|(?:\d+|[a-zA-Z]|[ivxlcdmIVXLCDM]+)[\.\)]\s*)/;
+            const bulletCheckRegex = /^(\s*)[\u2022\u25cf\u25cb\u25aa\u25ab\*\-]/;
+            const numberCheckRegex = /^(\s*)\d+[\.\)]/;
+            const alphaCheckRegex = /^(\s*)[a-zA-Z][\.\)]/;
+
+            const fullText = (el.innerText || '').trim();
+            if (!fullText) return;
+
+            let lines = fullText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            if (lines.length === 0) return;
+
+            let effectiveType = type;
+            if (type === 'bullet' && lines.every(l => bulletCheckRegex.test(l))) {
+                effectiveType = 'none';
+            } else if (type === 'number' && lines.every(l => numberCheckRegex.test(l))) {
+                effectiveType = 'none';
+            } else if (type === 'alpha' && lines.every(l => alphaCheckRegex.test(l))) {
+                effectiveType = 'none';
+            }
+
+            let numIdx = 1;
+            let alphaCharCode = 97; // 'a'
+
+            const transformed = lines.map(line => {
+                const clean = line.replace(listPrefixRegex, '').trim();
+                if (!clean) return '';
+                if (effectiveType === 'bullet') {
+                    return `• ${clean}`;
+                } else if (effectiveType === 'number') {
+                    return `${numIdx++}. ${clean}`;
+                } else if (effectiveType === 'alpha') {
+                    const letter = String.fromCharCode(alphaCharCode++);
+                    if (alphaCharCode > 122) alphaCharCode = 97;
+                    return `${letter}. ${clean}`;
+                } else {
+                    return clean;
+                }
+            }).filter(Boolean);
+
+            el.innerText = transformed.join('\n');
+            el.style.setProperty('white-space', 'pre-line', 'important');
+            el.style.setProperty('display', 'block', 'important');
+
+            const toastMessages = {
+                bullet: 'Bullet List (•) applied',
+                number: 'Numbered List (1. 2. 3.) applied',
+                alpha: 'Alphabet List (a. b. c.) applied',
+                none: 'Bullets / Numbers removed'
+            };
+            if (typeof showToast === 'function') {
+                showToast(toastMessages[type] || 'List updated');
+            }
+        }
+
+        function updateInlineToolbarState() {
+            if (!activeInlineEdit || !activeInlineEdit.element) return;
+            const el = activeInlineEdit.element;
+            const comp = window.getComputedStyle(el);
+
+            const sizeLbl = document.getElementById('inline-tool-size-val');
+            if (sizeLbl) {
+                const px = Math.round(parseFloat(el.style.fontSize) || parseFloat(comp.fontSize) || 12);
+                sizeLbl.innerText = `${px}`;
+            }
+
+            const align = (el.style.textAlign || comp.textAlign || 'left').toLowerCase();
+            const alignKey = (align === 'center' || align === 'right') ? align : 'left';
+            const alignIcon = document.getElementById('inline-tool-align-icon');
+            if (alignIcon) {
+                alignIcon.className = `fa-solid fa-align-${alignKey} text-slate-700`;
+            }
+
+            const col = el.style.color || comp.color;
+            const paletteIcon = document.querySelector('#inline-tool-color-btn i');
+            if (paletteIcon && col) {
+                paletteIcon.style.color = col;
+            }
         }
 
         function handleInlineEditStart(rawTarget) {
             if (typeof clearAllResumeHighlights === 'function') clearAllResumeHighlights();
             if (!rawTarget) return;
             const sheet = document.getElementById('live-resume-sheet');
-            if (!sheet || !sheet.contains(rawTarget)) return;
+            const sheet2 = document.getElementById('live-resume-sheet-page-2');
+            const inSheet = (sheet && sheet.contains(rawTarget)) || (sheet2 && sheet2.contains(rawTarget));
+            if (!inSheet) return;
 
-            // If an edit is already open, commit it first
             if (activeInlineEdit && activeInlineEdit.element) {
                 if (activeInlineEdit.element === rawTarget || activeInlineEdit.element.contains(rawTarget)) {
                     return;
@@ -15831,20 +16902,17 @@ function renderAcademicInputs() {
                 commitInlineEdit(false);
             }
 
-            // Exclude non-text elements
             let target = rawTarget;
-            if (target === sheet) return;
+            if (target === sheet || target === sheet2) return;
             if (target.tagName === 'IMG' || target.tagName === 'SVG' || target.tagName === 'PATH') return;
             if (target.tagName === 'I') {
                 target = target.parentElement || target;
             }
 
-            // Check if closest element has explicit field / academic / skill tagging
             const tagged = target.closest('[data-inline-field], [data-academic-col], [data-skill-pill]');
-            if (tagged && sheet.contains(tagged)) {
+            if (tagged && ((sheet && sheet.contains(tagged)) || (sheet2 && sheet2.contains(tagged)))) {
                 target = tagged;
             } else {
-                // If container with multiple block children, narrow down to leaf
                 if (target.children && target.children.length > 2) {
                     const leaf = Array.from(target.children).find(c => c.innerText && c.innerText.trim());
                     if (leaf) target = leaf;
@@ -15866,7 +16934,6 @@ function renderAcademicInputs() {
             target.setAttribute('spellcheck', 'false');
             target.classList.add('inline-editing-active');
 
-            // Select node text contents & focus
             setTimeout(() => {
                 try {
                     target.focus();
@@ -15878,17 +16945,16 @@ function renderAcademicInputs() {
                 } catch (err) {}
             }, 30);
 
-            showInlineToolbar();
+            showInlineToolbar(target);
             const liveBadge = document.getElementById('header-live-edit-badge');
             if (liveBadge) liveBadge.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-100');
 
-            // Keyboard shortcut handling
             target.onkeydown = function(e) {
                 if (e.key === 'Enter') {
                     const isMultiline = target.classList.contains('whitespace-pre-line') ||
                                         (target.tagName === 'P' && target.innerText.length > 80);
                     if (isMultiline && e.shiftKey) {
-                        return; // Shift+Enter allows newline
+                        return;
                     }
                     e.preventDefault();
                     commitInlineEdit(false);
@@ -15897,17 +16963,10 @@ function renderAcademicInputs() {
                     cancelInlineEdit();
                 }
             };
-
-            target.onblur = function() {
-                setTimeout(() => {
-                    if (activeInlineEdit && activeInlineEdit.element === target) {
-                        commitInlineEdit(false);
-                    }
-                }, 180);
-            };
         }
 
         function commitInlineEdit(fromToolbar = false) {
+            window._inlineInteractingWithToolbar = false;
             if (!activeInlineEdit || !activeInlineEdit.element) return;
             const el = activeInlineEdit.element;
             const originalText = activeInlineEdit.originalText;
@@ -15932,6 +16991,7 @@ function renderAcademicInputs() {
         }
 
         function cancelInlineEdit() {
+            window._inlineInteractingWithToolbar = false;
             if (!activeInlineEdit || !activeInlineEdit.element) return;
             const el = activeInlineEdit.element;
             el.innerText = activeInlineEdit.originalText;
@@ -16080,7 +17140,7 @@ function renderAcademicInputs() {
             if (!fieldInfo) {
                 renderLiveA4Preview();
             if (typeof updateAtsScore === 'function') updateAtsScore();
-                showToast("?? Could not map edited text to resume field");
+                showToast("Could not map edited text to resume field");
                 return;
             }
 
@@ -16101,7 +17161,7 @@ function renderAcademicInputs() {
                 saveCurrentResumeSilently();
                 renderLiveA4Preview();
             if (typeof updateAtsScore === 'function') updateAtsScore();
-                showToast("✓ Skill updated & saved!");
+                showToast("Skill updated & saved!");
                 return;
             }
 
@@ -16137,7 +17197,7 @@ function renderAcademicInputs() {
                     saveCurrentResumeSilently();
                     renderLiveA4Preview();
             if (typeof updateAtsScore === 'function') updateAtsScore();
-                    showToast("✓ Academic qualification saved!");
+                    showToast("Academic qualification saved!");
                     return;
                 }
             }
@@ -16262,16 +17322,57 @@ function renderAcademicInputs() {
             saveCurrentResumeSilently();
             renderLiveA4Preview();
             if (typeof updateAtsScore === 'function') updateAtsScore();
-            showToast("✓ " + (fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) + " updated & saved!");
+            showToast((fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) + " updated & saved!");
         }
 
-        // Toast
+        // Toast (Floating Notifications with Clean FontAwesome Icons, Zero Emojis)
         let _toastTimer = null;
-        function showToast(msg) {
+        function showToast(msg, customIcon = null) {
             const toast = document.getElementById('toast');
             const msgEl = document.getElementById('toast-msg');
+            const iconEl = document.getElementById('toast-icon');
             if (!toast || !msgEl) return;
-            msgEl.innerText = msg;
+
+            let cleanMsg = String(msg || '');
+            let iconClass = 'fa-solid fa-circle-check text-emerald-600 text-base shrink-0';
+
+            // Determine appropriate FontAwesome icon based on context
+            if (customIcon) {
+                iconClass = customIcon;
+            } else if (/error|fail|invalid|warn|cannot|not found|unavailable|please select|\?\?/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-circle-exclamation text-rose-500 text-base shrink-0';
+            } else if (/photo|camera|webcam|crop/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-camera text-indigo-500 text-base shrink-0';
+            } else if (/export|backup|download/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-file-arrow-down text-emerald-600 text-base shrink-0';
+            } else if (/import/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-file-arrow-up text-blue-500 text-base shrink-0';
+            } else if (/pdf|word|doc/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-file-lines text-teal-600 text-base shrink-0';
+            } else if (/scan|ocr|ai|analyz|read/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-magnifying-glass text-teal-500 text-base shrink-0';
+            } else if (/font|size|scale|table/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-font text-indigo-500 text-base shrink-0';
+            } else if (/delete|remove|cleared/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-trash-can text-amber-500 text-base shrink-0';
+            } else if (/duplicate|copy/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-clone text-emerald-600 text-base shrink-0';
+            } else if (/sort/i.test(cleanMsg)) {
+                iconClass = 'fa-solid fa-arrow-down-wide-short text-emerald-600 text-base shrink-0';
+            }
+
+            // Strictly remove any emojis, unicode ticks, or pictographic symbols from the message text
+            cleanMsg = cleanMsg
+                .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu, '')
+                .replace(/^(\s*[✓✔•\-]+\s*)+/g, '')
+                .replace(/^\s*\?\?\s*/g, '')
+                .trim();
+
+            if (iconEl) {
+                iconEl.className = iconClass;
+            }
+            msgEl.innerText = cleanMsg;
+
             if (_toastTimer) clearTimeout(_toastTimer);
             toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
             toast.classList.add('opacity-100', 'translate-y-0');

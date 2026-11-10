@@ -1,9 +1,10 @@
-const CACHE_NAME = 'easyresume-pwa-v26';
+const CACHE_NAME = 'easyresume-pwa-v50';
 const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './logo.png',
+  './logo-192.png',
   './logo.jpg',
   './logo.ico',
   './candidate_male.jpg',
@@ -37,19 +38,24 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // Network-first with cache fallback for HTML navigation, cache-first/stale-while-revalidate for assets
+  // Stale-while-revalidate / Instant cache response for navigation so reload never hangs
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200) {
-            const respClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, respClone));
-          }
-          return response;
-        })
-        .catch(() => {
-          return caches.match(event.request).then((res) => res || caches.match('./index.html'));
+      caches.match(event.request)
+        .then((cached) => cached || caches.match('./index.html'))
+        .then((cached) => cached || caches.match('./'))
+        .then((cached) => {
+          const fetchPromise = fetch(event.request)
+            .then((response) => {
+              if (response && response.status === 200) {
+                const respClone = response.clone();
+                caches.open(CACHE_NAME).then((cache) => cache.put(event.request, respClone));
+              }
+              return response;
+            })
+            .catch(() => cached || caches.match('./index.html'));
+
+          return cached || fetchPromise;
         })
     );
     return;
