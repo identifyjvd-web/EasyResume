@@ -6607,7 +6607,11 @@
                     if (found) currentResume = found;
                 }
                 if (!currentResume) {
-                    currentResume = allResumes.length > 0 ? allResumes[0] : null;
+                    currentResume = allResumes.length > 0 ? allResumes[0] : createBlankResumeObject('modern');
+                    if (allResumes.length === 0) {
+                        allResumes = [currentResume];
+                        saveAllResumesToStorage();
+                    }
                 }
             } catch (e) {
                 console.error("Storage error:", e);
@@ -6981,6 +6985,13 @@
                 renderResumesGrid();
                 generateDashboardAppQR();
             } else if (viewName === 'editor') {
+                if (!currentResume) {
+                    currentResume = (allResumes && allResumes.length > 0) ? allResumes[0] : createBlankResumeObject('modern');
+                    if (!allResumes.some(r => r.id === currentResume.id)) {
+                        allResumes.unshift(currentResume);
+                        saveAllResumesToStorage();
+                    }
+                }
                 if (typeof closeMobileSearch === 'function') closeMobileSearch();
                 viewDashboard.classList.add('hidden');
                 viewEditor.classList.remove('hidden');
@@ -7777,31 +7788,37 @@
         }
 
         function selectResumeToEdit(id) {
-            const found = allResumes.find(r => r.id === id);
-            if (found) {
-                found.isDummy = false;
-                found.hasBeenEdited = true;
-                currentResume = found;
-                try {
-                    localStorage.setItem('easyresume_active_id', currentResume.id);
-                } catch(e) {}
-                setFormMinimizedState(false, true);
-                switchView('editor');
+            let found = allResumes.find(r => r.id === id);
+            if (!found) {
+                found = currentResume || createBlankResumeObject('modern');
+                if (!allResumes.some(r => r.id === found.id)) allResumes.unshift(found);
             }
+            found.isDummy = false;
+            found.hasBeenEdited = true;
+            currentResume = found;
+            try {
+                localStorage.setItem('easyresume_active_id', currentResume.id);
+            } catch(e) {}
+            isFormMinimized = false;
+            switchView('editor');
+            setFormMinimizedState(false, true);
         }
 
         function selectResumeToView(id) {
-            const found = allResumes.find(r => r.id === id);
-            if (found) {
-                found.isDummy = false;
-                found.hasBeenEdited = true;
-                currentResume = found;
-                try {
-                    localStorage.setItem('easyresume_active_id', currentResume.id);
-                } catch(e) {}
-                setFormMinimizedState(true, true);
-                switchView('editor');
+            let found = allResumes.find(r => r.id === id);
+            if (!found) {
+                found = currentResume || createBlankResumeObject('modern');
+                if (!allResumes.some(r => r.id === found.id)) allResumes.unshift(found);
             }
+            found.isDummy = false;
+            found.hasBeenEdited = true;
+            currentResume = found;
+            try {
+                localStorage.setItem('easyresume_active_id', currentResume.id);
+            } catch(e) {}
+            isFormMinimized = true;
+            switchView('editor');
+            setFormMinimizedState(true, true);
         }
 
         function duplicateResume(id) {
@@ -13780,7 +13797,10 @@ function renderAcademicInputs() {
 
         function renderLiveA4Preview() {
             const sheet = document.getElementById('live-resume-sheet');
-            if (!sheet || !currentResume) return;
+            if (!sheet) return;
+            if (!currentResume) {
+                currentResume = (allResumes && allResumes.length > 0) ? allResumes[0] : createBlankResumeObject('modern');
+            }
 
             const rec = currentResume;
             const tpl = rec.template || 'corporate';
