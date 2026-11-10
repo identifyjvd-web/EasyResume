@@ -1,14 +1,10 @@
-const CACHE_NAME = 'easyresume-pwa-v78';
+const CACHE_NAME = 'easyresume-pwa-v1';
 const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './logo.png',
-  './logo-192.png',
-  './logo.jpg',
-  './logo.ico',
-  './candidate_male.jpg',
-  './candidate_photo.jpg'
+  './logo-192.png'
 ];
 
 self.addEventListener('install', (event) => {

@@ -101,13 +101,35 @@
                 position: absolute !important;
                 top: 0 !important;
                 left: 0 !important;
+                bottom: 0 !important;
                 height: 100% !important;
+                width: 280px !important;
+                max-width: 85vw !important;
                 z-index: 50 !important;
-                box-shadow: 0 10px 40px -5px rgba(0, 0, 0, 0.3) !important;
+                box-shadow: 0 10px 40px -5px rgba(0, 0, 0, 0.35) !important;
+                background: #ffffff !important;
             }
-            /* Prevent input zoom jump on iOS */
-            input, select, textarea {
-                font-size: 13.5px !important;
+            #samples-sidebar #sidebar-expanded-view {
+                position: relative !important;
+                width: 100% !important;
+                min-width: 100% !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+            }
+            #samples-sidebar #sidebar-minimized-view {
+                display: none !important;
+            }
+            #resume-preview-container {
+                -webkit-overflow-scrolling: touch !important;
+                overscroll-behavior-y: contain;
+                touch-action: pan-x pan-y !important;
+                height: 100% !important;
+            }
+            /* Prevent input zoom jump on iOS (iOS auto-zooms if font-size is below 16px) */
+            input:not([type="color"]):not([type="checkbox"]):not([type="radio"]),
+            select,
+            textarea {
+                font-size: 16px !important;
             }
         }
 
@@ -116,6 +138,17 @@
             background: linear-gradient(90deg, #dcfce7 0%, #ecfdf5 30%, #ccfbf1 70%, #e0f2fe 100%) !important;
             border-bottom: 1px solid rgba(16, 185, 129, 0.22) !important;
             box-shadow: 0 2px 10px -2px rgba(5, 150, 105, 0.08);
+        }
+
+        @media (max-width: 639px) {
+            .header-mobile-icon-button {
+                width: 2rem !important;
+                min-width: 2rem !important;
+                height: 2rem !important;
+                padding: 0 !important;
+                border-radius: 50% !important;
+                gap: 0 !important;
+            }
         }
 
         .custom-scroll::-webkit-scrollbar {
@@ -536,6 +569,13 @@
         }
         .inline-tool-btn:active {
             transform: scale(0.92);
+        }
+        #preview-inline-toolbar .inline-toolbar-grid .inline-tool-btn,
+        #preview-inline-toolbar .inline-toolbar-grid .inline-toolbar-action-btn,
+        #preview-inline-toolbar .inline-toolbar-grid #inline-tool-size-val {
+            box-sizing: border-box;
+            width: 32px !important;
+            height: 32px !important;
         }
         @media (max-width: 640px) {
             .inline-tool-btn {
@@ -1754,6 +1794,14 @@
             align-items: center !important;
         }
 
+        #mobile-search-toggle-btn { order: 0; }
+        #header-search-container { order: 1; }
+        #header-zoom-controls { order: 2; }
+        #header-btn-print { order: 3; }
+        #header-btn-minimize-form { order: 4; }
+        #header-menu-container { order: 7; }
+        #toggle-form-btn { order: 6; }
+
         #header-doc-type-filter:not(.hidden),
         #header-zoom-controls:not(.hidden) {
             height: 38px !important;
@@ -1772,6 +1820,30 @@
                 height: 34px !important;
                 min-height: 34px !important;
                 max-height: 34px !important;
+            }
+
+            #mobile-search-toggle-btn,
+            #mobile-search-close-btn,
+            #header-btn-print:not(.hidden),
+            #header-btn-menu,
+            #header-btn-minimize-form:not(.hidden),
+            #toggle-form-btn:not(.hidden),
+            #header-zoom-controls > button:first-child,
+            #header-zoom-controls > button:last-child {
+                width: 32px !important;
+                min-width: 32px !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
+                padding: 0 !important;
+                border-radius: 50% !important;
+                gap: 0 !important;
+            }
+
+            #header-menu-container {
+                height: 32px !important;
+                min-height: 32px !important;
+                max-height: 32px !important;
             }
 
             /* Floating Zoom Controls at Bottom Right in Mobile Mode */
@@ -1816,6 +1888,14 @@
 
         #header-dropdown-menu button:hover {
             background-color: #f1f5f9 !important;
+        }
+
+        @media (max-width: 639px) {
+            #header-dropdown-menu {
+                width: min(18rem, calc(100vw - 24px)) !important;
+                max-height: calc(100dvh - 70px);
+                overflow-y: auto;
+            }
         }
 
         /* ============================================================ */
@@ -2019,7 +2099,7 @@
                 <!-- Right Header Actions (Search, Filters, Export, Print, Options Menu) -->
                 <div id="header-right-actions" class="flex items-center gap-1.5 sm:gap-2.5 ml-auto shrink-0 min-w-0 transition-all duration-200">
                     <!-- Mobile Search Icon Button (Height matching Options button: h-8) -->
-                    <button id="mobile-search-toggle-btn" type="button" onclick="toggleMobileSearch()" class="sm:hidden h-8 w-8 rounded-full bg-white/95 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-emerald-300 flex items-center justify-center text-xs shadow-xs active:scale-90 transition cursor-pointer shrink-0" title="Search resumes & formats">
+                    <button id="mobile-search-toggle-btn" type="button" onclick="toggleMobileSearch()" class="header-mobile-icon-button sm:hidden h-8 w-8 rounded-full bg-white/95 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-emerald-300 flex items-center justify-center text-xs shadow-xs active:scale-90 transition cursor-pointer shrink-0" title="Search resumes & formats">
                         <i class="fa-solid fa-magnifying-glass text-xs"></i>
                     </button>
 
@@ -2033,38 +2113,37 @@
                             </button>
                         </div>
                         <!-- Mobile Close Search Button (Appears only on mobile when search is open) -->
-                        <button id="mobile-search-close-btn" type="button" onclick="closeMobileSearch()" class="sm:hidden ml-1.5 h-8 w-8 rounded-full bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-emerald-300 flex items-center justify-center text-xs shadow-xs transition active:scale-90 shrink-0 cursor-pointer" title="Close search">
+                        <button id="mobile-search-close-btn" type="button" onclick="closeMobileSearch()" class="header-mobile-icon-button sm:hidden ml-1.5 h-8 w-8 rounded-full bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-emerald-300 flex items-center justify-center text-xs shadow-xs transition active:scale-90 shrink-0 cursor-pointer" title="Close search">
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
                     </div>
 
 <!-- Zoom Controls (Visible in Editor Mode) -->
                     <div id="header-zoom-controls" class="hidden items-center bg-white/90 p-0.5 rounded-full border border-emerald-200/80 shadow-xs shrink-0">
-                        <button type="button" onclick="adjustZoom(-0.1)" class="w-8 h-8 rounded-full hover:bg-white text-slate-600 hover:text-slate-900 flex items-center justify-center text-xs font-black active:scale-90 transition cursor-pointer" title="Zoom Out (-)">
+                        <button type="button" onclick="adjustZoom(-0.1)" class="header-mobile-icon-button w-8 h-8 rounded-full hover:bg-white text-slate-600 hover:text-slate-900 flex items-center justify-center text-xs font-black active:scale-90 transition cursor-pointer" title="Zoom Out (-)">
                             <i class="fa-solid fa-minus text-[10px]"></i>
                         </button>
                         <button type="button" onclick="fitToScreen()" class="px-2 h-8 text-[11px] font-black text-slate-700 hover:text-emerald-700 transition cursor-pointer active:scale-95" title="Tap to Fit to Page">
                             <span id="zoom-val-label">85%</span>
                         </button>
-                        <button type="button" onclick="adjustZoom(0.1)" class="w-8 h-8 rounded-full hover:bg-white text-slate-600 hover:text-slate-900 flex items-center justify-center text-xs font-black active:scale-90 transition cursor-pointer" title="Zoom In (+)">
+                        <button type="button" onclick="adjustZoom(0.1)" class="header-mobile-icon-button w-8 h-8 rounded-full hover:bg-white text-slate-600 hover:text-slate-900 flex items-center justify-center text-xs font-black active:scale-90 transition cursor-pointer" title="Zoom In (+)">
                             <i class="fa-solid fa-plus text-[10px]"></i>
                         </button>
                     </div>
 
                     <!-- Print / PDF Button -->
-                    <button id="header-btn-print" onclick="downloadIndianPDF()" class="hidden h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition shrink-0" title="Print Indian Standard PDF">
+                    <button id="header-btn-print" onclick="downloadIndianPDF()" class="header-mobile-icon-button hidden h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition shrink-0" title="Print Indian Standard PDF">
                         <i class="fa-solid fa-print text-xs sm:text-sm"></i> <span class="hidden sm:inline">Print / PDF</span>
                     </button>
 
                     <!-- 3-Lines Options Dropdown Menu (Matching Header Height & Solid Opaque Card) -->
                     <div class="relative inline-flex items-center shrink-0" id="header-menu-container">
-                        <button id="header-btn-menu" type="button" onclick="toggleHeaderDropdownMenu(event)" class="h-8 sm:h-9 px-3 sm:px-3.5 rounded-full bg-white hover:bg-emerald-50 text-slate-800 hover:text-emerald-700 border border-emerald-300 text-xs font-black inline-flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer" title="Resume Options (Word / JSON Export & Import)">
-                            <i class="fa-solid fa-bars text-emerald-600 text-xs sm:text-sm"></i>
-                            <span class="hidden sm:inline text-xs font-black">Options</span>
+                        <button id="header-btn-menu" data-alias="header-mobile-menu-btn" type="button" onclick="toggleHeaderDropdownMenu(event)" class="header-mobile-icon-button h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-white hover:bg-emerald-50 text-slate-800 hover:text-emerald-700 border border-emerald-300 text-xs font-black inline-flex items-center justify-center shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer" title="Resume Options" aria-label="Resume Options">
+                            <i id="mobile-menu-icon" class="fa-solid fa-bars text-emerald-600 text-xs sm:text-sm"></i>
                         </button>
 
                         <!-- Dropdown Menu (100% Solid White Card, Completely Opaque, Zero Transparency) -->
-                        <div id="header-dropdown-menu" class="hidden absolute right-0 top-full mt-2 w-72 rounded-2xl border border-slate-300 py-2.5 transition-all select-none" style="background-color: #ffffff !important; background: #ffffff !important; opacity: 1 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.45), 0 10px 20px -5px rgba(0, 0, 0, 0.25) !important; z-index: 99999 !important;">
+                        <div id="header-dropdown-menu" class="hidden absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-24px)] rounded-2xl border border-slate-300 py-2.5 transition-all select-none" style="background-color: #ffffff !important; background: #ffffff !important; opacity: 1 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.45), 0 10px 20px -5px rgba(0, 0, 0, 0.25) !important; z-index: 99999 !important;">
                             <!-- Header Title -->
                             <div class="px-4 py-2 text-[11px] font-black uppercase tracking-wider text-slate-600 border-b border-slate-200 mb-1.5 flex items-center justify-between" style="background-color: #f8fafc !important;">
                                 <span class="flex items-center gap-1.5 font-black text-slate-700">
@@ -2075,8 +2154,37 @@
                                 </span>
                             </div>
 
-                            <!-- 1. Export as Word -->
-                            <button type="button" onclick="exportCurrentResumeWord(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-blue-700 hover:bg-blue-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                            <button type="button" data-menu-context="editor" onclick="toggleFormMinimize(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-emerald-700 hover:bg-emerald-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                                <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-base shrink-0 border border-emerald-200">
+                                    <i id="menu-item-view-icon" class="fa-solid fa-eye"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <div id="menu-item-view-label" class="font-extrabold text-sm text-slate-900">Preview Live Resume</div>
+                                    <div class="text-[11px] text-slate-600 font-medium">Switch between form and preview</div>
+                                </div>
+                            </button>
+                            <button type="button" data-menu-context="dashboard" onclick="createNewIndianResume(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-emerald-700 hover:bg-emerald-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                                <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-base shrink-0 border border-emerald-200">
+                                    <i class="fa-solid fa-plus"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-extrabold text-sm text-slate-900">Create New Resume</div>
+                                    <div class="text-[11px] text-slate-600 font-medium">Start a blank resume</div>
+                                </div>
+                            </button>
+                            <div data-menu-context="editor" class="my-1 border-t border-slate-200"></div>
+                            <button type="button" data-menu-context="editor" onclick="downloadIndianPDF(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-emerald-700 hover:bg-emerald-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                                <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-base shrink-0 border border-emerald-200">
+                                    <i class="fa-solid fa-print"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-extrabold text-sm text-slate-900">Print / Download PDF</div>
+                                    <div class="text-[11px] text-slate-600 font-medium">Print or save the current resume</div>
+                                </div>
+                            </button>
+
+                            <!-- Export options -->
+                            <button type="button" data-menu-context="editor" onclick="exportCurrentResumeWord(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-blue-700 hover:bg-blue-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
                                 <span class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition-transform border border-blue-200">
                                     <i class="fa-solid fa-file-word"></i>
                                 </span>
@@ -2087,7 +2195,7 @@
                             </button>
 
                             <!-- 2. Export as JSON -->
-                            <button type="button" onclick="exportCurrentResumeJson(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-emerald-700 hover:bg-emerald-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                            <button type="button" data-menu-context="editor" onclick="exportCurrentResumeJson(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-emerald-700 hover:bg-emerald-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
                                 <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition-transform border border-emerald-200">
                                     <i class="fa-solid fa-file-code"></i>
                                 </span>
@@ -2097,10 +2205,10 @@
                                 </div>
                             </button>
 
-                            <div class="my-1 border-t border-slate-200"></div>
+                            <div data-menu-context="editor" class="my-1 border-t border-slate-200"></div>
 
                             <!-- 3. Import Resume (Word / JSON) -->
-                            <button type="button" onclick="triggerResumeUniversalImport(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-purple-700 hover:bg-purple-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                            <button type="button" data-menu-context="dashboard" onclick="triggerResumeUniversalImport(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-purple-700 hover:bg-purple-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
                                 <span class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition-transform border border-purple-200">
                                     <i class="fa-solid fa-file-arrow-up"></i>
                                 </span>
@@ -2111,7 +2219,7 @@
                             </button>
 
                             <!-- 4. Upload & Auto-Fill from PDF -->
-                            <button type="button" onclick="triggerImportResumePdf(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-rose-700 hover:bg-rose-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                            <button type="button" data-menu-context="editor" onclick="triggerImportResumePdf(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-rose-700 hover:bg-rose-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
                                 <span class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-base shrink-0 group-hover:scale-105 transition-transform border border-rose-200">
                                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                                 </span>
@@ -2121,87 +2229,124 @@
                                 </div>
                             </button>
 
+                            <div data-menu-context="editor" class="my-1 border-t border-slate-200"></div>
+                            <button type="button" onclick="openFormatsModal(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-purple-700 hover:bg-purple-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                                <span class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-base shrink-0 border border-purple-200">
+                                    <i class="fa-solid fa-palette"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-extrabold text-sm text-slate-900">Choose Format &amp; Color</div>
+                                    <div class="text-[11px] text-slate-600 font-medium">Browse resume designs and themes</div>
+                                </div>
+                            </button>
+                            <button type="button" data-menu-context="editor" onclick="openSectionReorderModal(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-teal-700 hover:bg-teal-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                                <span class="w-9 h-9 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center text-base shrink-0 border border-teal-200">
+                                    <i class="fa-solid fa-arrows-up-down"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-extrabold text-sm text-slate-900">Reorder / Hide Sections</div>
+                                    <div class="text-[11px] text-slate-600 font-medium">Arrange sections on the resume</div>
+                                </div>
+                            </button>
+                            <button type="button" data-menu-context="editor" onclick="fitToScreen(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-blue-700 hover:bg-blue-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                                <span class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-base shrink-0 border border-blue-200">
+                                    <i class="fa-solid fa-expand"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-extrabold text-sm text-slate-900">Fit Resume to Screen</div>
+                                    <div class="text-[11px] text-slate-600 font-medium">Adjust preview to available space</div>
+                                </div>
+                            </button>
+                            <button type="button" data-menu-context="editor" onclick="handleHeaderActionBtn(); closeHeaderDropdownMenu();" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-rose-700 hover:bg-rose-50 flex items-center gap-3 transition group cursor-pointer" style="background-color: #ffffff !important;">
+                                <span class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-base shrink-0 border border-rose-200">
+                                    <i class="fa-solid fa-house"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-extrabold text-sm text-slate-900">Exit to Dashboard</div>
+                                    <div class="text-[11px] text-slate-600 font-medium">Return to saved resumes</div>
+                                </div>
+                            </button>
 
                         </div>
                     </div>
 
                     <!-- View / Edit Form Toggle Button -->
-                    <button id="header-btn-minimize-form" type="button" onclick="toggleFormMinimize()" class="hidden h-8 sm:h-9 px-3 rounded-full bg-white/95 hover:bg-emerald-50 text-emerald-700 flex items-center justify-center gap-1.5 border border-emerald-300 shadow-xs active:scale-90 transition-all shrink-0 cursor-pointer text-xs font-bold" title="Toggle View / Edit">
+                    <button id="header-btn-minimize-form" type="button" onclick="toggleFormMinimize()" class="header-mobile-icon-button hidden h-8 sm:h-9 px-3 rounded-full bg-white/95 hover:bg-emerald-50 text-emerald-700 flex items-center justify-center gap-1.5 border border-emerald-300 shadow-xs active:scale-90 transition-all shrink-0 cursor-pointer text-xs font-bold" title="Toggle View / Edit">
                         <i id="form-minimize-icon" class="fa-solid fa-eye text-xs text-emerald-600"></i>
-                        <span id="form-minimize-label" class="text-xs font-black">View</span>
+                        <span id="form-minimize-label" class="hidden sm:inline text-xs font-black">View</span>
                     </button>
 
                     <!-- Action Button: + on Dashboard / X in Editor Mode -->
-                    <button id="toggle-form-btn" type="button" onclick="handleHeaderActionBtn()" class="hidden sm:flex w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white items-center justify-center shadow-lg active:scale-90 transition-all shrink-0 cursor-pointer" title="New Resume Form / Open Editor">
+                    <button id="toggle-form-btn" type="button" onclick="handleHeaderActionBtn()" class="header-mobile-icon-button flex w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white items-center justify-center shadow-lg active:scale-90 transition-all shrink-0 cursor-pointer" title="New Resume Form / Open Editor">
                         <i id="toggle-icon" class="fa-solid fa-plus text-sm"></i>
                     </button>
                 </div>
             </div>
         </header>
 
-<div id="header-mobile-menu-dropdown" class="sm:hidden hidden fixed top-[54px] right-3 z-50 w-64 max-w-[calc(100vw-24px)] bg-slate-900/95 backdrop-blur-xl text-white rounded-2xl shadow-2xl border border-slate-700/80 p-2 space-y-1 select-none no-print">
+<div id="header-mobile-menu-dropdown" class="sm:hidden hidden fixed top-[54px] right-3 z-50 w-64 max-w-[calc(100vw-24px)] bg-white/95 backdrop-blur-xl text-slate-800 rounded-2xl shadow-2xl border border-emerald-200/80 p-2 space-y-1 select-none no-print">
             <!-- 1. Preview / Edit Toggle -->
-            <button type="button" onclick="toggleFormMinimize(); closeMobileHeaderMenu();" class="w-full py-2.5 px-3 rounded-xl flex items-center justify-between hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-emerald-400">
+            <button type="button" onclick="toggleFormMinimize(); closeMobileHeaderMenu();" class="w-full py-2.5 px-3 rounded-xl flex items-center justify-between hover:bg-emerald-50 active:bg-emerald-100 text-left transition cursor-pointer text-xs font-bold text-emerald-700">
                 <span class="flex items-center gap-2.5">
-                    <i id="menu-item-view-icon" class="fa-solid fa-eye text-sm w-4 text-center text-emerald-400"></i>
+                    <i id="menu-item-view-icon" class="fa-solid fa-eye text-sm w-4 text-center text-emerald-600"></i>
                     <span id="menu-item-view-label">Preview Live Resume</span>
                 </span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold uppercase">Toggle</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-extrabold uppercase border border-emerald-200">Toggle</span>
             </button>
 
-            <div class="h-px bg-slate-800 my-1"></div>
+            <div class="h-px bg-slate-200 my-1"></div>
 
             <!-- 2. Print / PDF -->
-            <button type="button" onclick="downloadIndianPDF(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-slate-200">
+            <button type="button" onclick="downloadIndianPDF(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-50 active:bg-slate-100 text-left transition cursor-pointer text-xs font-bold text-slate-700">
                 <i class="fa-solid fa-print text-sm w-4 text-center text-emerald-400"></i>
                 <span>Print / Download PDF</span>
             </button>
 
             <!-- 3. Export Resume JSON -->
-            <button type="button" onclick="exportCurrentResumeJson(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-slate-200">
+            <button type="button" onclick="exportCurrentResumeJson(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-50 active:bg-slate-100 text-left transition cursor-pointer text-xs font-bold text-slate-700">
                 <i class="fa-solid fa-file-arrow-down text-sm w-4 text-center text-amber-400"></i>
                 <span>Export Resume (JSON)</span>
             </button>
 
             <!-- 4. Import Resume JSON -->
-            <button type="button" onclick="triggerImportResumeJson(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-slate-200">
+            <button type="button" onclick="triggerImportResumeJson(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-50 active:bg-slate-100 text-left transition cursor-pointer text-xs font-bold text-slate-700">
                 <i class="fa-solid fa-file-arrow-up text-sm w-4 text-center text-sky-400"></i>
                 <span>Import Resume (JSON)</span>
             </button>
 
             <!-- 4b. Upload PDF Auto-Fill -->
-            <button type="button" onclick="triggerImportResumePdf(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-amber-300">
+            <button type="button" onclick="triggerImportResumePdf(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-amber-50 active:bg-amber-100 text-left transition cursor-pointer text-xs font-bold text-amber-700">
                 <i class="fa-solid fa-wand-magic-sparkles text-sm w-4 text-center text-amber-400"></i>
                 <span>Upload PDF (Auto-Fill)</span>
             </button>
 
 
 
-            <div class="h-px bg-slate-800 my-1"></div>
+            <div class="h-px bg-slate-200 my-1"></div>
 
             <!-- 5. Formats & Colors -->
-            <button type="button" onclick="toggleSidebarMinimize(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-slate-200">
+            <button type="button" onclick="openFormatsModal(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-50 active:bg-slate-100 text-left transition cursor-pointer text-xs font-bold text-slate-700">
                 <i class="fa-solid fa-palette text-sm w-4 text-center text-purple-400"></i>
                 <span>Choose Format & Color</span>
             </button>
 
             <!-- 6. Reorder Sections Modal -->
-            <button type="button" onclick="openSectionReorderModal(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-slate-200">
+            <button type="button" onclick="openSectionReorderModal(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-50 active:bg-slate-100 text-left transition cursor-pointer text-xs font-bold text-slate-700">
                 <i class="fa-solid fa-arrows-up-down text-sm w-4 text-center text-teal-400"></i>
                 <span>Reorder / Hide Sections</span>
             </button>
 
             <!-- 7. Fit to Screen -->
-            <button type="button" onclick="fitToScreen(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-800/80 active:bg-slate-800 text-left transition cursor-pointer text-xs font-bold text-slate-200">
+            <button type="button" onclick="fitToScreen(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-slate-50 active:bg-slate-100 text-left transition cursor-pointer text-xs font-bold text-slate-700">
                 <i class="fa-solid fa-expand text-sm w-4 text-center text-blue-400"></i>
                 <span>Fit Resume to Screen</span>
             </button>
 
-            <div class="h-px bg-slate-800 my-1"></div>
+            <div class="h-px bg-slate-200 my-1"></div>
 
             <!-- 8. Exit to Dashboard -->
-            <button type="button" onclick="handleHeaderActionBtn(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-rose-950/40 active:bg-rose-900/60 text-left transition cursor-pointer text-xs font-bold text-rose-300">
-                <i class="fa-solid fa-house text-sm w-4 text-center text-rose-400"></i>
+            <button type="button" onclick="handleHeaderActionBtn(); closeMobileHeaderMenu();" class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-rose-50 active:bg-rose-100 text-left transition cursor-pointer text-xs font-bold text-rose-700">
+                <i class="fa-solid fa-house text-sm w-4 text-center text-rose-600"></i>
                 <span>Exit to Dashboard</span>
             </button>
         </div>
@@ -2220,7 +2365,7 @@
                     <div class="lg:col-span-4 xl:col-span-4 2xl:col-span-3.5 order-2 lg:order-1 space-y-4">
                         
                         <!-- QR Code Card: Open on Any Device (Compact & Big QR Code, No Wasted Space) -->
-                        <div id="dashboard-qr-card" class="bg-gradient-to-b from-emerald-50/60 via-white to-white rounded-2xl border-2 border-emerald-400/80 p-3 sm:p-3.5 shadow-xs transition-all">
+                        <div id="dashboard-qr-card" class="hidden sm:block bg-gradient-to-b from-emerald-50/60 via-white to-white rounded-2xl border-2 border-emerald-400/80 p-3 sm:p-3.5 shadow-xs transition-all">
                             <div class="flex items-center justify-between gap-2 pb-2 border-b border-emerald-100">
                                 <div class="flex items-center gap-2 text-xs sm:text-sm font-black text-slate-900 tracking-tight min-w-0">
                                     <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs shrink-0">
@@ -2350,11 +2495,8 @@
             </div>
 
             <!-- VIEW 2: SPLIT MODE (DESKTOP SPLIT: SIDEBAR, LIVE A4 PREVIEW, FORM / MOBILE: MINIMIZE TOGGLE) -->
-            <div
-
-            <!-- VIEW 2: SPLIT MODE (DESKTOP SPLIT: SIDEBAR, LIVE A4 PREVIEW, FORM / MOBILE: MINIMIZE TOGGLE) -->
             <div id="view-editor" class="hidden flex-1 overflow-hidden h-full min-h-0 flex flex-col">
-                <div class="flex flex-col lg:flex-row flex-1 h-full w-full min-h-0 overflow-hidden">
+                <div class="flex flex-col lg:flex-row flex-1 h-full w-full min-h-0 overflow-hidden relative">
                     
                     <!-- 1. LEFT SIDEBAR: RESUME SAMPLES (MINIMIZE / MAXIMIZE CAPABLE - SMOOTH REVEAL) -->
                     <div id="samples-sidebar" class="hidden lg:flex flex-col shrink-0 h-full bg-white border-r border-slate-200 z-20 relative overflow-hidden" style="width: 48px; min-width: 48px; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
@@ -2435,15 +2577,28 @@
                     </div>
 
                     <!-- 2. CENTER PANE: DESKTOP LIVE INTERACTIVE A4 PREVIEW PANE -->
-                    <div id="preview-pane" class="flex-1 min-w-0 h-full flex flex-col bg-slate-200/70 overflow-hidden relative border-r border-slate-300 shadow-sm">
+                    <div id="preview-pane" class="flex-1 min-w-0 min-h-0 h-full flex flex-col bg-slate-200/70 overflow-hidden relative border-r border-slate-300 shadow-sm">
                         
 
 
-                        <!-- Floating Inline Rich Editing Toolbar (Light Mode, Vertical Dock on Screen Right/Left) -->
-                        <div id="preview-inline-toolbar" onmouseenter="window._inlineInteractingWithToolbar = true" onmouseleave="window._inlineInteractingWithToolbar = false" ontouchstart="window._inlineInteractingWithToolbar = true" ontouchend="setTimeout(() => { window._inlineInteractingWithToolbar = false; }, 800)" onmousedown="window._inlineInteractingWithToolbar = true" onmouseup="setTimeout(() => { window._inlineInteractingWithToolbar = false; }, 800)" class="hidden absolute z-40 bg-white/95 text-slate-800 p-1.5 rounded-2xl shadow-2xl flex-col items-center gap-1.5 backdrop-blur-md border border-slate-200/90 text-xs transition-all duration-150 select-none max-h-[85vh] overflow-y-auto custom-scroll w-[42px] sm:w-[44px]">
+                                        <!-- Floating Inline Rich Editing Toolbar -->
+                                        <div id="preview-inline-toolbar" onmouseenter="window._inlineInteractingWithToolbar = true" onmouseleave="window._inlineInteractingWithToolbar = false" ontouchstart="window._inlineInteractingWithToolbar = true" ontouchend="setTimeout(() => { window._inlineInteractingWithToolbar = false; }, 800)" onmousedown="window._inlineInteractingWithToolbar = true" onmouseup="setTimeout(() => { window._inlineInteractingWithToolbar = false; }, 800)" class="hidden absolute z-40 bg-white/95 text-slate-800 p-1.5 rounded-2xl shadow-2xl flex-col items-center gap-1.5 backdrop-blur-md border border-slate-200/90 text-xs select-none max-h-[85vh] overflow-y-auto custom-scroll" style="width:min(84px,94vw);">
+                                            <div class="inline-toolbar-drag-handle w-full flex items-center justify-center py-1 rounded-lg bg-slate-100 text-slate-600 font-bold cursor-move touch-none" title="Drag toolbar" onpointerdown="startInlineToolbarDrag(event)">
+                                                <i class="fa-solid fa-grip text-[10px]"></i>
+                                            </div>
+                                            <div class="inline-toolbar-grid grid grid-cols-2 gap-1">
+                                            <div class="contents">
+                                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="undoInlineEdit()" class="inline-toolbar-action-btn w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg flex items-center justify-center text-xs cursor-pointer" title="Undo (Ctrl+Z)">
+                                                    <i class="fa-solid fa-rotate-left text-[11px]"></i>
+                                                </button>
+                                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="redoInlineEdit()" class="inline-toolbar-action-btn w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg flex items-center justify-center text-xs cursor-pointer" title="Redo (Ctrl+Y)">
+                                                    <i class="fa-solid fa-rotate-right text-[11px]"></i>
+                                                </button>
+                                            </div>
+                                            <div class="inline-toolbar-row contents">
 
-                            <!-- Bold / Italic / Underline (Light grouped) -->
-                            <div class="flex flex-col items-center gap-0.5 shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                                            <!-- Bold / Italic / Underline (Light grouped) -->
+                                            <div class="contents">
                                 <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineToggleFormat('bold')" class="inline-tool-btn" title="Bold (Ctrl+B)">
                                     <i class="fa-solid fa-bold text-[11px]"></i>
                                 </button>
@@ -2456,7 +2611,7 @@
                             </div>
 
                             <!-- Font Size Controls (A+ / Value / A-) -->
-                            <div class="flex flex-col items-center gap-0.5 shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                            <div class="contents">
                                 <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineChangeFontSize(1)" class="inline-tool-btn" title="Increase Font Size (A+)">
                                     <span class="font-black text-[10.5px]">A<sup class="text-[8px]">+</sup></span>
                                 </button>
@@ -2467,42 +2622,34 @@
                             </div>
 
                             <!-- Single Alignment Cycle Button (Left -> Center -> Right -> Left) -->
-                            <div class="shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                            <div class="contents">
                                 <button type="button" id="inline-tool-align-btn" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineCycleAlignment()" class="inline-tool-btn" title="Alignment (Tap to cycle Left / Center / Right)">
                                     <i id="inline-tool-align-icon" class="fa-solid fa-align-left text-slate-700"></i>
                                 </button>
                             </div>
 
                             <!-- Bullet & Numbering Lists (•, 1.2.3., a.b.c., Remove) -->
-                            <div class="flex flex-col items-center gap-0.5 shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
-                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineApplyListFormat('bullet')" class="inline-tool-btn" title="Bullet List (•)">
-                                    <i class="fa-solid fa-list-ul text-[11px]"></i>
-                                </button>
-                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineApplyListFormat('number')" class="inline-tool-btn" title="Numbered List (1. 2. 3.)">
-                                    <i class="fa-solid fa-list-ol text-[11px]"></i>
-                                </button>
-                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineApplyListFormat('alpha')" class="inline-tool-btn" title="Alphabet List (a. b. c.)">
-                                    <span class="font-black text-[9.5px] tracking-tight">abc</span>
-                                </button>
-                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineApplyListFormat('none')" class="inline-tool-btn hover:text-rose-600" title="Remove Bullets / Numbering">
-                                    <i class="fa-solid fa-ban text-[10px] text-rose-500"></i>
+                            <div class="contents">
+                                <button type="button" id="inline-tool-list-btn" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineApplyListFormat('cycle')" class="inline-tool-btn" title="Cycle list: bullets → numbers → plain text">
+                                    <i id="inline-tool-list-icon" class="fa-solid fa-list-ul text-[11px]"></i>
                                 </button>
                             </div>
 
+                            <div class="inline-toolbar-row contents">
                             <!-- Single Text Color Button with Rich Floating Popup Palette -->
-                            <div class="relative shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                            <div class="contents">
                                 <button type="button" id="inline-tool-color-btn" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineToggleColorPalette(event)" class="inline-tool-btn" title="Choose Text Color (16+ Colors)">
                                     <i class="fa-solid fa-palette text-emerald-600 text-[11px]"></i>
                                 </button>
 
                                 <!-- Rich Floating Color Palette Popup -->
-                                <div id="inline-color-palette-popup" onmousedown="event.stopPropagation(); window._inlineInteractingWithToolbar = true;" ontouchstart="event.stopPropagation(); window._inlineInteractingWithToolbar = true;" class="hidden absolute z-50 bg-white/98 text-slate-800 p-2.5 rounded-2xl shadow-2xl border border-slate-200/90 flex-col gap-2 select-none w-[184px]" style="top: 0; right: calc(100% + 8px);">
+                                <div id="inline-color-palette-popup" onmousedown="event.stopPropagation(); window._inlineInteractingWithToolbar = true;" ontouchstart="event.stopPropagation(); window._inlineInteractingWithToolbar = true;" class="hidden fixed z-[60] text-slate-800 p-2 rounded-2xl shadow-2xl border flex-col gap-2 select-none w-[112px] max-h-[78vh] overflow-y-auto custom-scroll">
                                     <div class="flex items-center justify-between border-b border-slate-100 pb-1">
                                         <span class="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider">Text Color</span>
                                         <button type="button" onclick="inlineToggleColorPalette(event)" class="w-4 h-4 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center text-[10px] cursor-pointer">✕</button>
                                     </div>
                                     <!-- 16 Curated Resume Color Swatches (4x4 Grid) -->
-                                    <div class="grid grid-cols-4 gap-1.5">
+                                    <div class="grid grid-cols-2 gap-1">
                                         <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#0f172a')" class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-700 hover:scale-110 active:scale-95 transition cursor-pointer" title="Black (#0f172a)"></button>
                                         <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#334155')" class="w-7 h-7 rounded-lg bg-slate-700 border border-slate-500 hover:scale-110 active:scale-95 transition cursor-pointer" title="Charcoal (#334155)"></button>
                                         <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlinePickColor('#64748b')" class="w-7 h-7 rounded-lg bg-slate-500 border border-slate-400 hover:scale-110 active:scale-95 transition cursor-pointer" title="Slate Gray (#64748b)"></button>
@@ -2537,23 +2684,22 @@
                             </div>
 
                             <!-- Case Converter (aA) -->
-                            <div class="shrink-0 bg-slate-50 p-0.5 rounded-xl border border-slate-200/90">
+                            <div class="contents">
                                 <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="inlineCycleTextCase()" class="inline-tool-btn font-black text-[10px]" title="Change Case (UPPERCASE / Title Case / lowercase)">
                                     <span>aA</span>
                                 </button>
                             </div>
 
-                            <span class="w-5 h-px bg-slate-200 shrink-0"></span>
-
                             <!-- Action: Save (Done) / Discard (Cancel) -->
-                            <div class="flex flex-col items-center gap-1 shrink-0">
-                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="commitInlineEdit(true)" class="w-7 h-7 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-lg flex items-center justify-center text-xs transition shadow-xs cursor-pointer" title="Save changes (Enter)">
-                                    <i class="fa-solid fa-check text-[11px]"></i>
-                                </button>
-                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="cancelInlineEdit()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 hover:text-rose-600 rounded-lg flex items-center justify-center text-xs transition cursor-pointer" title="Cancel changes (Esc)">
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="cancelInlineEdit()" class="inline-toolbar-action-btn w-8 h-8 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 hover:text-rose-600 rounded-lg flex items-center justify-center text-xs transition cursor-pointer" title="Cancel changes (Esc)">
                                     <i class="fa-solid fa-xmark text-[11px]"></i>
                                 </button>
+                                <button type="button" onmousedown="event.preventDefault(); window._inlineInteractingWithToolbar = true;" ontouchstart="window._inlineInteractingWithToolbar = true;" onclick="commitInlineEdit(true)" class="inline-toolbar-action-btn w-8 h-8 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-lg flex items-center justify-center text-xs transition shadow-xs cursor-pointer" title="Save changes (Enter)">
+                                    <i class="fa-solid fa-check text-[11px]"></i>
+                                </button>
                             </div>
+                            </div>
+                        </div>
                         </div>
 
                         <!-- Page Density, 1-Page / 2-Page & Section Reorder (Fixed Mobile Footer, Floating Desktop Dock) -->
@@ -2601,7 +2747,7 @@
                         </div>
 
                         <!-- A4 Printable Sheet Area (Strict Fixed Aspect Ratio) -->
-                        <div id="resume-preview-container" class="flex-1 overflow-x-auto overflow-y-auto custom-scroll p-2 sm:p-4 pb-14 sm:pb-4 flex items-start">
+                        <div id="resume-preview-container" class="flex-1 min-h-0 overflow-x-auto overflow-y-auto custom-scroll p-2 sm:p-4 pb-16 sm:pb-6 flex items-start justify-center">
                             <div id="resume-sheet-scaler" class="relative shrink-0" style="margin: 0 auto; width: 675px; height: 955px;">
                                 <div id="live-resume-sheet" class="a4-sheet shrink-0" style="transform-origin: top left; transform: scale(0.85);">
                                     <!-- Live rendered Indian Standard Resume -->
@@ -3438,7 +3584,7 @@
                                                     <label class="premium-label !mb-0"><i class="fa-solid fa-location-dot text-emerald-600"></i> Declaration Place</label>
                                                     <button type="button" onclick="clearDeclarationField('inp-place')" class="text-[10px] font-semibold text-slate-400 hover:text-rose-500 transition cursor-pointer" title="Leave place blank">Clear</button>
                                                 </div>
-                                                <input id="inp-place" type="text" class="premium-input" placeholder="e.g. Chhindwara" oninput="liveUpdateResume()">
+                                                <input id="inp-place" type="text" class="premium-input" placeholder="Auto-filled from address; editable" oninput="onDeclarationPlaceChanged()">
                                             </div>
                                             <div class="premium-input-group !mb-0">
                                                 <div class="flex items-center justify-between mb-1">
@@ -3448,8 +3594,32 @@
                                                         <button type="button" onclick="clearDeclarationField('inp-date')" class="text-[10px] font-semibold text-slate-400 hover:text-rose-500 transition cursor-pointer" title="Leave date blank">Clear</button>
                                                     </div>
                                                 </div>
-                                                <input id="inp-date" type="text" class="premium-input" placeholder="DD/MM/YYYY (or blank)" oninput="liveUpdateResume()">
+                                                <input id="inp-date" type="text" class="premium-input" placeholder="DD/MM/YYYY" oninput="onDeclarationDateChanged()">
                                             </div>
+                                        </div>
+                                        <div class="premium-input-group !mb-0 mt-3 p-3 rounded-xl border border-emerald-200/80 bg-emerald-50/40">
+                                            <label for="inp-signature" class="premium-label">
+                                                <i class="fa-solid fa-signature text-emerald-600"></i> Upload Signature
+                                            </label>
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <label for="inp-signature" class="premium-btn-green py-2 px-3 !rounded-[12px] text-xs font-black flex items-center justify-center gap-1.5 whitespace-nowrap active:scale-95 transition cursor-pointer">
+                                                    <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
+                                                    <span>Upload Signature</span>
+                                                </label>
+                                                <input id="inp-signature" type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="onSignatureFileChosen(event)">
+                                                <button type="button" onclick="removeResumeSignature()" class="px-3 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition" title="Remove uploaded signature">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                                <span id="signature-upload-status" class="text-[11px] text-slate-500">PNG, JPG or WebP</span>
+                                            </div>
+                                            <label class="mt-2 flex items-center gap-2 cursor-pointer select-none bg-white px-2.5 py-1.5 rounded-xl border border-emerald-200/80 shadow-2xs">
+                                                <input type="checkbox" id="chk-show-signature" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-600 shrink-0" checked onchange="toggleSignatureVisibility(this.checked)">
+                                                <span class="text-xs font-black text-slate-800 flex items-center gap-1">
+                                                    <i class="fa-solid fa-signature text-emerald-600"></i>
+                                                    <span>Show on Resume</span>
+                                                </span>
+                                            </label>
+                                            <p class="text-[10px] text-slate-500 mt-1">Preview me signature ko drag karke move karein aur corner se resize karein.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -5559,10 +5729,15 @@
             const minView = document.getElementById('sidebar-minimized-view');
             if (!sb || !expView || !minView) return;
 
-            // In mobile mode (< 1024px), sidebar rail must always remain hidden
+            // In mobile mode (< 1024px), sidebar operates as an overlay drawer
             if (window.innerWidth < 1024) {
-                sb.classList.add('hidden');
-                sb.classList.remove('flex');
+                if (minimize) {
+                    sb.classList.add('hidden');
+                    sb.classList.remove('flex');
+                } else {
+                    sb.classList.remove('hidden');
+                    sb.classList.add('flex');
+                }
                 return;
             }
 
@@ -5706,6 +5881,10 @@
                 createNewIndianResume(formatId);
                 return;
             }
+            if (!isResumeDraft) {
+                currentResume = JSON.parse(JSON.stringify(currentResume));
+                isResumeDraft = true;
+            }
             currentResume.template = formatId;
 
             // Ensure sample data only if resume is still dummy
@@ -5838,7 +6017,9 @@
             const isDashboard = dashView && !dashView.classList.contains('hidden');
 
             if (!currentResume || isDashboard) {
+                isSamplePreviewMode = true;
                 createNewIndianResume(formatId);
+                isSamplePreviewMode = !!(currentResume && currentResume.isDummy);
                 return;
             }
             currentResume.template = formatId;
@@ -5952,6 +6133,10 @@
 
         function setPreviewTemplate(tpl) {
             if (currentResume) {
+                if (!isResumeDraft) {
+                    currentResume = JSON.parse(JSON.stringify(currentResume));
+                    isResumeDraft = true;
+                }
                 currentResume.template = tpl;
                 const sel = document.getElementById('preview-template-select');
                 if (sel) sel.value = tpl;
@@ -5968,6 +6153,7 @@
         let allResumes = [];
         let currentResume = null;
         let currentZoom = 0.85;
+        let isSamplePreviewMode = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             const removeSplash = () => {
@@ -6029,10 +6215,7 @@
                 setupLiveFormEntrySync();
                 if (typeof setupKeyboardArrowNavigation === 'function') setupKeyboardArrowNavigation();
                 setFormSection(1);
-                const savedView = localStorage.getItem('easyresume_active_view');
-                if (savedView === 'editor' && currentResume) {
-                    switchView('editor');
-                }
+                localStorage.setItem('easyresume_active_view', 'dashboard');
                 if (window.lucide) lucide.createIcons();
             } catch (err) {
                 console.error('App init error:', err);
@@ -6154,8 +6337,8 @@
             if (countEl) countEl.innerText = allResumes.length;
         }
 
-        function saveCurrentResumeToStorage() {
-            if (!currentResume) return;
+        function saveCurrentResumeToStorage(forceCommit = false) {
+            if (!currentResume || !forceCommit) return;
             currentResume.hasBeenEdited = true;
             currentResume.isDummy = false;
             currentResume.updatedAt = new Date().toISOString();
@@ -6169,6 +6352,9 @@
             if (typeof sendResumeToSyncedDesktop === 'function' && currentResume) {
                 sendResumeToSyncedDesktop(currentResume);
             }
+            isSamplePreviewMode = false;
+            isResumeDraft = false;
+            currentResume = JSON.parse(JSON.stringify(currentResume));
             try {
                 localStorage.setItem('easyresume_active_id', currentResume.id);
             } catch(e) {}
@@ -6181,13 +6367,20 @@
         let isFormMinimized = false;
         let currentMobileEditorMode = 'form'; // 'form' or 'view'
         let autoSaveResumeTimer = null;
+        let isResumeDraft = false;
+
+        function beginResumeDraft() {
+            if (!currentResume || isResumeDraft) return;
+            currentResume = JSON.parse(JSON.stringify(currentResume));
+            isResumeDraft = true;
+        }
 
         function flushPendingAutoSave() {
             if (autoSaveResumeTimer) {
                 clearTimeout(autoSaveResumeTimer);
                 autoSaveResumeTimer = null;
             }
-            if (currentResume && currentResume.hasBeenEdited) {
+            if (!isSamplePreviewMode && !isResumeDraft && currentResume && currentResume.hasBeenEdited) {
                 try {
                     currentResume.updatedAt = new Date().toISOString();
                     const idx = allResumes.findIndex(r => r.id === currentResume.id);
@@ -6208,22 +6401,9 @@
         window.addEventListener('pagehide', flushPendingAutoSave);
 
         function saveCurrentResumeSilently() {
-            if (!currentResume) return;
             clearTimeout(autoSaveResumeTimer);
-            autoSaveResumeTimer = setTimeout(() => {
-                try {
-                    currentResume.hasBeenEdited = true;
-                    currentResume.updatedAt = new Date().toISOString();
-                    const idx = allResumes.findIndex(r => r.id === currentResume.id);
-                    if (idx >= 0) {
-                        allResumes[idx] = currentResume;
-                    }
-                    saveAllResumesToStorage();
-                    localStorage.setItem('easyresume_active_id', currentResume.id);
-                } catch (e) {
-                    console.error("Auto-save error:", e);
-                }
-            }, 100);
+            if (!currentResume || isSamplePreviewMode) return;
+            beginResumeDraft();
         }
 
         
@@ -6269,7 +6449,7 @@
 
         document.addEventListener('pointerdown', (e) => {
             const dropdown = document.getElementById('header-mobile-menu-dropdown');
-            const btn = document.getElementById('header-mobile-menu-btn');
+            const btn = document.getElementById('header-btn-menu') || document.getElementById('header-mobile-menu-btn');
             if (dropdown && !dropdown.classList.contains('hidden')) {
                 if (!dropdown.contains(e.target) && (!btn || !btn.contains(e.target))) {
                     closeMobileHeaderMenu();
@@ -6307,7 +6487,7 @@
                 // In Live Preview: Desktop-style Edit button in header
                 minBtn.title = 'Edit Form';
                 minBtn.className = 'h-9 px-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 shadow-md active:scale-90 transition-all shrink-0 cursor-pointer text-xs font-bold';
-                minBtn.innerHTML = '<i id="form-minimize-icon" class="fa-solid fa-pen-to-square text-xs"></i> <span>Edit</span>';
+                minBtn.innerHTML = '<i id="form-minimize-icon" class="fa-solid fa-pen-to-square text-xs"></i> <span class="hidden sm:inline">Edit</span>';
 
                 // In Live Preview: Zoom controls & Print button are visible (both desktop & mobile)
                 if (zoomEl) zoomEl.classList.remove('hidden');
@@ -6339,8 +6519,8 @@
 
                 // Header minimize button: Eye icon
                 minBtn.title = 'Preview Resume (Live A4)';
-                minBtn.className = 'w-9 h-9 rounded-full bg-white/90 hover:bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200/80 shadow-xs active:scale-90 transition-all shrink-0 cursor-pointer';
-                minBtn.innerHTML = '<i id="form-minimize-icon" class="fa-solid fa-eye text-sm text-emerald-600"></i>';
+                minBtn.className = 'header-mobile-icon-button h-8 sm:h-9 w-8 sm:w-auto sm:px-3 rounded-full bg-white/90 hover:bg-emerald-50 text-emerald-700 flex items-center justify-center gap-1.5 border border-emerald-200/80 shadow-xs active:scale-90 transition-all shrink-0 cursor-pointer';
+                minBtn.innerHTML = '<i id="form-minimize-icon" class="fa-solid fa-eye text-sm text-emerald-600"></i><span class="hidden sm:inline text-xs font-black">View</span>';
 
                 // Update mobile floating bar: Show "Preview" button
                 if (mobToggleBtn && mobToggleIcon && mobToggleLbl) {
@@ -6378,6 +6558,10 @@
         }
 
         function toggleFormMinimize() {
+            if (isFormMinimized && currentResume && !isResumeDraft) {
+                currentResume = JSON.parse(JSON.stringify(currentResume));
+                isResumeDraft = true;
+            }
             setFormMinimizedState(!isFormMinimized);
         }
 
@@ -6721,6 +6905,7 @@
                 renderResumesGrid();
                 generateDashboardAppQR();
             } else if (viewName === 'editor') {
+                if (currentResume && currentResume.isDummy) isSamplePreviewMode = true;
                 if (typeof closeMobileSearch === 'function') closeMobileSearch();
                 viewDashboard.classList.add('hidden');
                 viewEditor.classList.remove('hidden');
@@ -6791,11 +6976,11 @@
             if (!btn || !icon) return;
 
             if (viewName === 'editor') {
-                btn.className = 'w-9 h-9 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-lg active:scale-90 transition-all shrink-0 cursor-pointer';
+                btn.className = 'header-mobile-icon-button w-9 h-9 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center shadow-lg active:scale-90 transition-all shrink-0 cursor-pointer';
                 btn.title = 'Close Editor / Back to Dashboard';
                 icon.className = 'fa-solid fa-xmark text-sm';
             } else {
-                btn.className = 'hidden sm:flex w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white items-center justify-center shadow-lg active:scale-90 transition-all shrink-0 cursor-pointer';
+                btn.className = 'header-mobile-icon-button flex w-9 h-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white items-center justify-center shadow-lg active:scale-90 transition-all shrink-0 cursor-pointer';
                 btn.title = 'New Resume Form / Open Editor';
                 icon.className = 'fa-solid fa-plus text-sm';
             }
@@ -6942,7 +7127,7 @@
                 try {
                     const confirmed = await showThemedConfirm({
                         title: "Close Editor?",
-                        message: "Do you want to save changes and close the editor? Your resume is auto-saved.",
+                        message: "Changes are saved only after you submit the resume. Close and discard these unsubmitted changes?",
                         badge: "Close Editor",
                         icon: "fa-solid fa-arrow-right-from-bracket",
                         iconType: "theme",
@@ -6959,24 +7144,28 @@
                 if (typeof clearAllResumeHighlights === 'function') clearAllResumeHighlights();
                 clearTimeout(autoSaveResumeTimer);
                 if (typeof liveUpdateResume === 'function') liveUpdateResume();
-                if (typeof saveCurrentResumeToStorage === 'function') saveCurrentResumeToStorage();
                 if (typeof hideFormSuccessPane === 'function') hideFormSuccessPane(false);
             } catch (e) {
                 console.warn("Save error before exit:", e);
             }
 
             switchView('dashboard');
+            if (isResumeDraft) {
+                currentResume = null;
+                isResumeDraft = false;
+            }
             showToast("Returned to Dashboard Home");
         }
 
-        function resetFormInputsToBlank() {
+        function resetFormInputsToBlank(preserveFormControls = false) {
+            isSamplePreviewMode = false;
             // 1. Reset wizard step back to Step 1
-            if (typeof setFormSection === 'function') {
+            if (!preserveFormControls && typeof setFormSection === 'function') {
                 setFormSection(1);
             }
 
             // 2. Hide success panel if open
-            if (typeof hideFormSuccessPane === 'function') {
+            if (!preserveFormControls && typeof hideFormSuccessPane === 'function') {
                 hideFormSuccessPane(false);
             }
 
@@ -6997,27 +7186,32 @@
             // 4. Reset age label & photo placeholder
             const ageEl = document.getElementById('form-age-val');
             if (ageEl) ageEl.innerText = '';
-            if (typeof updatePhotoFormUI === 'function') {
-                updatePhotoFormUI('');
-            }
 
             // 5. Reset academic records in current resume & DOM
             if (currentResume) {
                 currentResume.academicRecords = [
                     { exam: '10th Class', subject: '', institute: '', board: '', year: '', score: '', scoreType: 'percentage', totalMarks: '', marksObtained: '' }
                 ];
+                currentResume.id = `res_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+                currentResume.title = 'Untitled Resume';
+                currentResume.isDummy = false;
+                currentResume.hasBeenEdited = false;
                 currentResume.studentName = '';
                 currentResume.staff_designation = '';
+                currentResume.workRole = '';
                 currentResume.fatherName = '';
                 currentResume.mobile = '';
                 currentResume.email = '';
                 currentResume.dob = '';
+                currentResume.gender = '';
                 currentResume.maritalStatus = '';
+                currentResume.nationality = '';
                 currentResume.addressStreet = '';
                 currentResume.addressCity = '';
                 currentResume.addressTehsil = '';
                 currentResume.addressDistrict = '';
                 currentResume.addressState = '';
+                currentResume.addressCountry = '';
                 currentResume.addressPincode = '';
                 currentResume.address = '';
                 currentResume.careerObjective = '';
@@ -7032,10 +7226,36 @@
                 currentResume.languagesKnown = '';
                 currentResume.declarationPlace = '';
                 currentResume.declarationDate = '';
+                currentResume.declarationPlaceManuallySet = false;
+                currentResume.declarationDateManuallySet = false;
+                currentResume.declarationText = '';
                 currentResume.photoData = '';
-                currentResume.showPhoto = false;
+                currentResume.showPhoto = true;
+                currentResume.showAge = false;
+                currentResume.signatureData = '';
+                currentResume.showSignature = true;
+                delete currentResume.signatureX;
+                delete currentResume.signatureY;
+                delete currentResume.signatureWidth;
             }
-            if (typeof renderAcademicInputs === 'function') {
+            if (typeof updatePhotoFormUI === 'function') {
+                updatePhotoFormUI('');
+            }
+            const declarationDateInput = document.getElementById('inp-date');
+            if (currentResume) currentResume.declarationDate = getTodayDateString();
+            const signatureInput = document.getElementById('inp-signature');
+            if (signatureInput) signatureInput.value = '';
+            const signatureStatus = document.getElementById('signature-upload-status');
+            if (signatureStatus) signatureStatus.textContent = 'PNG, JPG or WebP';
+            if (preserveFormControls) {
+                document.querySelectorAll('#editor-pane input, #editor-pane select, #editor-pane textarea').forEach(el => {
+                    if (el.type === 'checkbox' || el.type === 'radio') {
+                        el.checked = el.id === 'chk-show-photo' || el.id === 'chk-show-signature';
+                    } else if (el.type !== 'file') {
+                        el.value = '';
+                    }
+                });
+            } else if (typeof renderAcademicInputs === 'function') {
                 renderAcademicInputs();
                 if (typeof renderExperienceInputs === 'function') renderExperienceInputs();
                 if (typeof renderSkillsUI === 'function') renderSkillsUI();
@@ -7043,11 +7263,28 @@
                 if (typeof renderProjectsInputs === 'function') renderProjectsInputs();
             updateAcademicDisplayModeUI((currentResume && currentResume.academicDisplayMode) ? currentResume.academicDisplayMode : "table");
             }
+            if (declarationDateInput) declarationDateInput.value = getTodayDateString();
 
             // 6. Reset scroll to top
             const scrollBody = document.getElementById('form-scroll-body');
-            if (scrollBody) scrollBody.scrollTop = 0;
+            if (scrollBody && !preserveFormControls) scrollBody.scrollTop = 0;
         }
+
+        document.addEventListener('pointerdown', (event) => {
+            if (!isSamplePreviewMode || !currentResume || !currentResume.isDummy) return;
+            const target = event.target;
+            if (!(target instanceof Element)) return;
+
+            const editor = document.getElementById('view-editor');
+            if (!editor || editor.classList.contains('hidden')) return;
+            const startsEditing = editor.contains(target) ||
+                target.closest('#header-doc-type-filter, #header-btn-import, #header-dropdown-menu, #header-mobile-menu-dropdown');
+            if (!startsEditing) return;
+
+            resetFormInputsToBlank(true);
+            renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
+        }, true);
 
         // ============================================================
         // SAVED RESUMES BATCH SELECTION & DELETION ENGINE
@@ -7308,16 +7545,14 @@
             }
 
             container.innerHTML = list.map(res => {
-                const dateStr = new Date(res.updatedAt || Date.now()).toLocaleDateString('en-IN', {
-                    day: 'numeric', month: 'short', year: 'numeric'
+                const dateStr = new Date(res.updatedAt || Date.now()).toLocaleString('en-IN', {
+                    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                 });
                 const isSelected = currentResume && currentResume.id === res.id;
                 const isSelectedInBatch = selectedResumeIds.has(res.id);
                 const candidateName = res.studentName || res.title || 'Untitled Candidate';
                 const role = res.staff_designation || res.workRole || 'Candidate Role';
                 const fmtObj = RESUME_FORMATS.find(f => f.id === res.template);
-                const fmtBadge = fmtObj ? fmtObj.badge : 'Standard';
-                const fmtBadgeColor = fmtObj ? fmtObj.badgeColor : 'bg-slate-100 text-slate-700 border-slate-200';
                 const themeColor = res.themeColor || (fmtObj ? fmtObj.themeColor : '#05996c');
                 const hasPhoto = (res.photoData && res.photoData.length > 20);
 
@@ -7332,32 +7567,27 @@
                          ontouchmove="cancelCardLongPress()"
                          title="${isBatchSelectionMode ? 'Click to select / unselect' : 'Click to preview, Edit button to modify details'}">
                         <div>
-                            <!-- Header Row: Photo/Icon & Format Badge + Delete Button -->
-                            <div class="flex items-center justify-between gap-2 mb-3">
+                            <!-- Candidate row: passport photo beside name and role -->
+                            <div class="flex items-center gap-3 mb-3 min-w-0">
                                 ${hasPhoto ? `
-                                    <div class="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-2xs border border-slate-200 bg-slate-50">
+                                    <div class="w-12 h-16 rounded-xl overflow-hidden shrink-0 shadow-2xs border border-slate-200 bg-slate-50">
                                         <img src="${sanitizePhotoUrl(res.photoData)}" class="w-full h-full object-cover pointer-events-none">
                                     </div>
                                 ` : `
-                                    <div class="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs pointer-events-none" style="background-color: ${themeColor}15; color: ${themeColor}; border: 1px solid ${themeColor}30;">
+                                    <div class="w-12 h-16 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs pointer-events-none" style="background-color: ${themeColor}15; color: ${themeColor}; border: 1px solid ${themeColor}30;">
                                         <i class="fa-solid fa-file-lines text-base"></i>
                                     </div>
                                 `}
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${fmtBadgeColor}">
-                                    ${fmtBadge}
-                                </span>
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight group-hover:text-emerald-700 transition truncate" title="${escapeAttr(candidateName)}">
+                                        ${escapeAttr(candidateName)}
+                                    </h3>
+                                    <p class="text-xs font-medium text-slate-500 mt-1 truncate flex items-center gap-1.5">
+                                        <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${escapeAttr(themeColor)};"></span>
+                                        <span class="truncate">${escapeAttr(role)}</span>
+                                    </p>
+                                </div>
                             </div>
-
-                            <!-- Title: Candidate Name -->
-                            <h3 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight group-hover:text-emerald-700 transition truncate" title="${escapeAttr(candidateName)}">
-                                ${escapeAttr(candidateName)}
-                            </h3>
-
-                            <!-- Subtitle: Candidate Role -->
-                            <p class="text-xs font-medium text-slate-500 mt-0.5 truncate flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${escapeAttr(themeColor)};"></span>
-                                <span class="truncate">${escapeAttr(role)}</span>
-                            </p>
                         </div>
 
                         <!-- Footer Row: Date & Actions -->
@@ -7367,18 +7597,14 @@
                             </span>
 
                             <div class="flex items-center gap-1 shrink-0 flex-wrap" onclick="event.stopPropagation()">
-                                <button type="button" onclick="selectResumeToEdit('${res.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center gap-1 shadow-2xs active:scale-95 cursor-pointer" title="Edit Resume Form">
-                                    <i class="fa-solid fa-pen-to-square text-[11px]"></i>
-                                    <span>Edit</span>
+                                <button type="button" onclick="selectResumeToEdit('${res.id}')" class="w-7 h-7 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center justify-center shadow-2xs active:scale-95 cursor-pointer" title="Edit Resume Form" aria-label="Edit Resume Form">
+                                    <i class="fa-solid fa-pen-to-square text-[13px]"></i>
                                 </button>
                                 <button type="button" onclick="event.stopPropagation(); exportResumePdfById('${res.id}')" class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-emerald-700 flex items-center justify-center transition active:scale-90 cursor-pointer text-xs" title="Print / Download PDF">
                                     <i class="fa-solid fa-print"></i>
                                 </button>
                                 <button type="button" onclick="event.stopPropagation(); exportResumeWordById('${res.id}')" class="w-7 h-7 rounded-lg hover:bg-blue-50 text-blue-600 flex items-center justify-center transition active:scale-90 cursor-pointer text-xs" title="Download Word (.doc)">
                                     <i class="fa-solid fa-file-word"></i>
-                                </button>
-                                <button type="button" onclick="event.stopPropagation(); exportResumeById('${res.id}')" class="w-7 h-7 rounded-lg hover:bg-emerald-50 text-emerald-600 flex items-center justify-center transition active:scale-90 cursor-pointer text-xs" title="Export JSON">
-                                    <i class="fa-solid fa-file-arrow-down"></i>
                                 </button>
                                 <button type="button" onclick="duplicateResume('${res.id}')" class="w-7 h-7 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition active:scale-90 cursor-pointer text-xs" title="Duplicate Resume">
                                     <i class="fa-solid fa-copy"></i>
@@ -7420,12 +7646,7 @@
             }
 
             currentResume = newRes;
-            try {
-                localStorage.setItem('easyresume_active_id', newRes.id);
-            } catch(e) {}
-            allResumes.unshift(newRes);
-            saveAllResumesToStorage();
-            renderResumesGrid();
+            isResumeDraft = true;
 
             updateActiveFormatBadge(chosenFmt);
             const sel = document.getElementById('preview-template-select');
@@ -7453,10 +7674,8 @@
         function selectResumeToEdit(id) {
             const found = allResumes.find(r => r.id === id);
             if (found) {
-                currentResume = found;
-                try {
-                    localStorage.setItem('easyresume_active_id', currentResume.id);
-                } catch(e) {}
+                currentResume = JSON.parse(JSON.stringify(found));
+                isResumeDraft = true;
                 setFormMinimizedState(false, true);
                 switchView('editor');
             }
@@ -7465,10 +7684,8 @@
         function selectResumeToView(id) {
             const found = allResumes.find(r => r.id === id);
             if (found) {
-                currentResume = found;
-                try {
-                    localStorage.setItem('easyresume_active_id', currentResume.id);
-                } catch(e) {}
+                currentResume = JSON.parse(JSON.stringify(found));
+                isResumeDraft = true;
                 setFormMinimizedState(true, true);
                 switchView('editor');
             }
@@ -7536,9 +7753,8 @@
             copy.isDummy = true;
             copy.hasBeenEdited = false;
             copy.updatedAt = new Date().toISOString();
-            allResumes.unshift(copy);
             currentResume = copy;
-            saveAllResumesToStorage();
+            isResumeDraft = true;
             if (copy.themeColorId) {
                 applyResumeThemeColor(copy.themeColorId, false);
             }
@@ -7606,14 +7822,25 @@
             if (document.getElementById('inp-skills')) document.getElementById('inp-skills').value = r.skills || '';
             if (document.getElementById('inp-projects')) document.getElementById('inp-projects').value = r.projects || '';
             if (document.getElementById('inp-languages')) document.getElementById('inp-languages').value = r.languagesKnown || 'English, Hindi';
-            if (document.getElementById('inp-place')) document.getElementById('inp-place').value = (r.declarationPlace !== undefined && r.declarationPlace !== null) ? r.declarationPlace : 'Chhindwara';
-            if (document.getElementById('inp-date')) document.getElementById('inp-date').value = (r.declarationDate !== undefined && r.declarationDate !== null) ? r.declarationDate : getTodayDateString();
+            if (!r.declarationPlace && !r.declarationPlaceManuallySet) {
+                r.declarationPlace = getSuggestedDeclarationPlace(r);
+            }
+            if (!r.declarationDate && !r.declarationDateManuallySet) {
+                r.declarationDate = getTodayDateString();
+            }
+            if (document.getElementById('inp-place')) document.getElementById('inp-place').value = r.declarationPlace || '';
+            if (document.getElementById('inp-date')) document.getElementById('inp-date').value = r.declarationDate || '';
+            const signatureStatus = document.getElementById('signature-upload-status');
+            if (signatureStatus) signatureStatus.textContent = r.signatureData ? 'Signature uploaded' : 'PNG, JPG or WebP';
+            const signatureVisibility = document.getElementById('chk-show-signature');
+            if (signatureVisibility) signatureVisibility.checked = r.showSignature !== false;
             if (document.getElementById('inp-declaration')) document.getElementById('inp-declaration').value = r.declarationText || DECLARATION_PRESETS[0].english;
 
             // Sync photo UI, crop button and show/hide checkbox
             updatePhotoFormUI(r.photoData || '');
+            r.showPhoto = true;
             const chkPhoto = document.getElementById('chk-show-photo');
-            if (chkPhoto) chkPhoto.checked = (r.showPhoto !== false);
+            if (chkPhoto) chkPhoto.checked = true;
             if (typeof updatePhotoWidthUI === 'function') updatePhotoWidthUI();
 
             // Auto-clean any legacy ? bullets safely (with robust type checking)
@@ -8624,8 +8851,15 @@ function renderAcademicInputs() {
             currentResume.languagesKnown = '';
             currentResume.declarationPlace = '';
             currentResume.declarationDate = '';
+            currentResume.declarationPlaceManuallySet = false;
+            currentResume.declarationDateManuallySet = false;
             currentResume.declarationText = DECLARATION_PRESETS[0].english;
             currentResume.photoData = '';
+            currentResume.showPhoto = false;
+            currentResume.signatureData = '';
+            delete currentResume.signatureX;
+            delete currentResume.signatureY;
+            delete currentResume.signatureWidth;
 
             // Reset academic records to blank 10th field only
             currentResume.academicRecords = [
@@ -8638,12 +8872,15 @@ function renderAcademicInputs() {
                 'inp-email', 'inp-dob', 'inp-addr-street', 'inp-addr-city', 'inp-addr-tehsil',
                 'inp-addr-district', 'inp-addr-state', 'inp-addr-country', 'inp-addr-pincode',
                 'inp-objective', 'inp-company', 'inp-duration', 'inp-responsibilities', 'inp-skills',
-                'inp-projects', 'inp-languages', 'inp-place', 'inp-date'
+                'inp-projects', 'inp-languages', 'inp-place', 'inp-date', 'inp-signature'
             ];
             fields.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = '';
             });
+            const dateInput = document.getElementById('inp-date');
+            if (dateInput) dateInput.value = getTodayDateString();
+            currentResume.declarationDate = getTodayDateString();
 
             if (document.getElementById('inp-declaration')) {
                 document.getElementById('inp-declaration').value = DECLARATION_PRESETS[0].english;
@@ -8657,6 +8894,10 @@ function renderAcademicInputs() {
 
             // Update photo UI in form
             updatePhotoFormUI('');
+            const signatureStatus = document.getElementById('signature-upload-status');
+            if (signatureStatus) signatureStatus.textContent = 'PNG, JPG or WebP';
+            const signatureVisibility = document.getElementById('chk-show-signature');
+            if (signatureVisibility) signatureVisibility.checked = true;
 
             // Re-render academic, custom fields, objective and declaration inputs in form
             renderAcademicInputs();
@@ -8921,6 +9162,10 @@ function renderAcademicInputs() {
 
         function editFormAgain() {
             hideFormSuccessPane(true);
+            if (currentResume && !isResumeDraft) {
+                currentResume = JSON.parse(JSON.stringify(currentResume));
+                isResumeDraft = true;
+            }
             setFormMinimizedState(false);
         }
 
@@ -8932,7 +9177,7 @@ function renderAcademicInputs() {
         // Form Submit & Completion Handling (In-Card Success with 5s Auto-Minimize)
         function submitResumeForm() {
             if (typeof liveUpdateResume === 'function') liveUpdateResume();
-            if (typeof saveCurrentResumeToStorage === 'function') saveCurrentResumeToStorage();
+            if (typeof saveCurrentResumeToStorage === 'function') saveCurrentResumeToStorage(true);
             if (typeof updateDocTypeUI === 'function') updateDocTypeUI();
 
             const candidateName = (currentResume && currentResume.studentName) ? currentResume.studentName : 'Candidate';
@@ -9041,6 +9286,7 @@ function renderAcademicInputs() {
         // Live Collect & Preview
         function liveUpdateResume() {
             if (!currentResume) return;
+            beginResumeDraft();
             currentResume.hasBeenEdited = true;
 
             // Auto-hide upload banner once user starts typing/editing
@@ -9120,19 +9366,20 @@ function renderAcademicInputs() {
             const chkAgeEl = document.getElementById('chk-show-age');
             if (chkAgeEl) currentResume.showAge = chkAgeEl.checked;
             const placeEl = document.getElementById('inp-place');
-            if (placeEl) currentResume.declarationPlace = placeEl.value;
-            const dateEl = document.getElementById('inp-date');
-            if (dateEl) currentResume.declarationDate = dateEl.value;
-            currentResume.declarationText = document.getElementById('inp-declaration')?.value || currentResume.declarationText || DECLARATION_PRESETS[0].english;
-
-
-
-            const idx = allResumes.findIndex(r => r.id === currentResume.id);
-            if (idx >= 0) {
-                allResumes[idx] = currentResume;
-            } else {
-                allResumes.unshift(currentResume);
+            if (placeEl) {
+                if (!placeEl.value.trim() && !currentResume.declarationPlaceManuallySet) {
+                    placeEl.value = getSuggestedDeclarationPlace(currentResume);
+                }
+                currentResume.declarationPlace = placeEl.value.trim();
             }
+            const dateEl = document.getElementById('inp-date');
+            if (dateEl) {
+                if (!dateEl.value.trim() && !currentResume.declarationDateManuallySet) {
+                    dateEl.value = getTodayDateString();
+                }
+                currentResume.declarationDate = dateEl.value.trim();
+            }
+            currentResume.declarationText = document.getElementById('inp-declaration')?.value || currentResume.declarationText || DECLARATION_PRESETS[0].english;
 
             if (window._liveUpdateRaf) cancelAnimationFrame(window._liveUpdateRaf);
             window._liveUpdateRaf = requestAnimationFrame(() => {
@@ -9180,7 +9427,27 @@ function renderAcademicInputs() {
             const today = getTodayDateString();
             const inp = document.getElementById('inp-date');
             if (inp) inp.value = today;
-            if (currentResume) currentResume.declarationDate = today;
+            if (currentResume) {
+                currentResume.declarationDate = today;
+                currentResume.declarationDateManuallySet = true;
+            }
+            liveUpdateResume();
+        }
+
+        function getSuggestedDeclarationPlace(resume = currentResume) {
+            if (!resume) return '';
+            return [resume.addressCity, resume.addressTehsil, resume.addressDistrict, resume.addressState]
+                .map(value => String(value || '').trim())
+                .find(Boolean) || '';
+        }
+
+        function onDeclarationPlaceChanged() {
+            if (currentResume) currentResume.declarationPlaceManuallySet = true;
+            liveUpdateResume();
+        }
+
+        function onDeclarationDateChanged() {
+            if (currentResume) currentResume.declarationDateManuallySet = true;
             liveUpdateResume();
         }
 
@@ -9189,11 +9456,92 @@ function renderAcademicInputs() {
             if (inp) {
                 inp.value = '';
                 if (currentResume) {
-                    if (fieldId === 'inp-place') currentResume.declarationPlace = '';
-                    if (fieldId === 'inp-date') currentResume.declarationDate = '';
+                    if (fieldId === 'inp-place') {
+                        currentResume.declarationPlace = '';
+                        currentResume.declarationPlaceManuallySet = true;
+                    }
+                    if (fieldId === 'inp-date') {
+                        currentResume.declarationDate = '';
+                        currentResume.declarationDateManuallySet = true;
+                    }
                 }
                 liveUpdateResume();
             }
+        }
+
+        function onSignatureFileChosen(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            if (!/^image\/(png|jpeg|webp)$/.test(file.type)) {
+                showToast('Choose a PNG, JPG or WebP signature image.');
+                event.target.value = '';
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Signature image must be smaller than 5 MB.');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onerror = () => showToast('Could not read the signature image.');
+            reader.onload = () => {
+                const image = new Image();
+                image.onerror = () => showToast('Could not load the signature image.');
+                image.onload = () => {
+                    if (!currentResume) return;
+                    const maxDimension = 900;
+                    const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+                    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+                    const context = canvas.getContext('2d');
+                    if (!context) {
+                        showToast('Could not process the signature image.');
+                        return;
+                    }
+                    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+                    currentResume.signatureData = canvas.toDataURL('image/png');
+                    currentResume.signatureWidth = currentResume.signatureWidth || 110;
+                    currentResume.signatureX = 0;
+                    currentResume.signatureY = 0;
+                    currentResume.showSignature = true;
+                    currentResume.hasBeenEdited = true;
+                    const status = document.getElementById('signature-upload-status');
+                    if (status) status.textContent = file.name;
+                    const visibility = document.getElementById('chk-show-signature');
+                    if (visibility) visibility.checked = true;
+                    renderLiveA4Preview();
+                    saveCurrentResumeSilently();
+                    showToast('Signature uploaded. Drag it to move and resize it on the preview.');
+                    event.target.value = '';
+                };
+                image.src = String(reader.result || '');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeResumeSignature() {
+            if (!currentResume) return;
+            currentResume.signatureData = '';
+            delete currentResume.signatureX;
+            delete currentResume.signatureY;
+            delete currentResume.signatureWidth;
+            currentResume.hasBeenEdited = true;
+            const input = document.getElementById('inp-signature');
+            if (input) input.value = '';
+            const status = document.getElementById('signature-upload-status');
+            if (status) status.textContent = 'PNG, JPG or WebP';
+            renderLiveA4Preview();
+            saveCurrentResumeSilently();
+            showToast('Signature removed.');
+        }
+
+        function toggleSignatureVisibility(checked) {
+            if (!currentResume) return;
+            currentResume.showSignature = !!checked;
+            renderLiveA4Preview();
+            saveCurrentResumeSilently();
         }
 
         // ==========================================
@@ -11017,9 +11365,7 @@ function renderAcademicInputs() {
                 if (cropBtn) cropBtn.classList.add('hidden');
             }
 
-            if (chkPhoto && currentResume) {
-                chkPhoto.checked = (currentResume.showPhoto !== false);
-            }
+            if (chkPhoto) chkPhoto.checked = true;
         }
 
         function removePhoto() {
@@ -11037,11 +11383,13 @@ function renderAcademicInputs() {
 
         function togglePhotoVisibility(checked) {
             if (!currentResume) return;
-            currentResume.showPhoto = checked;
+            currentResume.showPhoto = true;
+            const checkbox = document.getElementById('chk-show-photo');
+            if (checkbox) checkbox.checked = true;
             liveUpdateResume();
             renderLiveA4Preview();
             if (typeof updateAtsScore === 'function') updateAtsScore();
-            showToast(checked ? "Photo visible on resume" : "Photo hidden from resume");
+            if (!checked) showToast("Show on Resume stays enabled");
         }
 
         // Photo Width & Size Controller
@@ -13012,8 +13360,9 @@ function renderAcademicInputs() {
             // Strict Whole-Section Pagination Rule:
             // Calculate available vertical space on Page 1 before footer and padding.
             // 1 A4 page at 96 DPI is 1122.5px (297mm).
+            // Calculate true unscaled dimensions regardless of current zoom transform
             const innerRect = inner.getBoundingClientRect();
-            const currentZ = (typeof currentZoom === 'number' && currentZoom > 0) ? currentZoom : 1;
+            const actualScale = (inner.offsetWidth > 0 && innerRect.width > 0) ? (innerRect.width / inner.offsetWidth) : 1;
             const padBottom = parseFloat(window.getComputedStyle(inner).paddingBottom) || 28;
             const footerEl = inner.querySelector('.resume-sheet-footer');
             const footerH = footerEl ? (footerEl.offsetHeight || 30) : 30;
@@ -13027,9 +13376,9 @@ function renderAcademicInputs() {
             for (let i = 0; i < sections.length; i++) {
                 const sec = sections[i];
                 const secRect = sec.getBoundingClientRect();
-                const secRectBottom = (secRect.bottom - innerRect.top) / currentZ;
+                const secRectBottom = (actualScale > 0) ? ((secRect.bottom - innerRect.top) / actualScale) : ((sec.offsetTop || 0) + (sec.offsetHeight || 0));
                 const secOffsetBottom = (sec.offsetTop || 0) + (sec.offsetHeight || 0);
-                const secBottom = Math.max(secRectBottom, secOffsetBottom);
+                const secBottom = Math.max(secOffsetBottom, secRectBottom);
                 if (secBottom > maxPage1ContentBottom) {
                     splitIdx = i;
                     break;
@@ -13041,9 +13390,9 @@ function renderAcademicInputs() {
             let declOverflows = false;
             if (declEl) {
                 const declRect = declEl.getBoundingClientRect();
-                const declRectBottom = (declRect.bottom - innerRect.top) / currentZ;
+                const declRectBottom = (actualScale > 0) ? ((declRect.bottom - innerRect.top) / actualScale) : ((declEl.offsetTop || 0) + (declEl.offsetHeight || 0));
                 const declOffsetBottom = (declEl.offsetTop || 0) + (declEl.offsetHeight || 0);
-                const declBottom = Math.max(declRectBottom, declOffsetBottom);
+                const declBottom = Math.max(declOffsetBottom, declRectBottom);
                 if (declBottom > maxPage1ContentBottom) {
                     declOverflows = true;
                 }
@@ -13179,6 +13528,109 @@ function renderAcademicInputs() {
                 densityBadge.className = "px-2.5 sm:px-3 py-1 sm:py-1 rounded-full text-[10.5px] sm:text-[11px] font-black transition-all flex items-center justify-center gap-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer shadow-2xs border border-blue-300 whitespace-nowrap shrink-0 active:scale-95";
                 densityBadge.title = `Page Spacing: ${activeDensity}/5 (2 Pages)`;
             }
+        }
+
+        function renderResumeSignature(sheet, resume) {
+            if (!sheet || !resume || resume.showSignature === false ||
+                !/^data:image\/(?:png|jpeg|webp);base64,/i.test(resume.signatureData || '')) return;
+
+            const declaration = sheet.querySelector('[data-section-key="declaration"]');
+            if (!declaration) return;
+
+            const signatureLabel = Array.from(declaration.querySelectorAll('span, div'))
+                .find(el => el.children.length === 0 && /signature/i.test(el.textContent || ''));
+            const frame = signatureLabel ? signatureLabel.parentElement : declaration;
+            if (!frame) return;
+
+            frame.style.position = 'relative';
+            frame.style.overflow = 'visible';
+            frame.style.minHeight = `${Math.max(frame.offsetHeight || 0, 52)}px`;
+            if (signatureLabel) signatureLabel.style.visibility = 'hidden';
+
+            const width = Math.max(50, Math.min(240, Number(resume.signatureWidth) || 110));
+            const x = Number(resume.signatureX) || 0;
+            const y = Math.max(0, Number(resume.signatureY) || 0);
+            const overlay = document.createElement('div');
+            overlay.className = 'resume-signature-overlay';
+            overlay.style.cssText = `position:absolute;left:${x}px;top:${y}px;width:${width}px;z-index:5;cursor:move;touch-action:none;`;
+            const image = document.createElement('img');
+            image.src = resume.signatureData;
+            image.alt = 'Resume signature';
+            image.draggable = false;
+            image.style.cssText = 'display:block;width:100%;max-height:56px;object-fit:contain;object-position:left center;pointer-events:none;';
+            const resizeHandle = document.createElement('button');
+            resizeHandle.type = 'button';
+            resizeHandle.className = 'no-print';
+            resizeHandle.setAttribute('data-html2canvas-ignore', 'true');
+            resizeHandle.setAttribute('data-signature-resize', '');
+            resizeHandle.title = 'Drag to resize signature';
+            resizeHandle.style.cssText = 'display:block;position:absolute;right:-6px;bottom:-6px;width:16px;height:16px;border:2px solid #fff;border-radius:4px;background:#05996c;cursor:nwse-resize;touch-action:none;z-index:6;';
+            overlay.appendChild(image);
+            overlay.appendChild(resizeHandle);
+            overlay.addEventListener('pointerdown', event => {
+                if (event.target.closest('[data-signature-resize]')) return;
+                event.preventDefault();
+                event.stopPropagation();
+                beginResumeDraft();
+                const startX = event.clientX;
+                const startY = event.clientY;
+                const activeResume = currentResume && currentResume.id === resume.id ? currentResume : resume;
+                const startLeft = Number(activeResume.signatureX) || 0;
+                const startTop = Number(activeResume.signatureY) || 0;
+                const scaleX = frame.getBoundingClientRect().width / Math.max(1, frame.offsetWidth);
+                const scaleY = frame.getBoundingClientRect().height / Math.max(1, frame.offsetHeight);
+                const minLeft = -Math.max(0, frame.offsetLeft);
+                const maxLeft = Math.max(minLeft, declaration.clientWidth - frame.offsetLeft - width);
+                const pointerId = event.pointerId;
+                const move = moveEvent => {
+                    if (moveEvent.pointerId !== pointerId) return;
+                    overlay.style.left = `${Math.max(minLeft, Math.min(maxLeft, startLeft + (moveEvent.clientX - startX) / scaleX))}px`;
+                    overlay.style.top = `${Math.max(0, startTop + (moveEvent.clientY - startY) / scaleY)}px`;
+                };
+                const finish = finishEvent => {
+                    if (finishEvent.pointerId !== pointerId) return;
+                    document.removeEventListener('pointermove', move);
+                    document.removeEventListener('pointerup', finish);
+                    document.removeEventListener('pointercancel', finish);
+                    activeResume.signatureX = Math.round(parseFloat(overlay.style.left) || 0);
+                    activeResume.signatureY = Math.max(0, Math.round(parseFloat(overlay.style.top) || 0));
+                    activeResume.hasBeenEdited = true;
+                    saveCurrentResumeSilently();
+                };
+                document.addEventListener('pointermove', move);
+                document.addEventListener('pointerup', finish);
+                document.addEventListener('pointercancel', finish);
+            });
+
+            resizeHandle.addEventListener('pointerdown', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                beginResumeDraft();
+                const startX = event.clientX;
+                const startWidth = width;
+                const activeResume = currentResume && currentResume.id === resume.id ? currentResume : resume;
+                const scaleX = frame.getBoundingClientRect().width / Math.max(1, frame.offsetWidth);
+                const pointerId = event.pointerId;
+                const move = moveEvent => {
+                    if (moveEvent.pointerId !== pointerId) return;
+                    const nextWidth = Math.max(50, Math.min(240, startWidth + (moveEvent.clientX - startX) / scaleX));
+                    overlay.style.width = `${Math.round(nextWidth)}px`;
+                };
+                const finish = finishEvent => {
+                    if (finishEvent.pointerId !== pointerId) return;
+                    document.removeEventListener('pointermove', move);
+                    document.removeEventListener('pointerup', finish);
+                    document.removeEventListener('pointercancel', finish);
+                    activeResume.signatureWidth = Math.max(50, Math.min(240, Math.round(parseFloat(overlay.style.width) || width)));
+                    activeResume.hasBeenEdited = true;
+                    saveCurrentResumeSilently();
+                };
+                document.addEventListener('pointermove', move);
+                document.addEventListener('pointerup', finish);
+                document.addEventListener('pointercancel', finish);
+            });
+
+            frame.appendChild(overlay);
         }
 
         function renderLiveA4Preview() {
@@ -13335,8 +13787,8 @@ function renderAcademicInputs() {
             let rawAcs = (rec.academicRecords && rec.academicRecords.length) ? rec.academicRecords : [];
             let filledAcs = rawAcs.map((r, idx) => ({ ...r, _origFormIndex: idx })).filter(isAcademicFilled);
 
-            // If dummy resume or no filled records yet, fallback to sample records
-            if (!filledAcs.length && (rec.isDummy || !rec.hasBeenEdited)) {
+            // Only untouched sample previews may use fallback academic records.
+            if (!filledAcs.length && rec.isDummy && !rec.hasBeenEdited) {
                 const isFemale = (rec.gender === 'Female' || (rec.studentName && /priya|ananya|kavita/i.test(rec.studentName)));
                 const fallback = getSampleForTemplate(tpl) || (isFemale ? sampleIndianFresher : sampleIndianTech);
                 filledAcs = fallback.academicRecords.map((r, idx) => ({ ...r, _origFormIndex: idx })).filter(isAcademicFilled);
@@ -13637,7 +14089,7 @@ function renderAcademicInputs() {
                                 <div><strong class="inline-block w-32 text-slate-600">Languages Known</strong>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
                                 ${shouldShowHobbies ? `<div><strong class="inline-block w-32 text-slate-600">Hobbies & Interests</strong>: <span data-inline-field="hobbies">${escapeAttr(effectiveHobbies)}</span></div>` : ''}
                                 ${renderCustomParticulars('w-32', 'text-slate-600', true)}
-                                <div class="col-span-full flex items-start text-left"><strong class="inline-block w-32 shrink-0 text-slate-600 whitespace-nowrap">Permanent Address</strong><span class="shrink-0" style="margin-right: 3.5px;">:</span><div data-inline-field="address" class="flex-1 leading-tight text-slate-800">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
+                                <div class="col-span-full text-left"><strong class="inline-block w-32 text-slate-600">Permanent Address</strong>: <span data-inline-field="address" class="leading-tight text-slate-800">${escapeAttr(String(addr.full || addr.line1 || '').trim())}</span></div>
                             </div>
                         </div>
                     `,
@@ -15118,6 +15570,7 @@ function renderAcademicInputs() {
             // MULTI-PAGE REAL-TIME PHYSICAL A4 CARD PAGINATION (Page 1 & Page 2)
             // ============================================================
             paginateLiveResumeSheet(sheet, currentResume);
+            renderResumeSignature(sheet, currentResume);
 
             if (typeof applyZoom === 'function') {
                 applyZoom(currentZoom, true);
@@ -15458,22 +15911,8 @@ function renderAcademicInputs() {
             isPrintingActive = true;
 
             if (typeof activeInlineEdit !== 'undefined' && activeInlineEdit) commitInlineEdit(false);
-            if (currentResume) {
-                renderLiveA4Preview();
-                const activeColorId = (currentResume && currentResume.themeColorId) ? currentResume.themeColorId : activeThemeColorId;
-                if (activeColorId && typeof applyResumeThemeColor === 'function') {
-                    applyResumeThemeColor(activeColorId, false);
-                }
-            }
-            updateResumeFooterTimestamp();
             
-            // Set document.title so browser's "Save as PDF" dialog defaults to:
-            // "<Candidate Name> EasyResume°.pdf"
-            if (!prePrintDocTitle) prePrintDocTitle = document.title;
-            const rawName = (currentResume?.studentName || currentResume?.title || 'Resume').trim();
-            const safeName = rawName.replace(/[/\\?%*:|"<>]/g, '').trim() || 'Resume';
-            document.title = `${safeName} EasyResume°`;
-
+            // Capture pre-print zoom level before removing transforms
             prePrintZoomLevel = (typeof currentZoom === 'number' && currentZoom > 0) ? currentZoom : 0.85;
 
             const sheet = document.getElementById('live-resume-sheet');
@@ -15491,6 +15930,22 @@ function renderAcademicInputs() {
                 scaler.style.height = 'auto';
                 scaler.style.margin = '0 auto';
             }
+
+            if (currentResume) {
+                renderLiveA4Preview();
+                const activeColorId = (currentResume && currentResume.themeColorId) ? currentResume.themeColorId : activeThemeColorId;
+                if (activeColorId && typeof applyResumeThemeColor === 'function') {
+                    applyResumeThemeColor(activeColorId, false);
+                }
+            }
+            updateResumeFooterTimestamp();
+            
+            // Set document.title so browser's "Save as PDF" dialog defaults to:
+            // "<Candidate Name> EasyResume°.pdf"
+            if (!prePrintDocTitle) prePrintDocTitle = document.title;
+            const rawName = (currentResume?.studentName || currentResume?.title || 'Resume').trim();
+            const safeName = rawName.replace(/[/\\?%*:|"<>]/g, '').trim() || 'Resume';
+            document.title = `${safeName} EasyResume°`;
         }
 
         function restoreSheetAfterPrint() {
@@ -15505,6 +15960,14 @@ function renderAcademicInputs() {
             if (sheet) {
                 sheet.style.boxShadow = prePrintBoxShadow || '';
                 sheet.style.marginBottom = '0px';
+                if (prePrintTransform) {
+                    sheet.style.transform = prePrintTransform;
+                }
+            }
+
+            // Restore zoom level FIRST before rendering so geometric calculations match visual layout
+            if (typeof applyZoom === 'function') {
+                applyZoom(prePrintZoomLevel, true);
             }
 
             // Fresh render to recalculate clean single/multi-page bounds
@@ -15512,7 +15975,7 @@ function renderAcademicInputs() {
                 renderLiveA4Preview();
             }
 
-            // Strictly restore pre-print zoom scale & exact container geometry
+            // Re-apply zoom to sync container geometry with final page count
             if (typeof applyZoom === 'function') {
                 applyZoom(prePrintZoomLevel, true);
             }
@@ -15534,7 +15997,7 @@ function renderAcademicInputs() {
                 if (isPrintingActive) {
                     restoreSheetAfterPrint();
                 }
-            }, 600);
+            }, 1200);
         }
 
         window.addEventListener('beforeprint', prepareSheetForPrint);
@@ -15547,6 +16010,14 @@ function renderAcademicInputs() {
         // ==========================================
         // HEADER OPTIONS DROPDOWN MENU ENGINE
         // ==========================================
+        function updateHeaderDropdownMenuContext() {
+            const viewEditor = document.getElementById('view-editor');
+            const context = viewEditor && !viewEditor.classList.contains('hidden') ? 'editor' : 'dashboard';
+            document.querySelectorAll('#header-dropdown-menu [data-menu-context]').forEach(item => {
+                item.classList.toggle('hidden', item.dataset.menuContext !== context);
+            });
+        }
+
         function toggleHeaderDropdownMenu(event) {
             if (event) {
                 event.stopPropagation();
@@ -15554,6 +16025,7 @@ function renderAcademicInputs() {
             }
             const menu = document.getElementById('header-dropdown-menu');
             if (!menu) return;
+            updateHeaderDropdownMenuContext();
             menu.classList.toggle('hidden');
         }
 
@@ -15876,7 +16348,7 @@ function renderAcademicInputs() {
                 if (isPrintingActive) {
                     restoreSheetAfterPrint();
                 }
-            }, 600);
+            }, 1200);
         }
 
         // Batch export selected resumes as PDF
@@ -16849,35 +17321,120 @@ function renderAcademicInputs() {
             });
         }
 
+        function captureInlineEditState() {
+            if (!activeInlineEdit || !activeInlineEdit.element) return null;
+            const element = activeInlineEdit.element;
+            return {
+                html: element.innerHTML,
+                className: element.className,
+                style: element.getAttribute('style')
+            };
+        }
+
+        let inlineEditUndoStack = [];
+        let inlineEditRedoStack = [];
+
+        function recordInlineEditUndo() {
+            const state = captureInlineEditState();
+            if (!state) return;
+            inlineEditUndoStack.push(state);
+            if (inlineEditUndoStack.length > 100) inlineEditUndoStack.shift();
+            inlineEditRedoStack = [];
+        }
+
+        function restoreInlineEditState(state) {
+            if (!state || !activeInlineEdit || !activeInlineEdit.element) return;
+            const element = activeInlineEdit.element;
+            element.innerHTML = state.html;
+            element.className = state.className;
+            if (state.style === null) element.removeAttribute('style');
+            else element.setAttribute('style', state.style);
+            updateInlineToolbarState();
+        }
+
+        function undoInlineEdit() {
+            if (!inlineEditUndoStack.length) return;
+            const current = captureInlineEditState();
+            if (current) inlineEditRedoStack.push(current);
+            restoreInlineEditState(inlineEditUndoStack.pop());
+        }
+
+        function redoInlineEdit() {
+            if (!inlineEditRedoStack.length) return;
+            const current = captureInlineEditState();
+            if (current) inlineEditUndoStack.push(current);
+            restoreInlineEditState(inlineEditRedoStack.pop());
+        }
+
+        function startInlineToolbarDrag(event) {
+            if (event.button !== undefined && event.button !== 0) return;
+            const toolbar = document.getElementById('preview-inline-toolbar');
+            const pane = document.getElementById('preview-pane');
+            if (!toolbar || !pane) return;
+            event.preventDefault();
+            event.stopPropagation();
+            window._inlineInteractingWithToolbar = true;
+
+            const paneRect = pane.getBoundingClientRect();
+            const toolbarRect = toolbar.getBoundingClientRect();
+            const startX = event.clientX;
+            const startY = event.clientY;
+            const startLeft = toolbarRect.left - paneRect.left;
+            const startTop = toolbarRect.top - paneRect.top;
+            const move = moveEvent => {
+                const left = Math.max(8, Math.min(pane.clientWidth - toolbar.offsetWidth - 8,
+                    startLeft + moveEvent.clientX - startX));
+                const top = Math.max(8, Math.min(pane.clientHeight - toolbar.offsetHeight - 8,
+                    startTop + moveEvent.clientY - startY));
+                toolbar.style.left = `${left}px`;
+                toolbar.style.top = `${top}px`;
+                toolbar.style.right = 'auto';
+                const palette = document.getElementById('inline-color-palette-popup');
+                if (palette && !palette.classList.contains('hidden')) {
+                    const toolbarBounds = toolbar.getBoundingClientRect();
+                    const colorButton = document.getElementById('inline-tool-color-btn');
+                    const colorBounds = colorButton ? colorButton.getBoundingClientRect() : toolbarBounds;
+                    const paletteBounds = palette.getBoundingClientRect();
+                    const paletteLeft = toolbarBounds.right + paletteBounds.width + 3 <= window.innerWidth - 8
+                        ? toolbarBounds.right + 3
+                        : Math.max(8, Math.min(window.innerWidth - paletteBounds.width - 8,
+                            toolbarBounds.left - paletteBounds.width - 3));
+                    const paletteTop = Math.max(8, Math.min(window.innerHeight - paletteBounds.height - 8, colorBounds.top));
+                    palette.style.left = `${paletteLeft}px`;
+                    palette.style.top = `${paletteTop}px`;
+                }
+            };
+            const finish = () => {
+                document.removeEventListener('pointermove', move);
+                document.removeEventListener('pointerup', finish);
+                document.removeEventListener('pointercancel', finish);
+                window._inlineInteractingWithToolbar = false;
+            };
+            document.addEventListener('pointermove', move);
+            document.addEventListener('pointerup', finish, { once: true });
+            document.addEventListener('pointercancel', finish, { once: true });
+        }
+
         function positionInlineToolbar(targetEl) {
             const tb = document.getElementById('preview-inline-toolbar');
             const pane = document.getElementById('preview-pane');
             if (!tb || !pane) return;
 
-            const paneRect = pane.getBoundingClientRect();
             const tbH = tb.offsetHeight || 380;
-
-            let top = 40;
-            if (targetEl) {
-                const targetRect = targetEl.getBoundingClientRect();
-                const targetCenterY = (targetRect.top - paneRect.top) + (targetRect.height / 2);
-                top = targetCenterY - (tbH / 3);
-            }
+            const top = 8;
 
             const bottomMargin = window.innerWidth < 640 ? 58 : 16;
             const maxTop = Math.max(10, pane.clientHeight - tbH - bottomMargin);
-            top = Math.max(10, Math.min(maxTop, top));
 
-            tb.style.top = `${Math.round(top)}px`;
+            tb.style.top = `${Math.round(Math.min(maxTop, top))}px`;
             tb.style.bottom = 'auto';
             tb.style.transform = 'none';
-            tb.style.right = '10px';
-            tb.style.left = 'auto';
+            tb.style.left = '10px';
+            tb.style.right = 'auto';
 
             const colorPopup = document.getElementById('inline-color-palette-popup');
             if (colorPopup) {
-                colorPopup.style.right = 'calc(100% + 8px)';
-                colorPopup.style.left = 'auto';
+                colorPopup.style.right = 'auto';
             }
         }
 
@@ -16904,12 +17461,17 @@ function renderAcademicInputs() {
             if (colorPopup) {
                 colorPopup.classList.add('hidden');
                 colorPopup.classList.remove('flex');
+                const colorButton = document.getElementById('inline-tool-color-btn');
+                if (colorButton && colorPopup.parentElement !== colorButton.parentElement) {
+                    colorButton.parentElement.appendChild(colorPopup);
+                }
             }
         }
 
         function inlineToggleFormat(cmd) {
             window._inlineInteractingWithToolbar = true;
             if (!activeInlineEdit || !activeInlineEdit.element) return;
+            recordInlineEditUndo();
             const el = activeInlineEdit.element;
             const comp = window.getComputedStyle(el);
 
@@ -16982,6 +17544,7 @@ function renderAcademicInputs() {
         function inlineChangeFontSize(delta) {
             window._inlineInteractingWithToolbar = true;
             if (!activeInlineEdit || !activeInlineEdit.element) return;
+            recordInlineEditUndo();
             const el = activeInlineEdit.element;
             const comp = window.getComputedStyle(el);
             let currentPx = parseFloat(el.style.fontSize) || parseFloat(comp.fontSize) || 12;
@@ -16999,6 +17562,7 @@ function renderAcademicInputs() {
         function inlineCycleAlignment() {
             window._inlineInteractingWithToolbar = true;
             if (!activeInlineEdit || !activeInlineEdit.element) return;
+            recordInlineEditUndo();
             const el = activeInlineEdit.element;
             const comp = window.getComputedStyle(el);
             const currentAlign = (el.style.textAlign || comp.textAlign || 'left').toLowerCase();
@@ -17052,8 +17616,47 @@ function renderAcademicInputs() {
             if (!popup) return;
             const isHidden = popup.classList.contains('hidden');
             if (isHidden) {
+                if (popup.parentElement !== document.body) document.body.appendChild(popup);
                 popup.classList.remove('hidden');
                 popup.classList.add('flex');
+                const colorButton = document.getElementById('inline-tool-color-btn');
+                const buttonRect = colorButton ? colorButton.getBoundingClientRect() : null;
+                const toolbar = document.getElementById('preview-inline-toolbar');
+                const toolbarRect = toolbar ? toolbar.getBoundingClientRect() : null;
+                const popupWidth = popup.offsetWidth || 184;
+                let left = toolbarRect ? toolbarRect.right + 3 : (buttonRect ? buttonRect.right + 3 : 8);
+                if (left + popupWidth > window.innerWidth - 8) {
+                    left = toolbarRect ? toolbarRect.left - popupWidth - 3 : (buttonRect ? buttonRect.left - popupWidth - 3 : 8);
+                }
+                left = Math.max(8, Math.min(window.innerWidth - popupWidth - 8, left));
+                let top = buttonRect ? buttonRect.top : 8;
+                const colorObj = (typeof RESUME_THEME_COLORS !== 'undefined')
+                    ? (RESUME_THEME_COLORS.find(c => c.id === ((currentResume && currentResume.themeColorId) || activeThemeColorId)) || RESUME_THEME_COLORS[0])
+                    : { hex: '#05996c', light: '#ecfdf5', dark: '#065f46' };
+                popup.style.backgroundColor = colorObj.light;
+                popup.style.borderColor = colorObj.hex;
+                popup.style.color = colorObj.dark;
+                const paletteHeader = popup.firstElementChild;
+                const paletteTitle = paletteHeader ? paletteHeader.querySelector('span') : null;
+                const paletteClose = paletteHeader ? paletteHeader.querySelector('button') : null;
+                const paletteFooter = popup.lastElementChild;
+                const paletteLabel = paletteFooter ? paletteFooter.querySelector('label') : null;
+                const paletteReset = paletteFooter ? paletteFooter.querySelector('button') : null;
+                if (paletteHeader) paletteHeader.style.borderColor = colorObj.hex;
+                if (paletteTitle) paletteTitle.style.color = colorObj.dark;
+                if (paletteClose) {
+                    paletteClose.style.color = colorObj.dark;
+                    paletteClose.style.backgroundColor = colorObj.light;
+                }
+                if (paletteFooter) paletteFooter.style.borderColor = colorObj.hex;
+                if (paletteLabel) paletteLabel.style.color = colorObj.dark;
+                if (paletteReset) paletteReset.style.color = colorObj.dark;
+                popup.style.position = 'fixed';
+                popup.style.left = `${left}px`;
+                popup.style.right = 'auto';
+                popup.style.top = `${top}px`;
+                const popupHeight = popup.getBoundingClientRect().height || 220;
+                popup.style.top = `${Math.max(8, Math.min(window.innerHeight - popupHeight - 8, top))}px`;
             } else {
                 popup.classList.add('hidden');
                 popup.classList.remove('flex');
@@ -17063,6 +17666,7 @@ function renderAcademicInputs() {
         function inlineSetTextColor(color) {
             window._inlineInteractingWithToolbar = true;
             if (!activeInlineEdit || !activeInlineEdit.element) return;
+            recordInlineEditUndo();
             const el = activeInlineEdit.element;
             if (color === 'inherit') {
                 el.style.removeProperty('color');
@@ -17085,6 +17689,10 @@ function renderAcademicInputs() {
             if (popup) {
                 popup.classList.add('hidden');
                 popup.classList.remove('flex');
+                const colorButton = document.getElementById('inline-tool-color-btn');
+                if (colorButton && popup.parentElement !== colorButton.parentElement) {
+                    colorButton.parentElement.appendChild(popup);
+                }
             }
             if (typeof showToast === 'function') {
                 showToast(color === 'inherit' ? "Text color reset" : "Text color applied");
@@ -17097,6 +17705,7 @@ function renderAcademicInputs() {
             const el = activeInlineEdit.element;
             const text = el.innerText || '';
             if (!text.trim()) return;
+            recordInlineEditUndo();
 
             const isAllUpper = (text === text.toUpperCase() && text !== text.toLowerCase());
             const isAllLower = (text === text.toLowerCase() && text !== text.toUpperCase());
@@ -17129,13 +17738,18 @@ function renderAcademicInputs() {
             if (lines.length === 0) return;
 
             let effectiveType = type;
-            if (type === 'bullet' && lines.every(l => bulletCheckRegex.test(l))) {
+            if (type === 'cycle') {
+                if (lines.every(l => bulletCheckRegex.test(l))) effectiveType = 'number';
+                else if (lines.every(l => numberCheckRegex.test(l))) effectiveType = 'none';
+                else effectiveType = 'bullet';
+            } else if (type === 'bullet' && lines.every(l => bulletCheckRegex.test(l))) {
                 effectiveType = 'none';
             } else if (type === 'number' && lines.every(l => numberCheckRegex.test(l))) {
                 effectiveType = 'none';
             } else if (type === 'alpha' && lines.every(l => alphaCheckRegex.test(l))) {
                 effectiveType = 'none';
             }
+            recordInlineEditUndo();
 
             let numIdx = 1;
             let alphaCharCode = 97; // 'a'
@@ -17159,6 +17773,16 @@ function renderAcademicInputs() {
             el.innerText = transformed.join('\n');
             el.style.setProperty('white-space', 'pre-line', 'important');
             el.style.setProperty('display', 'block', 'important');
+            const listIcon = document.getElementById('inline-tool-list-icon');
+            const listButton = document.getElementById('inline-tool-list-btn');
+            if (listIcon && listButton) {
+                listIcon.className = `fa-solid ${effectiveType === 'number' ? 'fa-list-ol' : effectiveType === 'none' ? 'fa-list' : 'fa-list-ul'} text-[11px]`;
+                listButton.title = effectiveType === 'bullet'
+                    ? 'Bullets applied; next: numbered list'
+                    : effectiveType === 'number'
+                        ? 'Numbered list applied; next: plain text'
+                        : 'List removed; next: bullets';
+            }
 
             const toastMessages = {
                 bullet: 'Bullet List (•) applied',
@@ -17167,7 +17791,7 @@ function renderAcademicInputs() {
                 none: 'Bullets / Numbers removed'
             };
             if (typeof showToast === 'function') {
-                showToast(toastMessages[type] || 'List updated');
+                showToast(toastMessages[effectiveType] || 'List updated');
             }
         }
 
@@ -17231,12 +17855,23 @@ function renderAcademicInputs() {
             const originalText = (target.innerText || '').trim();
             if (!originalText) return;
 
+            beginResumeDraft();
             const fieldInfo = detectFieldFromElement(target);
 
+            inlineEditUndoStack = [];
+            inlineEditRedoStack = [];
+            const beforeInputHandler = () => recordInlineEditUndo();
+            target.addEventListener('beforeinput', beforeInputHandler);
             activeInlineEdit = {
                 element: target,
                 originalText: originalText,
-                field: fieldInfo
+                field: fieldInfo,
+                beforeInputHandler: beforeInputHandler,
+                originalState: {
+                    html: target.innerHTML,
+                    className: target.className,
+                    style: target.getAttribute('style')
+                }
             };
 
             target.contentEditable = "true";
@@ -17259,7 +17894,14 @@ function renderAcademicInputs() {
             if (liveBadge) liveBadge.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-100');
 
             target.onkeydown = function(e) {
-                if (e.key === 'Enter') {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+                    e.preventDefault();
+                    if (e.shiftKey) redoInlineEdit();
+                    else undoInlineEdit();
+                } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+                    e.preventDefault();
+                    redoInlineEdit();
+                } else if (e.key === 'Enter') {
                     const isMultiline = target.classList.contains('whitespace-pre-line') ||
                                         (target.tagName === 'P' && target.innerText.length > 80);
                     if (isMultiline && e.shiftKey) {
@@ -17281,6 +17923,9 @@ function renderAcademicInputs() {
             const originalText = activeInlineEdit.originalText;
             const newText = (el.innerText || '').trim();
 
+            if (activeInlineEdit.beforeInputHandler) {
+                el.removeEventListener('beforeinput', activeInlineEdit.beforeInputHandler);
+            }
             el.contentEditable = "false";
             el.classList.remove('inline-editing-active');
             el.onkeydown = null;
@@ -17293,6 +17938,13 @@ function renderAcademicInputs() {
             activeInlineEdit = null;
 
             if (newText === originalText.trim()) {
+                const originalState = editCopy.originalState;
+                if (originalState && (el.innerHTML !== originalState.html ||
+                    el.className !== originalState.className ||
+                    el.getAttribute('style') !== originalState.style)) {
+                    if (currentResume) currentResume.hasBeenEdited = true;
+                    saveCurrentResumeSilently();
+                }
                 return;
             }
 
@@ -17303,7 +17955,10 @@ function renderAcademicInputs() {
             window._inlineInteractingWithToolbar = false;
             if (!activeInlineEdit || !activeInlineEdit.element) return;
             const el = activeInlineEdit.element;
-            el.innerText = activeInlineEdit.originalText;
+            if (activeInlineEdit.beforeInputHandler) {
+                el.removeEventListener('beforeinput', activeInlineEdit.beforeInputHandler);
+            }
+            restoreInlineEditState(activeInlineEdit.originalState);
             el.contentEditable = "false";
             el.classList.remove('inline-editing-active');
             el.onkeydown = null;

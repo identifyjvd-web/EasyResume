@@ -1,0 +1,16 @@
+{
+  "name": "easyresume",
+  "version": "1.0.0",
+  "description": "Professional Resume Builder Desktop App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "resume",
+    "builder",
+    "desktop"
+  ],
+  "author": "",
+  "license": "ISC"
+}
