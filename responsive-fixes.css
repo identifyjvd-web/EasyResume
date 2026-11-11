@@ -83,9 +83,7 @@ body {
   }
 }
 
-/* The dashboard's resume/template samples should be two-up on phones. Use
-   :has() to find the actual sample-card parent instead of assuming a class
-   name that may not be present in the generated dashboard markup. */
+/* Keep dashboard resume/template samples two-up on phones. */
 @media (max-width: 767px) {
   #view-dashboard :is(div, section, ul):has(> :is([class*="resume"], [class*="template"], [class*="sample"], [data-template], [data-sample])) {
     display: grid !important;
@@ -99,6 +97,53 @@ body {
     min-width: 0 !important;
     max-width: 100% !important;
     flex: none !important;
+  }
+}
+
+/* Compact saved-resume cards on desktop and mobile: trim padding/gaps and
+   remove default heading/paragraph margins that create empty space. */
+#view-dashboard :is(article, li, [class*="resume-card"], [class*="saved-resume"], [data-resume-card]) {
+  min-width: 0;
+  padding: 10px !important;
+  gap: 8px !important;
+}
+
+#view-dashboard :is(article, li, [class*="resume-card"], [class*="saved-resume"], [data-resume-card]) :is(h1, h2, h3, h4, h5, h6, p) {
+  margin-block: 0 !important;
+  line-height: 1.25 !important;
+}
+
+#view-dashboard :is(article, li, [class*="resume-card"], [class*="saved-resume"], [data-resume-card]) :is(img, [class*="avatar"], [class*="profile-photo"], [class*="photo"]) {
+  margin-block: 0 !important;
+  flex-shrink: 0;
+}
+
+/* Make the edit action a regular, understated icon button instead of a large
+   floating/card-style control. */
+#view-dashboard :is(button, [role="button"]):is([aria-label*="edit" i], [title*="edit" i]),
+#view-dashboard :is(button, [role="button"]):has(svg[class*="pencil"], svg[class*="edit"], i[class*="pen"], i[class*="edit"]) {
+  width: 32px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 6px !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+#view-dashboard :is(button, [role="button"]):is([aria-label*="edit" i], [title*="edit" i]) svg,
+#view-dashboard :is(button, [role="button"]):has(svg[class*="pencil"], svg[class*="edit"], i[class*="pen"], i[class*="edit"]) :is(svg, i) {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 767px) {
+  #view-dashboard :is(article, li, [class*="resume-card"], [class*="saved-resume"], [data-resume-card]) {
+    padding: 8px !important;
+    gap: 6px !important;
   }
 }
 

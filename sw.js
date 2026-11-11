@@ -1,4 +1,4 @@
-const CACHE_NAME = 'easyresume-pwa-v2';
+const CACHE_NAME = 'easyresume-pwa-v3';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -8,7 +8,7 @@ const CORE_ASSETS = [
   './logo-192.png'
 ];
 
-const RESPONSIVE_STYLESHEET = '<link rel="stylesheet" href="./responsive-fixes.css?v=mobile-dashboard-2up">';
+const RESPONSIVE_STYLESHEET = '<link rel="stylesheet" href="./responsive-fixes.css?v=saved-resume-compact-3">';
 
 async function addResponsiveStylesheet(response) {
   if (!response || !response.headers.get('content-type')?.includes('text/html')) {
@@ -96,7 +96,7 @@ self.addEventListener('fetch', (event) => {
           if (event.request.destination === 'image') {
             return caches.match('./logo.png');
           }
-        })
+        });
     })
   );
 });
