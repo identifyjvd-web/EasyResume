@@ -53,6 +53,14 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        .brand-mark {
+            display: inline-block;
+            font-size: 0.62em;
+            line-height: 0;
+            vertical-align: super;
+            transform: translateY(-0.08em);
+        }
+
         html,
         body {
             overflow-x: hidden !important;
@@ -1988,16 +1996,28 @@
             }
         }
 
-        /* 100% Solid White Dropdown Menu Card (Zero Transparency, Crystal Clear) */
+        /* Roomy page-style options cards */
         #header-dropdown-menu {
             background-color: #ffffff !important;
             background: #ffffff !important;
             opacity: 1 !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
-            border: 1.5px solid #cbd5e1 !important;
-            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.45), 0 10px 20px -5px rgba(0, 0, 0, 0.25) !important;
+            border: 1px solid rgba(16, 185, 129, 0.28) !important;
+            border-radius: 24px !important;
+            width: min(24rem, calc(100vw - 24px)) !important;
+            max-height: min(80vh, 760px);
+            overflow-y: auto;
+            padding: 10px !important;
+            box-shadow: 0 24px 60px -18px rgba(15, 23, 42, 0.48), 0 8px 24px -8px rgba(5, 150, 105, 0.18) !important;
             z-index: 99999 !important;
+        }
+
+        #header-dropdown-menu > button,
+        #header-mobile-menu-dropdown > button {
+            min-height: 50px;
+            padding: 10px 12px !important;
+            border-radius: 15px !important;
         }
 
         #header-dropdown-menu,
@@ -2010,14 +2030,29 @@
         }
 
         #header-dropdown-menu button:hover {
-            background-color: #f1f5f9 !important;
+            background-image: linear-gradient(rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.08)) !important;
+            box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.18) !important;
+        }
+
+        #header-mobile-menu-dropdown {
+            width: min(24rem, calc(100vw - 20px)) !important;
+            max-height: calc(100dvh - 70px);
+            overflow-y: auto;
+            padding: 12px !important;
+            border: 1px solid rgba(16, 185, 129, 0.28) !important;
+            border-radius: 24px !important;
+            box-shadow: 0 24px 60px -18px rgba(15, 23, 42, 0.48), 0 8px 24px -8px rgba(5, 150, 105, 0.18) !important;
+        }
+
+        #header-mobile-menu-dropdown > button:hover {
+            background-color: #f0fdf4 !important;
+            box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.18);
         }
 
         @media (max-width: 639px) {
             #header-dropdown-menu {
-                width: min(18rem, calc(100vw - 24px)) !important;
+                width: min(24rem, calc(100vw - 20px)) !important;
                 max-height: calc(100dvh - 70px);
-                overflow-y: auto;
             }
         }
 
@@ -2202,13 +2237,13 @@
             <!-- Logo Squircle Card -->
             <div
                 class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl bg-white p-2 shadow-[0_12px_36px_rgba(5,153,108,0.18)] border border-emerald-100/80 flex items-center justify-center overflow-hidden transition-transform duration-300">
-                <img src="logo.png" alt="EasyResume Logo" class="w-full h-full object-cover rounded-xl sm:rounded-2xl">
+                <img src="logo.png" alt="Resume Logo" class="w-full h-full object-cover rounded-xl sm:rounded-2xl">
             </div>
 
             <!-- Brand Title -->
             <div
                 class="mt-4 flex items-center leading-none text-2xl sm:text-[28px] font-black tracking-tight text-slate-900">
-                <span>Easy</span><span class="text-emerald-700 ml-0.5">Resume&deg;</span>
+                <span>Easy</span><span class="text-emerald-700 ml-0.5">Resume<span class="brand-mark">°</span></span>
             </div>
             <span
                 class="text-[9.5px] sm:text-[10px] font-extrabold text-emerald-700 tracking-wider uppercase mt-1.5">Smart
@@ -2237,7 +2272,7 @@
                 <!-- EasyResume Brand Logo & Name -->
                 <div id="header-brand-container" onclick="handleBrandClick()"
                     class="flex items-center gap-2 sm:gap-3 cursor-pointer shrink-0 select-none group active:scale-95 transition-transform"
-                    title="EasyResume - WhatsApp: 7999565002">
+                    title="Resume - WhatsApp: 7999565002">
                     <div
                         class="w-9 h-9 sm:w-11 sm:h-11 md:w-11.5 md:h-11.5 rounded-xl sm:rounded-2xl overflow-hidden shadow-xs shrink-0 bg-transparent flex items-center justify-center">
                         <img src="logo.png" alt="EasyResume Logo" class="w-full h-full object-cover">
@@ -2247,7 +2282,7 @@
                             <span
                                 class="text-lg sm:text-2xl md:text-[26px] font-black tracking-tight text-slate-900 leading-none">Easy</span>
                             <span
-                                class="text-lg sm:text-2xl md:text-[26px] font-black tracking-tight text-emerald-700 leading-none ml-0.5">Resume&deg;</span>
+                                class="text-lg sm:text-2xl md:text-[26px] font-black tracking-tight text-emerald-700 leading-none ml-0.5">Resume<span class="brand-mark">°</span></span>
                         </div>
                         <span
                             class="text-[9px] sm:text-[10px] font-bold text-emerald-700 tracking-wide mt-0.5 leading-none">By
@@ -2326,10 +2361,9 @@
                             <i id="mobile-menu-icon" class="fa-solid fa-bars text-emerald-600 text-xs sm:text-sm"></i>
                         </button>
 
-                        <!-- Dropdown Menu (100% Solid White Card, Completely Opaque, Zero Transparency) -->
+                        <!-- Dropdown Menu (Roomy Page-Style Action Card) -->
                         <div id="header-dropdown-menu"
-                            class="hidden absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-24px)] rounded-2xl border border-slate-300 py-2.5 transition-all select-none"
-                            style="background-color: #ffffff !important; background: #ffffff !important; opacity: 1 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.45), 0 10px 20px -5px rgba(0, 0, 0, 0.25) !important; z-index: 99999 !important;">
+                            class="hidden absolute right-0 top-full mt-2 w-96 max-w-[calc(100vw-24px)] rounded-2xl border border-slate-300 py-2.5 transition-all select-none">
                             <!-- Header Title -->
                             <div class="px-4 py-2 text-[11px] font-black uppercase tracking-wider text-slate-600 border-b border-slate-200 mb-1.5 flex items-center justify-between"
                                 style="background-color: #f8fafc !important;">
@@ -2439,7 +2473,7 @@
                                 </div>
                             </button>
 
-                            <!-- 4. Upload & Auto-Fill from PDF -->
+                            <!-- 4. Upload & Auto-Fill from Resume File -->
                             <button type="button" data-menu-context="editor"
                                 onclick="triggerImportResumePdf(); closeHeaderDropdownMenu();"
                                 class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-800 hover:text-rose-700 hover:bg-rose-50 flex items-center gap-3 transition group cursor-pointer"
@@ -2450,9 +2484,9 @@
                                 </span>
                                 <div class="flex-1 min-w-0">
                                     <div class="font-extrabold text-sm text-slate-900 group-hover:text-rose-700">Upload
-                                        PDF (Auto-Fill)</div>
-                                    <div class="text-[11px] text-slate-600 font-medium">Extract existing PDF resume into
-                                        form</div>
+                                        Resume (Auto-Fill)</div>
+                                    <div class="text-[11px] text-slate-600 font-medium">JSON, PDF, Word, or image file into
+                                        the form</div>
                                 </div>
                             </button>
 
@@ -2553,6 +2587,16 @@
 
         <div id="header-mobile-menu-dropdown"
             class="sm:hidden hidden fixed top-[54px] right-3 z-50 w-64 max-w-[calc(100vw-24px)] bg-white/95 backdrop-blur-xl text-slate-800 rounded-2xl shadow-2xl border border-emerald-200/80 p-2 space-y-1 select-none no-print">
+            <div class="px-3 py-2 mb-1 rounded-2xl bg-gradient-to-r from-emerald-50 via-white to-teal-50 border border-emerald-100">
+                <div class="flex items-center gap-2 text-sm font-black text-slate-900">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <i class="fa-solid fa-sliders text-sm"></i>
+                    </span>
+                    Resume Menu
+                </div>
+                <div class="text-[10px] text-slate-500 font-semibold ml-10 -mt-1">Quick actions and settings</div>
+            </div>
+
             <!-- 1. Preview / Edit Toggle -->
             <button type="button" onclick="toggleFormMinimize(); closeMobileHeaderMenu();"
                 class="w-full py-2.5 px-3 rounded-xl flex items-center justify-between hover:bg-emerald-50 active:bg-emerald-100 text-left transition cursor-pointer text-xs font-bold text-emerald-700">
@@ -2587,11 +2631,11 @@
                 <span>Import Resume (JSON)</span>
             </button>
 
-            <!-- 4b. Upload PDF Auto-Fill -->
+            <!-- 4b. Upload Resume Auto-Fill -->
             <button type="button" onclick="triggerImportResumePdf(); closeMobileHeaderMenu();"
                 class="w-full py-2 px-3 rounded-xl flex items-center gap-2.5 hover:bg-amber-50 active:bg-amber-100 text-left transition cursor-pointer text-xs font-bold text-amber-700">
                 <i class="fa-solid fa-wand-magic-sparkles text-sm w-4 text-center text-amber-400"></i>
-                <span>Upload PDF (Auto-Fill)</span>
+                <span>Upload Resume (Auto-Fill)</span>
             </button>
 
 
@@ -2804,7 +2848,7 @@
                                         <!-- Mobile Only: Upload Old Resume -->
                                         <button type="button" onclick="triggerImportResumePdf()"
                                             class="sm:hidden py-1 px-2.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center gap-1.5 shadow-2xs active:scale-95 transition cursor-pointer shrink-0 ml-auto sm:ml-0"
-                                            title="Auto-fill from existing PDF, Word (.docx) or Image Resume">
+                                            title="Auto-fill from existing JSON, PDF, Word (.docx) or Image Resume">
                                             <i class="fa-solid fa-cloud-arrow-up text-emerald-600 text-xs"></i>
                                             <span>Upload Old Resume</span>
                                         </button>
@@ -2820,7 +2864,7 @@
                                 <div class="hidden sm:flex items-center gap-2 sm:gap-2.5 shrink-0">
                                     <button type="button" onclick="triggerImportResumePdf()"
                                         class="py-1.5 sm:py-2 px-3 sm:px-4 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center gap-1.5 shadow-2xs active:scale-95 transition cursor-pointer"
-                                        title="Auto-fill from existing PDF, Word (.docx) or Image Resume">
+                                        title="Auto-fill from existing JSON, PDF, Word (.docx) or Image Resume">
                                         <i class="fa-solid fa-cloud-arrow-up text-emerald-600 text-xs"></i>
                                         <span>Upload Old Resume</span>
                                     </button>
@@ -3333,7 +3377,7 @@
                                                     <!-- Auto-fill from old resume button right above Upload & Capture buttons (Theme Emerald Style with Upload Icon at the end) -->
                                                     <button type="button" onclick="triggerImportResumePdf()"
                                                         class="w-full py-1.5 sm:py-2 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer"
-                                                        title="Auto-fill form from existing PDF, Word (.docx) or Image Resume">
+                                                        title="Auto-fill form from existing JSON, PDF, Word (.docx) or Image Resume">
                                                         <span class="truncate">Auto fill from old resume</span>
                                                         <i
                                                             class="fa-solid fa-cloud-arrow-up text-emerald-600 text-xs"></i>
@@ -4622,13 +4666,12 @@
         <footer id="app-global-footer" class="shrink-0 h-6 sm:h-6.5 w-full bg-gradient-to-r from-emerald-100/90 via-teal-50/90 to-sky-100/80 backdrop-blur-md border-t border-emerald-200/70 text-[10px] sm:text-[11px] font-medium flex items-center justify-between px-3 sm:px-5 select-none print:hidden z-30 shadow-2xs text-slate-800">
             <div class="flex items-center gap-1.5 min-w-0 truncate">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0"></span>
-                <span class="text-slate-900 font-bold truncate">EasyResume</span>
-                <span class="px-1.5 py-0.2 rounded bg-white/80 text-emerald-800 font-mono text-[9px] sm:text-[10px] font-extrabold border border-emerald-300/80 shadow-2xs">v8.7.0</span>
+                <span class="text-slate-900 font-bold truncate">EasyResume&deg;</span>
+                <span class="text-emerald-700 font-mono text-[9px] sm:text-[10px] font-semibold">v8.7.0</span>
             </div>
-            <div class="flex items-center gap-1.5 shrink-0 text-slate-800">
-                <i class="fa-solid fa-eye text-emerald-600 text-[10px]"></i>
-                <span class="text-slate-600 font-bold">Visitors:</span>
-                <span id="footer-visitors-count" class="font-mono font-black text-emerald-900 tracking-wider">1,429</span>
+            <div class="flex items-center gap-1.5 shrink-0">
+                <i class="fa-solid fa-shield-halved text-emerald-600 text-[10px]"></i>
+                <button onclick="openTermsModal()" class="text-emerald-700 font-semibold hover:text-emerald-900 hover:underline transition-colors duration-150 cursor-pointer bg-transparent border-none p-0">Privacy Policy</button>
             </div>
         </footer>
 
@@ -4645,7 +4688,7 @@
             onchange="onPhotoFileChosen(event)">
         <input type="file" id="hidden-import-json-input" accept=".json,application/json" class="hidden"
             onchange="handleResumeJsonImport(event)">
-        <input type="file" id="hidden-import-pdf-input" accept=".pdf,.doc,.docx,image/*" class="hidden"
+        <input type="file" id="hidden-import-pdf-input" accept=".json,.pdf,.doc,.docx,application/json,image/*" class="hidden"
             onchange="handleResumePdfImport(event)">
 
         <!-- Resume Section Reorder Right Sidebar Drawer (Slides in from Right Side) -->
@@ -4666,7 +4709,7 @@
                         </div>
                         <div>
                             <h3 class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">
-                                Terms &amp; Privacy Policy (नियम एवं शर्तें)
+                                Privacy Policy
                             </h3>
                             <p class="text-[11px] sm:text-xs text-emerald-700 font-semibold flex items-center gap-1.5 mt-0.5">
                                 <i class="fa-solid fa-lock text-[10px]"></i> 100% Client-Side Privacy &amp; Data Security Assurance
@@ -4682,74 +4725,69 @@
 
                 <!-- Scrollable Modal Body -->
                 <div class="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 space-y-4 text-slate-800 text-xs sm:text-sm leading-relaxed">
-                    <!-- Highlight Banner Box -->
-                    <div class="p-3.5 sm:p-4 rounded-xl bg-emerald-50 border border-emerald-200/90 flex items-start gap-3">
-                        <i class="fa-solid fa-circle-check text-emerald-600 text-lg sm:text-xl shrink-0 mt-0.5"></i>
-                        <div class="space-y-1">
-                            <h4 class="font-bold text-emerald-950 text-xs sm:text-sm">
-                                आपकी गोपनीयता हमारी सर्वोच्च प्राथमिकता है (Zero Server Data Policy)
-                            </h4>
-                            <p class="text-[11.5px] sm:text-xs text-emerald-900 leading-normal">
-                                EasyResume™ में बनाया गया कोई भी रेज़्युमे, फोटो या पर्सनल जानकारी किसी सर्वर, डेटाबेस या एडमिन के पास <b>कभी भी नहीं जाती</b>। यह 100% आपके अपने मोबाइल या कंप्यूटर के ब्राउज़र में ही सुरक्षित रहता है।
-                            </p>
+                    <!-- Privacy Policy: 4 sections -->
+                    <div class="p-4 rounded-xl border border-emerald-200/90 bg-white shadow-sm space-y-4">
+                        <div class="flex items-start gap-3 pb-3 border-b border-slate-200">
+                            <i class="fa-solid fa-shield-halved text-emerald-600 text-lg shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-xs sm:text-sm">Your Privacy Matters</h4>
+                                <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">आपकी गोपनीयता हमारे लिए महत्वपूर्ण है।</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Points Assurance (Hindi & English) -->
-                    <div class="space-y-3">
-                        <!-- Point 1 -->
-                        <div class="p-3 rounded-xl border border-slate-200 hover:border-emerald-300 transition bg-slate-50/50">
+                        <!-- 1. No Data Collection -->
+                        <div>
                             <div class="flex items-center gap-2 font-bold text-slate-900 text-xs sm:text-sm">
                                 <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs shrink-0 font-black">1</span>
-                                <span>100% Local Device Storage (स्थानीय डिवाइस में सुरक्षित)</span>
+                                <span>No Data Collection</span>
                             </div>
                             <p class="text-[11.5px] sm:text-xs text-slate-600 mt-1.5 pl-8 leading-normal">
-                                All resume content (personal particulars, phone, email, education, experience, photo &amp; signature) is stored strictly on your local browser (LocalStorage &amp; IndexedDB). No backend server is attached.
+                                EasyResume does not collect, store, or transmit any of your personal data to any server. All resume data is saved only on your own device (browser's localStorage).
                             </p>
                             <p class="text-[11px] sm:text-[11.5px] text-slate-500 mt-1 pl-8 italic">
-                                आपका पूरा डेटा आपके डिवाइस के लोकल स्टोरेज में ही सेव रहता है। कोई भी बाहरी व्यक्ति या एडमिन इसे नहीं देख सकता।
+                                EasyResume आपकी कोई भी जानकारी किसी सर्वर पर नहीं भेजता। आपका सारा डेटा सिर्फ आपके डिवाइस में सुरक्षित रहता है।
                             </p>
                         </div>
 
-                        <!-- Point 2 -->
-                        <div class="p-3 rounded-xl border border-slate-200 hover:border-emerald-300 transition bg-slate-50/50">
+                        <!-- 2. No Tracking / No Ads -->
+                        <div class="pt-3 border-t border-slate-200">
                             <div class="flex items-center gap-2 font-bold text-slate-900 text-xs sm:text-sm">
                                 <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs shrink-0 font-black">2</span>
-                                <span>Zero Data Leak &amp; No Third-Party Tracking (कोई डेटा लीक का ख़तरा नहीं)</span>
+                                <span>No Tracking &amp; No Ads</span>
                             </div>
                             <p class="text-[11.5px] sm:text-xs text-slate-600 mt-1.5 pl-8 leading-normal">
-                                EasyResume does NOT use tracking pixels, ad trackers, or third-party data selling networks. There is zero risk of data leak, data breach, or commercial exploitation.
+                                We do not use cookies, advertising trackers, analytics scripts, or third-party data collectors. Your resume-building activity is completely private.
                             </p>
                             <p class="text-[11px] sm:text-[11.5px] text-slate-500 mt-1 pl-8 italic">
-                                हम किसी भी प्रकार का डेटा कलेक्ट या ट्रैक नहीं करते हैं। डेटा लीक होने या किसी को बेचे जाने की कोई संभावना नहीं है।
+                                हम कोई कुकी, ट्रैकर या विज्ञापन स्क्रिप्ट उपयोग नहीं करते। आपकी गतिविधि पूरी तरह निजी है।
                             </p>
                         </div>
 
-                        <!-- Point 3 -->
-                        <div class="p-3 rounded-xl border border-slate-200 hover:border-emerald-300 transition bg-slate-50/50">
+                        <!-- 3. Your Data, Your Control -->
+                        <div class="pt-3 border-t border-slate-200">
                             <div class="flex items-center gap-2 font-bold text-slate-900 text-xs sm:text-sm">
                                 <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs shrink-0 font-black">3</span>
-                                <span>Full User Ownership &amp; Offline Freedom (पूर्ण यूज़र नियंत्रण व ऑफ़लाइन उपयोग)</span>
+                                <span>Your Data, Your Control</span>
                             </div>
                             <p class="text-[11.5px] sm:text-xs text-slate-600 mt-1.5 pl-8 leading-normal">
-                                You own 100% of your documents. You can export as PDF, Word (.doc), or JSON backup anytime. You can delete individual resumes or clear all data whenever you want. Works 100% offline without active internet.
+                                You can export your resumes as PDF, Word, or JSON anytime. You can delete all saved data by clearing browser storage. We never access your files.
                             </p>
                             <p class="text-[11px] sm:text-[11.5px] text-slate-500 mt-1 pl-8 italic">
-                                आप जब चाहें अपना रेज़्युमे PDF, Word या JSON में डाउनलोड कर सकते हैं या एक क्लिक में डिलीट कर सकते हैं। यह ऐप बिना इंटरनेट के भी पूरी तरह काम करता है।
+                                आप अपना डेटा कभी भी PDF, Word या JSON में export कर सकते हैं या delete कर सकते हैं। हमारी इस तक कोई पहुँच नहीं है।
                             </p>
                         </div>
 
-                        <!-- Point 4 -->
-                        <div class="p-3 rounded-xl border border-slate-200 hover:border-emerald-300 transition bg-slate-50/50">
+                        <!-- 4. Third-Party Libraries -->
+                        <div class="pt-3 border-t border-slate-200">
                             <div class="flex items-center gap-2 font-bold text-slate-900 text-xs sm:text-sm">
                                 <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs shrink-0 font-black">4</span>
-                                <span>User Responsibility / उपयोग की शर्तें</span>
+                                <span>Third-Party Libraries</span>
                             </div>
                             <p class="text-[11.5px] sm:text-xs text-slate-600 mt-1.5 pl-8 leading-normal">
-                                Users are solely responsible for the authenticity and factual accuracy of the information, educational marks, and certificates entered in their generated resume documents.
+                                EasyResume uses open-source libraries (PDF.js, Tesseract.js, etc.) loaded from public CDNs. These libraries do not share your data with us or any third party.
                             </p>
                             <p class="text-[11px] sm:text-[11.5px] text-slate-500 mt-1 pl-8 italic">
-                                रेज़्युमे में दर्ज की गई सभी शैक्षणिक व व्यक्तिगत जानकारियों की सत्यता के लिए उपयोगकर्ता स्वयं उत्तरदायी होंगे।
+                                ऐप कुछ open-source libraries CDN से load करता है। ये आपका डेटा हमसे या किसी तीसरे पक्ष से साझा नहीं करतीं।
                             </p>
                         </div>
                     </div>
@@ -4773,7 +4811,7 @@
                             </div>
                             <div>
                                 <span class="text-slate-400 block text-[10px]">Platform / Application:</span>
-                                <span class="font-bold text-slate-100">EasyResume™ (Smart Resume Maker PWA)</span>
+                                <span class="font-bold text-slate-100">EasyResume<span class="brand-mark">°</span> (Smart Resume Maker PWA)</span>
                             </div>
                             <div>
                                 <span class="text-slate-400 block text-[10px]">Location &amp; Office:</span>
@@ -4786,7 +4824,7 @@
                         </div>
 
                         <div class="mt-3 pt-2.5 border-t border-slate-700/70 flex flex-wrap items-center justify-between text-[10px] text-slate-400">
-                            <span>&copy; 2026 EasyResume&trade; by Javed Ansari. All rights reserved.</span>
+                            <span>&copy; 2026 EasyResume<span class="brand-mark">°</span> by Javed Ansari. All rights reserved.</span>
                             <span class="text-emerald-400 font-semibold flex items-center gap-1">
                                 <i class="fa-solid fa-lock text-[9px]"></i> End-to-End Local Privacy Guaranteed
                             </span>
@@ -4799,7 +4837,7 @@
                     <span class="text-[11px] text-slate-500 font-medium hidden sm:inline">
                         100% सुरक्षित एवं निजी रेज़्युमे मेकर
                     </span>
-                    <button type="button" onclick="closeTermsModal()"
+                    <button type="button" onclick="closeTermsModal(true)"
                         class="w-full sm:w-auto px-6 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs shadow-2xs active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-check text-xs"></i>
                         <span>I Understand &amp; Agree (सहमत हैं)</span>
@@ -6785,30 +6823,36 @@
 
             const uploadCardHtml = `
                 <div class="system-card ${spanClasses} rounded-xl p-2 sm:p-3.5 relative overflow-hidden flex flex-col justify-between items-center text-center group cursor-pointer border-2 border-dashed border-emerald-400/90 hover:border-emerald-600 bg-gradient-to-b from-emerald-50/40 via-white to-teal-50/30 hover:bg-emerald-50/70 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full min-h-[390px] sm:min-h-[410px]" onclick="triggerCustomSampleUpload()">
-                    <input type="file" id="custom-sample-file-input" accept=".json,.docx,.doc" class="hidden" onchange="handleCustomSampleUpload(event)">
+                    <input type="file" id="custom-sample-file-input" accept=".json,.pdf,.docx,.doc,application/json,image/*" class="hidden" onchange="handleResumePdfImport(event)">
                     <div class="w-full flex-1 flex flex-col items-center justify-center py-6 sm:py-8">
                         <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-3xl sm:text-4xl mb-3 sm:mb-4 shadow-xs group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
                         </div>
                         <h3 class="text-xs sm:text-base font-bold text-slate-900 group-hover:text-emerald-700 transition">
-                            + Add / Upload Sample
+                            Upload Resume File
                         </h3>
                         <p class="text-[9.5px] sm:text-xs text-slate-500 font-medium px-2 mt-1.5 max-w-sm leading-relaxed">
-                            Upload resume sample via <b>JSON (.json)</b> or <b>Word (.docx, .doc)</b> file
+                            Auto-fill the editor from a <b>JSON</b>, <b>PDF</b>, <b>Word</b>, or <b>image</b> resume
                         </p>
                         <div class="mt-3 flex items-center justify-center gap-1.5 flex-wrap">
                             <span class="px-2.5 py-0.5 rounded-full text-[9px] sm:text-[9.5px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
                                 <i class="fa-solid fa-code mr-1"></i>JSON
                             </span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[9px] sm:text-[9.5px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                                <i class="fa-solid fa-file-pdf mr-1"></i>PDF
+                            </span>
                             <span class="px-2.5 py-0.5 rounded-full text-[9px] sm:text-[9.5px] font-bold bg-blue-100 text-blue-800 border border-blue-300">
                                 <i class="fa-solid fa-file-word mr-1"></i>WORD (.docx, .doc)
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[9px] sm:text-[9.5px] font-bold bg-violet-100 text-violet-800 border border-violet-300">
+                                <i class="fa-solid fa-image mr-1"></i>IMAGE
                             </span>
                         </div>
                     </div>
                     <div class="w-full pt-2 sm:pt-3 border-t border-slate-100 mt-2 sm:mt-3 flex justify-center" onclick="event.stopPropagation()">
                         <button type="button" onclick="triggerCustomSampleUpload()" class="w-full sm:max-w-xs py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-[10.5px] sm:text-xs shadow-2xs active:scale-95 transition flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer">
                             <i class="fa-solid fa-file-arrow-up text-[11px] sm:text-xs"></i>
-                            <span>Upload Sample File</span>
+                            <span>Auto-fill from File</span>
                         </button>
                     </div>
                 </div>
@@ -8042,6 +8086,8 @@
         let currentResume = null;
         let currentZoom = 0.85;
         let isSamplePreviewMode = false;
+        let pendingPrivacyConsentResumeId = null;
+        let privacyConsentRequiredResumeId = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             initFooterVisitorCounter();
@@ -8352,6 +8398,11 @@
         });
 
         function setFormMinimizedState(minimized, silent = false) {
+            if (privacyConsentRequiredResumeId && (!currentResume || currentResume.id !== privacyConsentRequiredResumeId)) {
+                privacyConsentRequiredResumeId = null;
+            }
+            if (privacyConsentRequiredResumeId && !minimized) return;
+
             isFormMinimized = !!minimized;
             currentMobileEditorMode = isFormMinimized ? 'view' : 'form';
 
@@ -9441,6 +9492,8 @@
                 console.warn("Save error before exit:", e);
             }
 
+            pendingPrivacyConsentResumeId = null;
+            privacyConsentRequiredResumeId = null;
             switchView('dashboard');
             if (isResumeDraft) {
                 currentResume = null;
@@ -9564,6 +9617,7 @@
 
         document.addEventListener('pointerdown', (event) => {
             if (!isSamplePreviewMode || !currentResume || !currentResume.isDummy) return;
+            if (privacyConsentRequiredResumeId === currentResume.id) return;
             const target = event.target;
             if (!(target instanceof Element)) return;
 
@@ -9935,6 +9989,9 @@
 
             currentResume = newRes;
             isResumeDraft = true;
+            const isMobile = window.innerWidth < 1024;
+            pendingPrivacyConsentResumeId = null;
+            privacyConsentRequiredResumeId = isMobile ? newRes.id : null;
 
             updateActiveFormatBadge(chosenFmt);
             const sel = document.getElementById('preview-template-select');
@@ -9947,16 +10004,30 @@
             if (typeof updateAtsScore === 'function') updateAtsScore();
             renderSidebarSamples();
 
-            // Open entry form!
-            setFormMinimizedState(false, true);
+            // Show the filled sample first on mobile, then open its form.
+            setFormMinimizedState(isMobile, true);
 
-            const editorPane = document.getElementById('editor-form-pane');
-            if (editorPane) editorPane.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => {
+            const focusNameInput = () => {
                 const nameInput = document.getElementById('inp-fullname');
                 if (nameInput) nameInput.focus();
-            }, 300);
-            showToast(`New "${fmtObj ? fmtObj.name : 'Indian Standard'}" Resume Created!`);
+            };
+            const editorPane = document.getElementById('editor-form-pane');
+
+            if (isMobile) {
+                showToast('Sample preview shown first; Privacy Policy follows.');
+                setTimeout(() => {
+                    const editorView = document.getElementById('view-editor');
+                    if (currentResume !== newRes || !editorView || editorView.classList.contains('hidden') || !isFormMinimized) return;
+
+                    pendingPrivacyConsentResumeId = newRes.id;
+                    openTermsModal();
+                    showToast('Review the Privacy Policy and tap I Understand to continue.');
+                }, 4500);
+            } else {
+                if (editorPane) editorPane.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(focusNameInput, 300);
+                showToast(`New "${fmtObj ? fmtObj.name : 'Indian Standard'}" Resume Created!`);
+            }
         }
 
         function selectResumeToEdit(id) {
@@ -14667,7 +14738,7 @@
                    rel="noopener noreferrer" 
                    class="text-emerald-700 hover:text-emerald-800 hover:underline transition-colors flex items-center gap-1 shrink-0 font-bold whitespace-nowrap"
                    title="EasyResume&deg; by Javed Ansari">
-                    <span class="text-emerald-700 whitespace-nowrap leading-tight">EasyResume&deg; by Javed Ansari</span>
+                    <span class="text-emerald-700 whitespace-nowrap leading-tight">EasyResume<span class="brand-mark">°</span> by Javed Ansari</span>
                     <i class="fa-solid fa-arrow-up-right-from-square text-[7px] text-emerald-600 opacity-80 shrink-0"></i>
                 </a>
             </div>
@@ -18762,12 +18833,39 @@
             }
         }
 
-        function closeTermsModal() {
+        function closeTermsModal(accepted = false) {
             const modal = document.getElementById('terms-policy-modal');
             if (modal) {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }
+
+            const pendingResumeId = pendingPrivacyConsentResumeId;
+            pendingPrivacyConsentResumeId = null;
+            if (!pendingResumeId) return;
+            privacyConsentRequiredResumeId = null;
+
+            if (!accepted) {
+                if (currentResume && currentResume.id === pendingResumeId) {
+                    currentResume = null;
+                    isResumeDraft = false;
+                    isSamplePreviewMode = false;
+                }
+                switchView('dashboard');
+                showToast('Resume creation cancelled.');
+                return;
+            }
+
+            if (!currentResume || currentResume.id !== pendingResumeId) return;
+
+            resetFormInputsToBlank(false);
+            liveUpdateResume();
+            renderLiveA4Preview();
+            if (typeof updateAtsScore === 'function') updateAtsScore();
+            setFormMinimizedState(false, true);
+
+            const editorPane = document.getElementById('editor-form-pane');
+            if (editorPane) editorPane.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function closeHeaderDropdownMenu() {
@@ -19687,6 +19785,11 @@
         async function handleResumePdfImport(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
+
+            if (/\.json$/i.test(file.name || '') || file.type === 'application/json') {
+                await handleResumeJsonImport(event);
+                return;
+            }
 
             // Security & Virus Guard Check
             const securityCheck = await validateSafeUploadedFile(file, 'document');
