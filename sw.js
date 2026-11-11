@@ -1,11 +1,26 @@
-const CACHE_NAME = 'easyresume-pwa-v1';
+const CACHE_NAME = 'easyresume-pwa-v2';
 const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './responsive-fixes.css',
   './logo.png',
   './logo-192.png'
 ];
+
+const RESPONSIVE_STYLESHEET = '<link rel="stylesheet" href="./responsive-fixes.css?v=mobile-dashboard-2up">';
+
+async function addResponsiveStylesheet(response) {
+  if (!response || !response.headers.get('content-type')?.includes('text/html')) {
+    return response;
+  }
+
+  const html = await response.text();
+  if (html.includes('responsive-fixes.css')) return new Response(html, response);
+
+  const updatedHtml = html.replace(/<\/head>/i, `${RESPONSIVE_STYLESHEET}\n</head>`);
+  return new Response(updatedHtml, response);
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -32,26 +47,23 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  const url = new URL(event.request.url);
-
-  // Stale-while-revalidate / Instant cache response for navigation so reload never hangs
   if (event.request.mode === 'navigate') {
     event.respondWith(
       caches.match(event.request)
         .then((cached) => cached || caches.match('./index.html'))
-        .then((cached) => cached || caches.match('./'))
         .then((cached) => {
-          const fetchPromise = fetch(event.request)
+          const cachedPage = cached ? addResponsiveStylesheet(cached) : Promise.resolve(null);
+          const freshPage = fetch(event.request)
+            .then(addResponsiveStylesheet)
             .then((response) => {
               if (response && response.status === 200) {
-                const respClone = response.clone();
-                caches.open(CACHE_NAME).then((cache) => cache.put(event.request, respClone));
+                caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
               }
               return response;
             })
-            .catch(() => cached || caches.match('./index.html'));
+            .catch(() => cachedPage);
 
-          return cached || fetchPromise;
+          return cachedPage.then((page) => page || freshPage);
         })
     );
     return;
@@ -61,7 +73,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch fresh in background
         fetch(event.request)
           .then((networkResponse) => {
             if (networkResponse && networkResponse.status === 200) {
@@ -77,16 +88,15 @@ self.addEventListener('fetch', (event) => {
           if (!networkResponse || networkResponse.status !== 200 || (networkResponse.type !== 'basic' && networkResponse.type !== 'cors')) {
             return networkResponse;
           }
-          const respClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, respClone));
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
           return networkResponse;
         })
         .catch(() => {
-          // If offline and request is an image
           if (event.request.destination === 'image') {
             return caches.match('./logo.png');
           }
-        });
+        })
     })
   );
 });

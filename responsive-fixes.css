@@ -22,7 +22,7 @@ body {
 }
 
 /* Keep the footer anchored to each physical A4 page, independently of the
-   amount of resume content or the preview zoom level. */
+   amount of resume content or the resume preview zoom level. */
 .a4-page-card {
   position: relative !important;
 }
@@ -83,47 +83,22 @@ body {
   }
 }
 
+/* The dashboard's resume/template samples should be two-up on phones. Use
+   :has() to find the actual sample-card parent instead of assuming a class
+   name that may not be present in the generated dashboard markup. */
 @media (max-width: 767px) {
-  .resume-grid,
-  .template-grid,
-  .dashboard-grid,
-  .samples-grid,
-  .card-grid,
-  [class*="resume-grid"],
-  [class*="template-grid"],
-  [class*="dashboard-grid"],
-  [class*="samples-grid"],
-  [class*="card-grid"] {
+  #view-dashboard :is(div, section, ul):has(> :is([class*="resume"], [class*="template"], [class*="sample"], [data-template], [data-sample])) {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 10px !important;
+    min-width: 0 !important;
   }
 
-  .resume-card,
-  .template-card,
-  .sample-card,
-  .dashboard-card,
-  [class*="resume-card"],
-  [class*="template-card"],
-  [class*="sample-card"],
-  [class*="dashboard-card"] {
+  #view-dashboard :is(div, section, ul) > :is([class*="resume"], [class*="template"], [class*="sample"], [data-template], [data-sample]) {
     width: 100% !important;
     min-width: 0 !important;
-    max-width: none !important;
-    flex: 0 0 auto !important;
-  }
-
-  .resume-list,
-  .template-list,
-  .sample-list,
-  .dashboard-list,
-  [class*="resume-list"],
-  [class*="template-list"],
-  [class*="sample-list"],
-  [class*="dashboard-list"] {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
+    max-width: 100% !important;
+    flex: none !important;
   }
 }
 
@@ -133,25 +108,7 @@ body {
     overflow-wrap: anywhere;
   }
 
-  .resume-grid,
-  .template-grid,
-  .dashboard-grid,
-  .samples-grid,
-  .card-grid,
-  .resume-list,
-  .template-list,
-  .sample-list,
-  .dashboard-list,
-  [class*="resume-grid"],
-  [class*="template-grid"],
-  [class*="dashboard-grid"],
-  [class*="samples-grid"],
-  [class*="card-grid"],
-  [class*="resume-list"],
-  [class*="template-list"],
-  [class*="sample-list"],
-  [class*="dashboard-list"] {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  #view-dashboard :is(div, section, ul):has(> :is([class*="resume"], [class*="template"], [class*="sample"], [data-template], [data-sample])) {
     gap: 8px !important;
   }
 }
