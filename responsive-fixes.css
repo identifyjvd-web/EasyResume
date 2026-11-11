@@ -83,10 +83,76 @@ body {
   }
 }
 
+@media (max-width: 767px) {
+  .resume-grid,
+  .template-grid,
+  .dashboard-grid,
+  .samples-grid,
+  .card-grid,
+  [class*="resume-grid"],
+  [class*="template-grid"],
+  [class*="dashboard-grid"],
+  [class*="samples-grid"],
+  [class*="card-grid"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .resume-card,
+  .template-card,
+  .sample-card,
+  .dashboard-card,
+  [class*="resume-card"],
+  [class*="template-card"],
+  [class*="sample-card"],
+  [class*="dashboard-card"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    flex: 0 0 auto !important;
+  }
+
+  .resume-list,
+  .template-list,
+  .sample-list,
+  .dashboard-list,
+  [class*="resume-list"],
+  [class*="template-list"],
+  [class*="sample-list"],
+  [class*="dashboard-list"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+}
+
 @media (max-width: 480px) {
   .a4-page-card .resume-sheet-footer {
     font-size: 6.5px !important;
     overflow-wrap: anywhere;
+  }
+
+  .resume-grid,
+  .template-grid,
+  .dashboard-grid,
+  .samples-grid,
+  .card-grid,
+  .resume-list,
+  .template-list,
+  .sample-list,
+  .dashboard-list,
+  [class*="resume-grid"],
+  [class*="template-grid"],
+  [class*="dashboard-grid"],
+  [class*="samples-grid"],
+  [class*="card-grid"],
+  [class*="resume-list"],
+  [class*="template-list"],
+  [class*="sample-list"],
+  [class*="dashboard-list"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
   }
 }
 
