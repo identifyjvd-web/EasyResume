@@ -33,17 +33,18 @@ body {
   flex-direction: column !important;
   min-height: 100% !important;
   box-sizing: border-box !important;
-  padding-bottom: 12mm !important;
+  padding-bottom: 16mm !important;
 }
 
 .a4-page-card .resume-sheet-footer {
   position: absolute !important;
-  left: 10mm !important;
-  right: 10mm !important;
-  bottom: 5mm !important;
+  left: 12mm !important;
+  right: 12mm !important;
+  bottom: 8mm !important;
   width: auto !important;
   margin: 0 !important;
   z-index: 2;
+  overflow: visible !important;
 }
 
 @media (max-width: 1023px) {
@@ -76,27 +77,27 @@ body {
   }
 
   .a4-page-card .resume-sheet-footer {
-    left: 8mm !important;
-    right: 8mm !important;
-    bottom: 4mm !important;
-    font-size: 7px !important;
+    left: 10mm !important;
+    right: 10mm !important;
+    bottom: 6mm !important;
+    font-size: 7.5px !important;
+    overflow: visible !important;
   }
 }
 
-/* Keep dashboard resume/template samples two-up on phones. */
+/* Keep dashboard resume formats two-up on phones. */
 @media (max-width: 767px) {
-  #view-dashboard :is(div, section, ul):has(> :is([class*="resume"], [class*="template"], [class*="sample"], [data-template], [data-sample])) {
+  #resumes-formats-grid {
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 10px !important;
     min-width: 0 !important;
   }
 
-  #view-dashboard :is(div, section, ul) > :is([class*="resume"], [class*="template"], [class*="sample"], [data-template], [data-sample]) {
+  #resumes-formats-grid > div {
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
-    flex: none !important;
   }
 }
 
@@ -134,7 +135,12 @@ body {
 }
 
 /* Preview-only actions must not appear while the dashboard is the active view. */
-body.dashboard-active .dashboard-preview-control {
+body.dashboard-active .dashboard-preview-control,
+body.dashboard-active #header-zoom-controls,
+body.dashboard-active #header-btn-print,
+body.dashboard-active #header-btn-minimize-form,
+body.dashboard-active #header-live-edit-badge,
+body.dashboard-active [data-menu-context="editor"] {
   display: none !important;
 }
 
@@ -151,16 +157,249 @@ body.dashboard-active .dashboard-preview-control {
     overflow-wrap: anywhere;
   }
 
-  #view-dashboard :is(div, section, ul):has(> :is([class*="resume"], [class*="template"], [class*="sample"], [data-template], [data-sample])) {
+  #resumes-formats-grid {
     gap: 8px !important;
   }
 }
 
 @media print {
-  .a4-page-card .resume-sheet-footer {
-    position: absolute !important;
-    left: 10mm !important;
-    right: 10mm !important;
-    bottom: 5mm !important;
+  .a4-page-card {
+    position: relative !important;
   }
+
+  .a4-page-card .resume-sheet-footer,
+  #live-resume-sheet .resume-sheet-footer {
+    position: absolute !important;
+    left: 12mm !important;
+    right: 12mm !important;
+    bottom: 8.5mm !important;
+    width: auto !important;
+    box-sizing: border-box !important;
+    padding-top: 4px !important;
+    padding-bottom: 2px !important;
+    border-top: 1px solid #cbd5e1 !important;
+    overflow: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .resume-page-number {
+    font-size: 8.5px !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    text-align: center !important;
+    flex: 1 1 0% !important;
+  }
+
+  .resume-sheet-footer a {
+    color: #05996c !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    overflow: visible !important;
+  }
+
+  .resume-sheet-footer a span {
+    white-space: nowrap !important;
+    display: inline !important;
+    line-height: 1.3 !important;
+    color: #05996c !important;
+  }
+}
+
+
+/* =========================================================
+   DASHBOARD 2-COLUMN RESUME FORMATS MOBILE OPTIMIZATIONS
+   Ensures format samples, fonts, icons & text never get cut off or squeezed
+   ========================================================= */
+@media (max-width: 639px) {
+  /* Mockup Container on phones: fits 100% of content with zero clipping */
+  #resumes-formats-grid .resume-format-mockup,
+  #resumes-formats-grid [class*="h-[260px]"] {
+    height: 220px !important;
+    min-height: 220px !important;
+    max-height: 220px !important;
+    padding: 6px 7px !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+  }
+
+  /* Compact typography inside mockup */
+  #resumes-formats-grid .resume-format-mockup :is(h1, h2, h3, h4, h5, div, span, p) {
+    letter-spacing: -0.015em !important;
+  }
+
+  /* Compact section spacing inside mockup */
+  #resumes-formats-grid .resume-format-mockup :is(.mt-2, .mt-2\.5, .mt-3) {
+    margin-top: 3px !important;
+  }
+
+  #resumes-formats-grid .resume-format-mockup :is(.mt-1, .mt-1\.5) {
+    margin-top: 1.5px !important;
+  }
+
+  #resumes-formats-grid .resume-format-mockup .space-y-1 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1px !important;
+  }
+
+  #resumes-formats-grid .resume-format-mockup :is(.pb-2, .pb-1\.5) {
+    padding-bottom: 2.5px !important;
+  }
+
+  #resumes-formats-grid .resume-format-mockup :is(.pt-1, .pt-1\.5) {
+    padding-top: 2px !important;
+  }
+
+  /* Scale mockup section titles & text sizes down so content never overflows */
+  #resumes-formats-grid .resume-format-mockup :is(.text-\[8px\], .text-\[9px\]) {
+    font-size: 6px !important;
+    line-height: 1.15 !important;
+  }
+
+  #resumes-formats-grid .resume-format-mockup :is(.text-\[7px\], .text-\[6px\]) {
+    font-size: 5.5px !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Chips, skills, competency pills on mobile mockup */
+  #resumes-formats-grid .resume-format-mockup .flex-wrap {
+    gap: 2px !important;
+    margin-top: 1.5px !important;
+  }
+
+  #resumes-formats-grid .resume-format-mockup .flex-wrap > span {
+    padding: 1px 3px !important;
+    font-size: 5.2px !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Academic / data tables inside mockup */
+  #resumes-formats-grid .resume-format-mockup :is(.p-1, .p-0\.5) {
+    padding: 1.5px 2.5px !important;
+  }
+
+  /* Mini avatar / photo thumbnail in header */
+  #resumes-formats-grid .resume-format-mockup :is(.w-8, .w-9):is(.h-10, .h-11) {
+    width: 22px !important;
+    height: 28px !important;
+  }
+
+  #resumes-formats-grid .resume-format-mockup :is(.w-8, .w-9):is(.h-10, .h-11) i {
+    font-size: 11px !important;
+  }
+
+  /* Pinned signature / verification footer row at bottom of mockup */
+  #resumes-formats-grid .resume-format-mockup > div:last-child {
+    padding-top: 2.5px !important;
+    margin-top: auto !important;
+    border-top-width: 1px !important;
+  }
+
+  #resumes-formats-grid .resume-format-mockup > div:last-child span {
+    font-size: 5.5px !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Format Card Meta: Title, Badge, Description, Button */
+  .format-card-title {
+    font-size: 11px !important;
+    line-height: 1.25 !important;
+    font-weight: 900 !important;
+  }
+
+  .format-card-badge {
+    font-size: 8px !important;
+    padding: 1px 4px !important;
+    line-height: 1.1 !important;
+  }
+
+  .format-card-desc {
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 5px !important;
+  }
+
+  .format-card-btn {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    font-size: 10.5px !important;
+    border-radius: 9px !important;
+  }
+}
+
+@media (min-width: 640px) {
+  #resumes-formats-grid .resume-format-mockup,
+  #resumes-formats-grid [class*="h-[260px]"] {
+    height: 260px !important;
+    min-height: 260px !important;
+    max-height: 260px !important;
+  }
+}
+
+
+
+#resumes-formats-grid .resume-format-mockup,
+#resumes-formats-grid [class*="h-[260px]"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+
+/* Strictly lock preview density dock toolbar to bottom-0 above footer on phones */
+@media (max-width: 639px) {
+  #preview-density-dock {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    margin: 0 !important;
+    z-index: 25 !important;
+  }
+}
+
+
+/* Dynamic Spanning for Add/Upload Sample Card in Formats Grid */
+.upload-sample-card.span-cols-2 {
+  grid-column: span 2 / span 2 !important;
+}
+
+@media (min-width: 1024px) {
+  .upload-sample-card.lg-span-cols-2 {
+    grid-column: span 2 / span 2 !important;
+  }
+  .upload-sample-card.lg-span-cols-3 {
+    grid-column: span 3 / span 3 !important;
+  }
+}
+
+@media (min-width: 1536px) {
+  .upload-sample-card.xxl-span-cols-2 {
+    grid-column: span 2 / span 2 !important;
+  }
+  .upload-sample-card.xxl-span-cols-3 {
+    grid-column: span 3 / span 3 !important;
+  }
+  .upload-sample-card.xxl-span-cols-4 {
+    grid-column: span 4 / span 4 !important;
+  }
+}
+
+/* Ensure upload sample card height matches resume format sample cards */
+.upload-sample-card {
+  height: 100% !important;
+  min-height: 400px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
 }

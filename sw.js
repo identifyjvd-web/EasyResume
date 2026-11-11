@@ -1,4 +1,4 @@
-const CACHE_NAME = 'easyresume-pwa-v85';
+const CACHE_NAME = 'easyresume-pwa-v104';
 const CORE_ASSETS = [
   './',
   './index.html',
