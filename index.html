@@ -5572,80 +5572,119 @@
 
         
         const sampleIndianGold = {
+            id: 'res_sample_gold',
+            isDummy: true,
+            hasBeenEdited: false,
+            title: 'Royal Gold & Corporate Legal Resume',
+            updatedAt: new Date().toISOString(),
+            template: 'classic_gold',
+            themeColorId: 'gold',
+            themeColor: '#d97706',
             docType: 'resume',
-            studentName: 'ADV. ARJUN RAJPUT',
+            studentName: 'Adv. Arjun Rajput',
+            staff_designation: 'Senior Legal Consultant & Corporate Advisor',
             workRole: 'Senior Legal Consultant & Corporate Advisor',
             mobile: '+91 98234 56712',
             email: 'arjun.rajput.legal@gmail.com',
             fatherName: 'Vikram Singh Rajput',
-            dob: '1990-08-14',
+            dob: '14-08-1990',
             gender: 'Male',
             maritalStatus: 'Married',
             nationality: 'Indian',
             languagesKnown: 'English (Fluent), Hindi (Native)',
-            permanentAddress: 'B-402, High Court Enclave, Civil Lines, Nagpur, Maharashtra - 440001',
+            addressStreet: 'B-402, High Court Enclave, Civil Lines',
+            addressCity: 'Nagpur',
+            addressTehsil: 'Nagpur Urban',
+            addressDistrict: 'Nagpur',
+            addressState: 'Maharashtra',
+            addressCountry: 'India',
+            addressPincode: '440001',
+            address: 'B-402, High Court Enclave, Civil Lines, Nagpur, Maharashtra - 440001',
             careerObjective: 'Distinguished legal practitioner with 8+ years of counsel experience in corporate compliance, contract negotiation, arbitration, and regulatory risk governance. Committed to safeguarding institutional integrity through strategic legal excellence.',
-            skills: 'Corporate Law, Contract Drafting, Dispute Resolution, Regulatory Compliance, Risk Assessment, Mergers & Acquisitions, Legal Research, Arbitration',
-            hobbies: 'Constitutional History, Chess, Golf, Reading Law Journals',
-            declaration: 'I solemnly affirm and declare that all particulars stated above are true and complete to the best of my knowledge and official record.',
-            declarationDate: '11/11/2026',
-            declarationPlace: 'Nagpur',
-            themeColor: '#d97706',
-            template: 'classic_gold',
-            isDummy: true,
-            academicColWidths: { degree: 140, institute: 170, board: 130, year: 60, percent: 80 },
+            academicRecords: [
+                { exam: 'Secondary (Class X)', subject: 'General Academic Subjects', institute: 'St. Francis High School', board: 'CBSE New Delhi', year: '2007', score: '91.6%' },
+                { exam: 'Higher Secondary (XII)', subject: 'Arts & Humanities', institute: 'St. Francis College', board: 'CBSE New Delhi', year: '2009', score: '88.2%' },
+                { exam: 'Graduation (LL.B)', subject: 'B.A. LL.B (Hons.)', institute: 'Symbiosis Law School, Pune', board: 'Symbiosis International Univ', year: '2014', score: '82.4%' },
+                { exam: 'Post Graduation (LL.M)', subject: 'LL.M (Corporate Law)', institute: 'National Law School of India University', board: 'NLSIU Bangalore', year: '2016', score: '78.5%' },
+                { exam: 'Diploma', subject: '', institute: '', board: '', year: '', score: '' },
+                { exam: 'ITI', subject: '', institute: '', board: '', year: '', score: '' }
+            ],
+            academicColWidths: { degree: 140, institute: 170, board: 130, year: 60, score: 80 },
             academicDisplayMode: 'table',
-            academicDetails: [
-                { degree: 'Master of Laws (LL.M - Corporate Law)', schoolCollege: 'National Law School of India University', boardUniversity: 'NLSIU Bangalore', passingYear: '2016', percentage: '78.50%' },
-                { degree: 'Bachelor of Laws (B.A. LL.B Hons.)', schoolCollege: 'Symbiosis Law School', boardUniversity: 'Symbiosis International Univ', passingYear: '2014', percentage: '82.40%' },
-                { degree: 'Higher Secondary (XII Arts)', schoolCollege: 'St. Francis College', boardUniversity: 'CBSE New Delhi', passingYear: '2009', percentage: '88.20%' },
-                { degree: 'Secondary School (Class X)', schoolCollege: 'St. Francis High School', boardUniversity: 'CBSE New Delhi', passingYear: '2007', percentage: '91.60%' }
+            companyName: 'Rajput & Associates Legal Chambers',
+            workDuration: '2020 - Present',
+            workResponsibilities: 'Lead counsel advising 20+ multinational corporate clients on commercial transactions, corporate restructuring, FDI compliance, and high-stakes arbitration proceedings.\nDrafted and vetted cross-border joint venture agreements valued over $150M. Managed intellectual property disputes and regulatory filings with SEBI and CCI.',
+            experiences: [
+                { company: 'Rajput & Associates Legal Chambers', role: 'Principal Legal Counsel', duration: '2020 - Present', responsibilities: 'Lead counsel advising 20+ multinational corporate clients on commercial transactions, corporate restructuring, FDI compliance, and high-stakes arbitration proceedings.', _userAdded: true },
+                { company: 'Shardul Amarchand Mangaldas & Co', role: 'Senior Associate Counsel', duration: '2016 - 2020', responsibilities: 'Drafted and vetted cross-border joint venture agreements valued over $150M. Managed intellectual property disputes and regulatory filings with SEBI and CCI.', _userAdded: true }
             ],
-            experienceList: [
-                { role: 'Principal Legal Counsel', company: 'Rajput & Associates Legal Chambers', duration: '2020 - Present', description: 'Lead counsel advising 20+ multinational corporate clients on commercial transactions, corporate restructuring, FDI compliance, and high-stakes arbitration proceedings.' },
-                { role: 'Senior Associate Counsel', company: 'Shardul Amarchand Mangaldas & Co', duration: '2016 - 2020', description: 'Drafted and vetted cross-border joint venture agreements valued over $150M. Managed intellectual property disputes and regulatory filings with SEBI and CCI.' }
-            ],
-            projects: [
-                { title: 'Cross-Border Telecom Restructuring', techStack: 'Corporate Governance, M&A, Competition Law', description: 'Orchestrated the comprehensive legal framework and regulatory clearance for a major pan-India telecom asset consolidation.' }
-            ]
+            skills: 'Corporate Law, Contract Drafting, Dispute Resolution, Regulatory Compliance, Risk Assessment, Mergers & Acquisitions, Legal Research, Arbitration',
+            projects: '• Cross-Border Telecom Restructuring (Corporate Governance, M&A): Orchestrated the comprehensive legal framework and regulatory clearance for a major pan-India telecom asset consolidation.\n• High-Stakes Commercial Arbitration (Arbitration): Successfully represented public sector enterprise in ₹180 Cr contractual dispute resolution.',
+            hobbies: 'Constitutional History, Chess, Golf, Reading Law Journals',
+            declarationPlace: 'Nagpur',
+            declarationDate: '11/11/2026',
+            declarationText: 'I solemnly affirm and declare that all particulars stated above are true and complete to the best of my knowledge and official record.',
+            photoData: DEFAULT_DUMMY_PHOTO,
+            showPhoto: true,
+            showAge: false
         };
 
         const sampleIndianCoral = {
+            id: 'res_sample_coral',
+            isDummy: true,
+            hasBeenEdited: false,
+            title: 'Coral Impact & Modern Marketing Resume',
+            updatedAt: new Date().toISOString(),
+            template: 'coral_impact',
+            themeColorId: 'rose',
+            themeColor: '#e11d48',
             docType: 'resume',
-            studentName: 'PRIYA SHARMA',
+            studentName: 'Priya Sharma',
+            staff_designation: 'Growth Marketing Lead & Brand Strategist',
             workRole: 'Growth Marketing Lead & Brand Strategist',
             mobile: '+91 91756 60750',
             email: 'priya.growth@gmail.com',
             fatherName: 'Dinesh Sharma',
-            dob: '1995-04-22',
+            dob: '22-04-1995',
             gender: 'Female',
             maritalStatus: 'Single',
             nationality: 'Indian',
             languagesKnown: 'English (Fluent), Hindi (Native), French (Basic)',
-            permanentAddress: 'A-12, Cyber City Heights, Sector 29, Gurugram, Haryana - 122002',
+            addressStreet: 'A-12, Cyber City Heights, Sector 29',
+            addressCity: 'Gurugram',
+            addressTehsil: 'Gurugram',
+            addressDistrict: 'Gurugram',
+            addressState: 'Haryana',
+            addressCountry: 'India',
+            addressPincode: '122002',
+            address: 'A-12, Cyber City Heights, Sector 29, Gurugram, Haryana - 122002',
             careerObjective: 'Dynamic and metric-driven Growth Marketing Strategist with 6+ years driving viral customer acquisition, product-led growth, and brand equity. Scaled D2C and FinTech brands from 0 to 1M+ active users with high ROI.',
-            skills: 'Performance Marketing, Product-Led Growth (PLG), SEO/SEM, Marketing Analytics, Retention & CRM, Brand Strategy, A/B Testing, Influencer Campaigns, Conversion Rate Optimization (CRO)',
-            hobbies: 'Podcasting, Urban Photography, Badminton, Travel Blogging',
-            declaration: 'I hereby certify that all information provided in this curriculum vitae is authentic and accurate to the best of my knowledge.',
-            declarationDate: '11/11/2026',
-            declarationPlace: 'Gurugram',
-            themeColor: '#e11d48',
-            template: 'coral_impact',
-            isDummy: true,
-            academicColWidths: { degree: 140, institute: 170, board: 130, year: 60, percent: 80 },
+            academicRecords: [
+                { exam: 'Class X (Secondary)', subject: 'General Academic Subjects', institute: 'Delhi Public School, R.K. Puram', board: 'CBSE New Delhi', year: '2012', score: '95.0%' },
+                { exam: 'Class XII (Senior Secondary)', subject: 'Commerce with Mathematics', institute: 'Delhi Public School, R.K. Puram', board: 'CBSE New Delhi', year: '2014', score: '93.4%' },
+                { exam: 'Graduation (B.A. Hons)', subject: 'Journalism & Mass Comm', institute: 'Lady Shri Ram College for Women', board: 'Delhi University', year: '2017', score: '81.6%' },
+                { exam: 'Post Graduation (MBA)', subject: 'Marketing & Communications', institute: 'MICA (The School of Ideas)', board: 'MICA Ahmedabad', year: '2019', score: '84.2%' },
+                { exam: 'Diploma', subject: '', institute: '', board: '', year: '', score: '' },
+                { exam: 'ITI', subject: '', institute: '', board: '', year: '', score: '' }
+            ],
+            academicColWidths: { degree: 140, institute: 170, board: 130, year: 60, score: 80 },
             academicDisplayMode: 'table',
-            academicDetails: [
-                { degree: 'MBA in Marketing & Communications', schoolCollege: 'MICA (The School of Ideas)', boardUniversity: 'MICA Ahmedabad', passingYear: '2019', percentage: '84.20%' },
-                { degree: 'B.A. (Hons.) Journalism & Mass Comm', schoolCollege: 'Lady Shri Ram College for Women', boardUniversity: 'Delhi University', passingYear: '2017', percentage: '81.60%' },
-                { degree: 'Class XII (Commerce with Maths)', schoolCollege: 'Delhi Public School, R.K. Puram', boardUniversity: 'CBSE New Delhi', passingYear: '2014', percentage: '93.40%' }
+            companyName: 'NovaPay Technologies (FinTech)',
+            workDuration: '2022 - Present',
+            workResponsibilities: 'Scaled monthly active users by 320% through automated growth funnels, targeted meta ad campaigns, and lifecycle email automation.\nLowered CAC by 42% while scaling revenue.',
+            experiences: [
+                { company: 'NovaPay Technologies (FinTech)', role: 'Head of Growth Marketing', duration: '2022 - Present', responsibilities: 'Scaled monthly active users by 320% through automated growth funnels, targeted meta ad campaigns, and lifecycle email automation. Lowered CAC by 42% while scaling revenue.', _userAdded: true },
+                { company: 'Zest Living D2C Brands', role: 'Senior Performance Marketer', duration: '2019 - 2022', responsibilities: 'Managed ₹4.5 Cr annual paid acquisition budget across Google, Instagram, and programmatic ads. Built viral referral flywheel generating 250k organic signups.', _userAdded: true }
             ],
-            experienceList: [
-                { role: 'Head of Growth Marketing', company: 'NovaPay Technologies (FinTech)', duration: '2022 - Present', description: 'Scaled monthly active users by 320% through automated growth funnels, targeted meta ad campaigns, and lifecycle email automation. Lowered CAC by 42% while scaling revenue.' },
-                { role: 'Senior Performance Marketer', company: 'Zest Living D2C Brands', duration: '2019 - 2022', description: 'Managed ₹4.5 Cr annual paid acquisition budget across Google, Instagram, and programmatic ads. Built viral referral flywheel generating 250k organic signups.' }
-            ],
-            projects: [
-                { title: 'Zero-CAC Viral Referral Flywheel', techStack: 'Growth Loops, Mixpanel, Segment, Klaviyo', description: 'Designed a double-sided gamified referral programme that propelled organic customer acquisition from 12% to 46% of total revenue.' }
-            ]
+            skills: 'Performance Marketing, Product-Led Growth (PLG), SEO/SEM, Marketing Analytics, Retention & CRM, Brand Strategy, A/B Testing, Influencer Campaigns, Conversion Rate Optimization (CRO)',
+            projects: '• Zero-CAC Viral Referral Flywheel (Growth Loops): Designed a double-sided gamified referral programme that propelled organic customer acquisition from 12% to 46% of total revenue.\n• Omnichannel D2C Brand Launch: Orchestrated pan-India digital launch generating 100k+ qualified leads in first quarter.',
+            hobbies: 'Podcasting, Urban Photography, Badminton, Travel Blogging',
+            declarationPlace: 'Gurugram',
+            declarationDate: '11/11/2026',
+            declarationText: 'I hereby certify that all information provided in this curriculum vitae is authentic and accurate to the best of my knowledge.',
+            photoData: DEFAULT_DUMMY_PHOTO_FEMALE,
+            showPhoto: true,
+            showAge: false
         };
 
         function getSampleForTemplate(templateId) {
@@ -10516,6 +10555,16 @@
             if (Array.isArray(r.experiences) && r.experiences.length > 0) {
                 return r.experiences;
             }
+            if (Array.isArray(r.experienceList) && r.experienceList.length > 0) {
+                r.experiences = r.experienceList.map(e => ({
+                    company: e.company || '',
+                    role: e.role || '',
+                    duration: e.duration || '',
+                    responsibilities: e.description || e.responsibilities || '',
+                    _userAdded: true
+                }));
+                return r.experiences;
+            }
             if (r.companyName || r.workResponsibilities || r.workRole) {
                 r.experiences = [{
                     company: r.companyName || '',
@@ -10770,7 +10819,21 @@
             if (Array.isArray(r.projectRecords) && r.projectRecords.length > 0) {
                 return r.projectRecords;
             }
-            if (r.projects && r.projects.trim()) {
+            if (Array.isArray(r.projects) && r.projects.length > 0) {
+                r.projectRecords = r.projects.map(p => {
+                    if (typeof p === 'string') {
+                        return { title: p.replace(/^[\u2022\-\u25cf\u25cb\*]\s*/, '').trim(), tech: '', description: '', _userAdded: true };
+                    }
+                    return {
+                        title: p.title || 'Project',
+                        tech: p.techStack || p.tech || '',
+                        description: p.description || '',
+                        _userAdded: true
+                    };
+                });
+                return r.projectRecords;
+            }
+            if (r.projects && typeof r.projects === 'string' && r.projects.trim()) {
                 const rawLines = r.projects.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
                 const records = [];
                 rawLines.forEach(line => {
@@ -15090,7 +15153,9 @@
             twocolumn: ['objective', 'academic', 'experience', 'projects', 'custom', 'declaration'],
             creative: ['objective', 'academic', 'experience', 'skills', 'projects', 'custom', 'particulars', 'declaration'],
             executive_bold: ['objective', 'academic', 'experience', 'skills', 'projects', 'custom', 'particulars', 'declaration'],
-            compact_pro: ['objective', 'academic', 'experience', 'skills', 'projects', 'custom', 'particulars', 'declaration']
+            compact_pro: ['objective', 'academic', 'experience', 'skills', 'projects', 'custom', 'particulars', 'declaration'],
+            classic_gold: ['objective', 'academic', 'experience', 'skills', 'projects', 'custom', 'particulars', 'declaration'],
+            coral_impact: ['objective', 'academic', 'experience', 'skills', 'projects', 'custom', 'particulars', 'declaration']
         };
 
         const SECTION_METADATA = {
@@ -16086,6 +16151,18 @@
             };
 
             // Filter out unfilled default records with original form index
+            if (!Array.isArray(rec.academicRecords) || !rec.academicRecords.length) {
+                if (Array.isArray(rec.academicDetails) && rec.academicDetails.length) {
+                    rec.academicRecords = rec.academicDetails.map(ad => ({
+                        exam: ad.degree || ad.exam || 'Degree',
+                        subject: ad.subject || '',
+                        institute: ad.schoolCollege || ad.institute || '',
+                        board: ad.boardUniversity || ad.board || '',
+                        year: ad.passingYear || ad.year || '',
+                        score: ad.percentage || ad.score || ''
+                    }));
+                }
+            }
             let rawAcs = (rec.academicRecords && rec.academicRecords.length) ? rec.academicRecords : [];
             let filledAcs = rawAcs.map((r, idx) => ({ ...r, _origFormIndex: idx })).filter(isAcademicFilled);
 
@@ -16093,7 +16170,8 @@
             if (!filledAcs.length && rec.isDummy && !rec.hasBeenEdited) {
                 const isFemale = (rec.gender === 'Female' || (rec.studentName && /priya|ananya|kavita/i.test(rec.studentName)));
                 const fallback = getSampleForTemplate(tpl) || (isFemale ? sampleIndianFresher : sampleIndianTech);
-                filledAcs = fallback.academicRecords.map((r, idx) => ({ ...r, _origFormIndex: idx })).filter(isAcademicFilled);
+                const fallbackList = (fallback && Array.isArray(fallback.academicRecords) && fallback.academicRecords.length) ? fallback.academicRecords : (sampleIndianTech.academicRecords || []);
+                filledAcs = fallbackList.map((r, idx) => ({ ...r, _origFormIndex: idx })).filter(isAcademicFilled);
             }
 
             // Education qualification sorted by passing year: latest year on top!
@@ -17823,7 +17901,7 @@
             }
 
             
-            if (effectiveTpl === 'classic_gold') {
+                        if (effectiveTpl === 'classic_gold') {
                 const goldSections = {
                     objective: (rec.careerObjective || rec.isDummy) ? `
                         <div class="relative group/resume-sec mt-4" data-section-key="objective">
@@ -17857,14 +17935,27 @@
                                             <th class="col-institute relative py-1 font-serif font-bold text-amber-950" ${getColWidthStyle('institute')}>Institute<div class="col-divider-handle no-print" onpointerdown="startColDividerResize(event, 'institute')" ondblclick="resetColDividerWidth('institute', this.parentElement)" title="Drag column width"></div></th>
                                             <th class="col-board relative py-1 font-serif font-bold text-amber-950" ${getColWidthStyle('board')}>Board / Univ<div class="col-divider-handle no-print" onpointerdown="startColDividerResize(event, 'board')" ondblclick="resetColDividerWidth('board', this.parentElement)" title="Drag column width"></div></th>
                                             <th class="col-year py-1 text-center font-serif font-bold text-amber-950" ${getColWidthStyle('year')}>Year</th>
-                                            <th class="col-percent py-1 text-right font-serif font-bold text-amber-950" ${getColWidthStyle('percent')}>Score</th>
+                                            <th class="col-percent py-1 text-right font-serif font-bold text-amber-950" ${getColWidthStyle('score')}>Score</th>
                                             <th class="w-8 py-1 text-center no-print text-[10px] text-amber-900"><i class="fa-solid fa-arrows-up-down"></i></th>
                                         </tr>
                                     </thead>
                                     <tbody id="academic-table-body-sortable">
-                                        ${renderAcademicRows(acs, tpl)}
+                                        ${acs.map(ac => `
+                                        <tr data-academic-exam="${escapeAttr(ac.exam || '')}" data-academic-orig-index="${ac._origFormIndex !== undefined ? ac._origFormIndex : ''}" class="border-b border-amber-200/60">
+                                            <td class="col-degree py-0.5 font-serif font-bold text-slate-900">
+                                                <div data-academic-col="exam">${escapeAttr(ac.exam || '-')}</div>
+                                                ${ac.subject ? `<div class="font-normal font-sans text-[10px] text-slate-600"><span data-academic-col="subject">${escapeAttr(ac.subject)}</span></div>` : ''}
+                                            </td>
+                                            <td class="col-institute py-0.5 font-serif" data-academic-col="institute">${escapeAttr(ac.institute || '-')}</td>
+                                            <td class="col-board py-0.5 font-serif" data-academic-col="board">${escapeAttr(ac.board || '-')}</td>
+                                            <td class="col-year py-0.5 text-center font-bold" data-academic-col="year">${escapeAttr(ac.year || '-')}</td>
+                                            <td class="col-score py-0.5 text-right font-bold text-amber-900 bg-amber-50/50" data-academic-col="score">${escapeAttr(formatAcademicDisplayScore(ac))}</td>
+                                            <td class="w-8 py-0.5 text-center no-print text-amber-700 text-xs"></td>
+                                        </tr>
+                                        `).join('')}
                                     </tbody>
                                 </table>
+                                ${renderAcademicTableControls()}
                             </div>
                             `}
                         </div>
@@ -17877,22 +17968,11 @@
                                 <span class="text-amber-600 text-sm">&#9670;</span>
                                 <span>PROFESSIONAL ENGAGEMENTS & EXPERIENCE</span>
                             </h2>
-                            <div class="space-y-3 mt-1.5">
-                                ${exps.map((e, idx) => `
-                                    <div class="relative group/exp-item pb-1.5 border-b border-amber-100 last:border-b-0">
-                                        <div class="flex flex-wrap items-baseline justify-between gap-1">
-                                            <div class="font-serif font-bold text-slate-900 text-xs">${e.role || 'Senior Counsel'}</div>
-                                            <div class="text-[10px] font-sans font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80">${e.duration || '2020 - Present'}</div>
-                                        </div>
-                                        <div class="text-[11px] font-serif italic text-amber-900 font-semibold">${e.company || 'Legal Associates'}</div>
-                                        ${e.description ? `<p class="text-[11px] text-slate-700 font-serif leading-relaxed mt-1">${e.description}</p>` : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
+                            ${renderTemplateExperienceItems('text-amber-900 font-serif font-bold', 'mt-1.5 space-y-2.5')}
                         </div>
                     ` : '',
 
-                    skills: (skillsArr.length > 0 || rec.isDummy) ? `
+                    skills: ((skillsArr.length > 0 || rec.isDummy) && rec.enableSkills !== false) ? `
                         <div class="relative group/resume-sec mt-4" data-section-key="skills">
                             ${renderSectionReorderControls('skills', tpl)}
                             <h2 class="text-xs font-serif font-black uppercase tracking-widest text-amber-950 border-b-2 border-double border-amber-600/80 pb-1 mb-2 flex items-center gap-2">
@@ -17902,61 +17982,62 @@
                             <div class="flex flex-wrap gap-1.5 mt-2">
                                 ${skillsArr.map(s => `
                                     <span class="px-2.5 py-1 rounded bg-amber-50 text-amber-900 border border-amber-300 font-serif font-bold text-[10.5px] shadow-2xs">
-                                        ${s}
+                                        ${escapeAttr(s)}
                                     </span>
                                 `).join('')}
                             </div>
                         </div>
                     ` : '',
 
-                    projects: (hasProjects && rec.enableProjects !== false) ? `
+                    projects: (rec.projects) ? `
                         <div class="relative group/resume-sec mt-4" data-section-key="projects">
                             ${renderSectionReorderControls('projects', tpl)}
                             <h2 class="text-xs font-serif font-black uppercase tracking-widest text-amber-950 border-b-2 border-double border-amber-600/80 pb-1 mb-2 flex items-center gap-2">
                                 <span class="text-amber-600 text-sm">&#9670;</span>
                                 <span>KEY MATTERS & ADVISORY CASES</span>
                             </h2>
-                            <div class="space-y-2 mt-1.5">
-                                ${projs.map(p => `
-                                    <div class="p-2 rounded bg-amber-50/40 border border-amber-200/70">
-                                        <div class="font-serif font-bold text-amber-950 text-xs">${p.title}</div>
-                                        ${p.techStack ? `<div class="text-[10px] text-amber-800 font-sans font-semibold mt-0.5">${p.techStack}</div>` : ''}
-                                        ${p.description ? `<p class="text-[11px] font-serif text-slate-700 mt-1 leading-relaxed">${p.description}</p>` : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
+                            ${renderTemplateProjectItems('mt-1.5 space-y-2 font-serif')}
                         </div>
                     ` : '',
 
-                    custom: renderCustomSectionsHtml(tpl),
+                    custom: renderTemplateCustomSections(tpl),
 
-                    particulars: (hasAnyPersonalParticulars || rec.isDummy) ? `
+                    particulars: `
                         <div class="relative group/resume-sec mt-4" data-section-key="particulars">
                             ${renderSectionReorderControls('particulars', tpl)}
                             <h2 class="text-xs font-serif font-black uppercase tracking-widest text-amber-950 border-b-2 border-double border-amber-600/80 pb-1 mb-2 flex items-center gap-2">
                                 <span class="text-amber-600 text-sm">&#9670;</span>
                                 <span>PERSONAL PARTICULARS & REGISTRATION</span>
                             </h2>
-                            <div class="border border-amber-200 rounded p-2.5 bg-amber-50/30">
-                                ${renderPersonalParticularsGrid(rec, tpl)}
+                            <div data-particulars-grid="true" class="border border-amber-200/90 rounded-lg p-2.5 bg-amber-50/30 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-800 font-serif">
+                                <div><strong class="inline-block w-32 text-amber-950 font-bold">Father's Name</strong>: <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-32', 'text-amber-950 font-bold', false)}
+                                <div><strong class="inline-block w-32 text-amber-950 font-bold">Date of Birth</strong>: <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
+                                <div><strong class="inline-block w-32 text-amber-950 font-bold">Gender</strong>: <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
+                                ${rec.maritalStatus ? `<div><strong class="inline-block w-32 text-amber-950 font-bold">Marital Status</strong>: <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
+                                <div><strong class="inline-block w-32 text-amber-950 font-bold">Nationality</strong>: <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
+                                <div><strong class="inline-block w-32 text-amber-950 font-bold">Languages</strong>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
+                                ${shouldShowHobbies ? `<div><strong class="inline-block w-32 text-amber-950 font-bold">Hobbies</strong>: <span data-inline-field="hobbies">${escapeAttr(effectiveHobbies)}</span></div>` : ''}
+                                ${renderCustomParticulars('w-24', 'text-amber-950 font-bold', false)}
+                                <div class="col-span-full flex items-start gap-1.5 text-left"><strong class="shrink-0 text-amber-950 font-bold">Address:</strong><div data-inline-field="address" class="flex-1 leading-tight">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
                             </div>
                         </div>
-                    ` : '',
+                    `,
 
                     declaration: (rec.enableDeclaration !== false) ? `
-                        <div class="relative group/resume-sec mt-4" data-section-key="declaration">
+                        <div class="relative group/resume-sec mt-4 pt-2.5 border-t border-amber-600/50 text-xs font-serif" data-section-key="declaration">
                             ${renderSectionReorderControls('declaration', tpl)}
                             <h2 class="text-xs font-serif font-black uppercase tracking-widest text-amber-950 border-b-2 border-double border-amber-600/80 pb-1 mb-2 flex items-center gap-2">
                                 <span class="text-amber-600 text-sm">&#9670;</span>
                                 <span>DECLARATION & AFFIRMATION</span>
                             </h2>
-                            <p data-inline-field="declaration" class="text-xs text-slate-700 font-serif italic leading-relaxed">
-                                "${rec.declaration || 'I solemnly declare and confirm that all particulars supplied herein are true and verified according to official records.'}"
+                            <p data-inline-field="declarationText" class="text-xs text-slate-700 font-serif italic leading-relaxed">
+                                "${renderDeclarationText(rec.declarationText || rec.declaration, 'I solemnly affirm and declare that all particulars stated above are true and complete to the best of my knowledge and official record.')}"
                             </p>
                             <div class="mt-4 flex justify-between items-end text-xs font-serif">
                                 <div>
-                                    <div>Date: <span data-inline-field="declarationDate" class="font-bold text-amber-950">${rec.declarationDate || '11/11/2026'}</span></div>
-                                    <div class="mt-0.5">Place: <span data-inline-field="declarationPlace" class="font-bold text-amber-950">${rec.declarationPlace || 'New Delhi'}</span></div>
+                                    <div>Date: <span data-inline-field="declarationDate" class="font-bold text-amber-950">${todayStr}</span></div>
+                                    <div class="mt-0.5">Place: <span data-inline-field="declarationPlace" class="font-bold text-amber-950">${placeStr}</span></div>
                                 </div>
                                 <div class="text-right">
                                     <div class="text-[9px] text-amber-800 uppercase font-sans font-bold">Authorized Signatory</div>
@@ -17974,7 +18055,7 @@
                         <!-- Royal Gold Header -->
                         <div class="text-center pb-3 border-b-2 border-double border-amber-600/80">
                             <h1 data-inline-field="studentName" class="text-2xl sm:text-3xl font-serif font-black uppercase tracking-wider text-amber-950">${rec.studentName || 'CANDIDATE FULL NAME'}</h1>
-                            ${rec.workRole ? `<div data-inline-field="workRole" class="text-xs font-sans font-bold text-amber-800 uppercase tracking-widest mt-0.5">${rec.workRole}</div>` : ''}
+                            ${(rec.workRole || rec.staff_designation) ? `<div data-inline-field="workRole" class="text-xs font-sans font-bold text-amber-800 uppercase tracking-widest mt-0.5">${escapeAttr(rec.workRole || rec.staff_designation)}</div>` : ''}
                             
                             <div class="mt-2 text-xs text-slate-700 flex flex-wrap items-center justify-center gap-2 sm:gap-3 font-sans">
                                 <span><i class="fa-solid fa-phone text-amber-600 mr-1"></i> <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span></span>
@@ -17995,7 +18076,7 @@
                 `;
             }
 
-            if (effectiveTpl === 'coral_impact') {
+            else if (effectiveTpl === 'coral_impact') {
                 const coralSections = {
                     objective: (rec.careerObjective || rec.isDummy) ? `
                         <div class="relative group/resume-sec mt-3.5" data-section-key="objective">
@@ -18026,14 +18107,27 @@
                                             <th class="col-institute relative py-1 text-rose-950 font-bold" ${getColWidthStyle('institute')}>Institute<div class="col-divider-handle no-print" onpointerdown="startColDividerResize(event, 'institute')" ondblclick="resetColDividerWidth('institute', this.parentElement)" title="Drag column width"></div></th>
                                             <th class="col-board relative py-1 text-rose-950 font-bold" ${getColWidthStyle('board')}>Board / Univ<div class="col-divider-handle no-print" onpointerdown="startColDividerResize(event, 'board')" ondblclick="resetColDividerWidth('board', this.parentElement)" title="Drag column width"></div></th>
                                             <th class="col-year py-1 text-center text-rose-950 font-bold" ${getColWidthStyle('year')}>Year</th>
-                                            <th class="col-percent py-1 text-right text-rose-950 font-bold" ${getColWidthStyle('percent')}>Score</th>
+                                            <th class="col-percent py-1 text-right text-rose-950 font-bold" ${getColWidthStyle('score')}>Score</th>
                                             <th class="w-8 py-1 text-center no-print text-[10px] text-rose-800"><i class="fa-solid fa-arrows-up-down"></i></th>
                                         </tr>
                                     </thead>
                                     <tbody id="academic-table-body-sortable">
-                                        ${renderAcademicRows(acs, tpl)}
+                                        ${acs.map(ac => `
+                                        <tr data-academic-exam="${escapeAttr(ac.exam || '')}" data-academic-orig-index="${ac._origFormIndex !== undefined ? ac._origFormIndex : ''}" class="border-b border-rose-100">
+                                            <td class="col-degree py-0.5 font-bold text-slate-900">
+                                                <div data-academic-col="exam">${escapeAttr(ac.exam || '-')}</div>
+                                                ${ac.subject ? `<div class="font-normal text-[10px] text-slate-600"><span data-academic-col="subject">${escapeAttr(ac.subject)}</span></div>` : ''}
+                                            </td>
+                                            <td class="col-institute py-0.5" data-academic-col="institute">${escapeAttr(ac.institute || '-')}</td>
+                                            <td class="col-board py-0.5" data-academic-col="board">${escapeAttr(ac.board || '-')}</td>
+                                            <td class="col-year py-0.5 text-center font-bold" data-academic-col="year">${escapeAttr(ac.year || '-')}</td>
+                                            <td class="col-score py-0.5 text-right font-bold text-rose-700 bg-rose-50/40" data-academic-col="score">${escapeAttr(formatAcademicDisplayScore(ac))}</td>
+                                            <td class="w-8 py-0.5 text-center no-print text-rose-700 text-xs"></td>
+                                        </tr>
+                                        `).join('')}
                                     </tbody>
                                 </table>
+                                ${renderAcademicTableControls()}
                             </div>
                             `}
                         </div>
@@ -18046,22 +18140,11 @@
                                 <span class="w-2.5 h-2.5 bg-rose-600 inline-block rounded-xs"></span>
                                 <span>PROFESSIONAL EXPERIENCE & ACHIEVEMENTS</span>
                             </h2>
-                            <div class="space-y-3 mt-1.5">
-                                ${exps.map((e, idx) => `
-                                    <div class="relative group/exp-item pb-1.5 border-b border-slate-100 last:border-b-0">
-                                        <div class="flex flex-wrap items-baseline justify-between gap-1">
-                                            <div class="font-bold text-slate-950 text-xs">${e.role || 'Designation'}</div>
-                                            <div class="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">${e.duration || '2022 - Present'}</div>
-                                        </div>
-                                        <div class="text-[11px] font-semibold text-rose-600 mt-0.5">${e.company || 'Company'}</div>
-                                        ${e.description ? `<p class="text-[11px] text-slate-600 leading-relaxed mt-1">${e.description}</p>` : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
+                            ${renderTemplateExperienceItems('text-rose-600 font-bold', 'mt-1.5 space-y-2.5')}
                         </div>
                     ` : '',
 
-                    skills: (skillsArr.length > 0 || rec.isDummy) ? `
+                    skills: ((skillsArr.length > 0 || rec.isDummy) && rec.enableSkills !== false) ? `
                         <div class="relative group/resume-sec mt-3.5" data-section-key="skills">
                             ${renderSectionReorderControls('skills', tpl)}
                             <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 border-b-2 border-rose-600 pb-1 mb-2 flex items-center gap-2">
@@ -18071,59 +18154,62 @@
                             <div class="flex flex-wrap gap-1.5 mt-2">
                                 ${skillsArr.map(s => `
                                     <span class="px-2.5 py-1 rounded-full bg-rose-50 text-rose-800 border border-rose-200/90 font-bold text-[10.5px] shadow-2xs">
-                                        ${s}
+                                        ${escapeAttr(s)}
                                     </span>
                                 `).join('')}
                             </div>
                         </div>
                     ` : '',
 
-                    projects: (hasProjects && rec.enableProjects !== false) ? `
+                    projects: (rec.projects) ? `
                         <div class="relative group/resume-sec mt-3.5" data-section-key="projects">
                             ${renderSectionReorderControls('projects', tpl)}
                             <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 border-b-2 border-rose-600 pb-1 mb-2 flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 bg-rose-600 inline-block rounded-xs"></span>
                                 <span>HIGH-IMPACT PROJECTS & CAMPAIGNS</span>
                             </h2>
-                            <div class="space-y-2 mt-1.5">
-                                ${projs.map(p => `
-                                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-                                        <div class="font-bold text-slate-900 text-xs">${p.title}</div>
-                                        ${p.techStack ? `<div class="text-[10px] text-rose-600 font-bold mt-0.5">${p.techStack}</div>` : ''}
-                                        ${p.description ? `<p class="text-[11px] text-slate-600 mt-1 leading-relaxed">${p.description}</p>` : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
+                            ${renderTemplateProjectItems('mt-1.5 space-y-2')}
                         </div>
                     ` : '',
 
-                    custom: renderCustomSectionsHtml(tpl),
+                    custom: renderTemplateCustomSections(tpl),
 
-                    particulars: (hasAnyPersonalParticulars || rec.isDummy) ? `
+                    particulars: `
                         <div class="relative group/resume-sec mt-3.5" data-section-key="particulars">
                             ${renderSectionReorderControls('particulars', tpl)}
                             <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 border-b-2 border-rose-600 pb-1 mb-2 flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 bg-rose-600 inline-block rounded-xs"></span>
                                 <span>PERSONAL DETAILS</span>
                             </h2>
-                            ${renderPersonalParticularsGrid(rec, tpl)}
+                            <div data-particulars-grid="true" class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-800">
+                                <div><strong class="inline-block w-32">Father's Name</strong>: <span data-inline-field="fatherName">${rec.fatherName || '-'}</span></div>
+                                ${renderParentalParticulars('w-32', 'font-bold', false)}
+                                <div><strong class="inline-block w-32">Date of Birth</strong>: <span data-inline-field="dob">${formatDobWithAge(rec)}</span></div>
+                                <div><strong class="inline-block w-32">Gender</strong>: <span data-inline-field="gender">${rec.gender || 'Male'}</span></div>
+                                ${rec.maritalStatus ? `<div><strong class="inline-block w-32">Marital Status</strong>: <span data-inline-field="maritalStatus">${escapeAttr(rec.maritalStatus)}</span></div>` : ''}
+                                <div><strong class="inline-block w-32">Nationality</strong>: <span data-inline-field="nationality">${rec.nationality || 'Indian'}</span></div>
+                                <div><strong class="inline-block w-32">Languages</strong>: <span data-inline-field="languagesKnown">${rec.languagesKnown || 'English, Hindi'}</span></div>
+                                ${shouldShowHobbies ? `<div><strong class="inline-block w-32">Hobbies</strong>: <span data-inline-field="hobbies">${escapeAttr(effectiveHobbies)}</span></div>` : ''}
+                                ${renderCustomParticulars('w-24', 'font-bold', false)}
+                                <div class="col-span-full flex items-start gap-1.5 text-left"><strong class="shrink-0">Address:</strong><div data-inline-field="address" class="flex-1 leading-tight">${escapeAttr(addr.full || addr.line1 || '')}</div></div>
+                            </div>
                         </div>
-                    ` : '',
+                    `,
 
                     declaration: (rec.enableDeclaration !== false) ? `
-                        <div class="relative group/resume-sec mt-3.5" data-section-key="declaration">
+                        <div class="relative group/resume-sec mt-3.5 pt-2 border-t border-rose-200 text-xs" data-section-key="declaration">
                             ${renderSectionReorderControls('declaration', tpl)}
                             <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 border-b-2 border-rose-600 pb-1 mb-2 flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 bg-rose-600 inline-block rounded-xs"></span>
                                 <span>DECLARATION</span>
                             </h2>
-                            <p data-inline-field="declaration" class="text-xs text-slate-700 italic leading-relaxed">
-                                "${rec.declaration || 'I hereby declare that all the information given above is true and authentic.'}"
+                            <p data-inline-field="declarationText" class="text-xs text-slate-700 italic leading-relaxed">
+                                "${renderDeclarationText(rec.declarationText || rec.declaration, 'I hereby declare that all the information given above is true and authentic.')}"
                             </p>
                             <div class="mt-4 flex justify-between items-end text-xs">
                                 <div>
-                                    <div>Date: <span data-inline-field="declarationDate" class="font-bold">${rec.declarationDate || '11/11/2026'}</span></div>
-                                    <div class="mt-0.5">Place: <span data-inline-field="declarationPlace" class="font-bold">${rec.declarationPlace || 'City'}</span></div>
+                                    <div>Date: <span data-inline-field="declarationDate" class="font-bold">${todayStr}</span></div>
+                                    <div class="mt-0.5">Place: <span data-inline-field="declarationPlace" class="font-bold">${placeStr}</span></div>
                                 </div>
                                 <div class="text-right">
                                     <div data-inline-field="studentName" class="font-bold uppercase mt-2">(${rec.studentName || 'Candidate Name'})</div>
@@ -18141,7 +18227,7 @@
                         <div class="pb-3 border-b-2 border-rose-600 flex justify-between items-start">
                             <div class="border-l-4 border-rose-600 pl-3">
                                 <h1 data-inline-field="studentName" class="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-950">${rec.studentName || 'CANDIDATE FULL NAME'}</h1>
-                                ${rec.workRole ? `<div data-inline-field="workRole" class="text-xs font-bold text-rose-600 uppercase tracking-wider mt-0.5">${rec.workRole}</div>` : ''}
+                                ${(rec.workRole || rec.staff_designation) ? `<div data-inline-field="workRole" class="text-xs font-bold text-rose-600 uppercase tracking-wider mt-0.5">${escapeAttr(rec.workRole || rec.staff_designation)}</div>` : ''}
                             </div>
                             <div class="text-right text-xs text-slate-600 space-y-0.5 font-medium">
                                 <div><i class="fa-solid fa-phone text-rose-600 mr-1"></i> <span data-inline-field="mobile">${formatMobileForDisplay(rec.mobile)}</span></div>
