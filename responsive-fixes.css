@@ -100,49 +100,46 @@ body {
   }
 }
 
-/* Compact saved-resume cards on desktop and mobile: trim padding/gaps and
-   remove default heading/paragraph margins that create empty space. */
-#view-dashboard :is(article, li, [class*="resume-card"], [class*="saved-resume"], [data-resume-card]) {
-  min-width: 0;
-  padding: 10px !important;
+/* JS tags the actual saved-resume cards and dashboard toolbar at runtime. */
+.compact-saved-resume-card {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 8px !important;
   gap: 8px !important;
 }
 
-#view-dashboard :is(article, li, [class*="resume-card"], [class*="saved-resume"], [data-resume-card]) :is(h1, h2, h3, h4, h5, h6, p) {
+.compact-saved-resume-card :is(h1, h2, h3, h4, h5, h6, p) {
   margin-block: 0 !important;
   line-height: 1.25 !important;
 }
 
-#view-dashboard :is(article, li, [class*="resume-card"], [class*="saved-resume"], [data-resume-card]) :is(img, [class*="avatar"], [class*="profile-photo"], [class*="photo"]) {
+.compact-saved-resume-card :is(img, [class*="avatar"], [class*="profile"], [class*="photo"]) {
   margin-block: 0 !important;
-  flex-shrink: 0;
+  flex-shrink: 0 !important;
 }
 
-/* Make the edit action a regular, understated icon button instead of a large
-   floating/card-style control. */
-#view-dashboard :is(button, [role="button"]):is([aria-label*="edit" i], [title*="edit" i]),
-#view-dashboard :is(button, [role="button"]):has(svg[class*="pencil"], svg[class*="edit"], i[class*="pen"], i[class*="edit"]) {
-  width: 32px !important;
-  min-width: 32px !important;
-  height: 32px !important;
-  min-height: 32px !important;
-  padding: 6px !important;
+.compact-saved-resume-card :is(button, [role="button"]):is([aria-label*="edit" i], [title*="edit" i]),
+.compact-saved-resume-card :is(button, [role="button"]):has(svg[class*="pencil"], svg[class*="edit"], i[class*="pen"], i[class*="edit"]) {
+  width: 30px !important;
+  min-width: 30px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 5px !important;
   border: 0 !important;
   border-radius: 8px !important;
   background: transparent !important;
   box-shadow: none !important;
-  transform: none !important;
 }
 
-#view-dashboard :is(button, [role="button"]):is([aria-label*="edit" i], [title*="edit" i]) svg,
-#view-dashboard :is(button, [role="button"]):has(svg[class*="pencil"], svg[class*="edit"], i[class*="pen"], i[class*="edit"]) :is(svg, i) {
-  width: 16px;
-  height: 16px;
+/* Preview-only actions must not appear while the dashboard is the active view. */
+body.dashboard-active .dashboard-preview-control {
+  display: none !important;
 }
 
 @media (max-width: 767px) {
-  #view-dashboard :is(article, li, [class*="resume-card"], [class*="saved-resume"], [data-resume-card]) {
-    padding: 8px !important;
+  .compact-saved-resume-card {
+    padding: 7px !important;
     gap: 6px !important;
   }
 }
