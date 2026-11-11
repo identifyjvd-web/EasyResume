@@ -403,3 +403,14 @@ body.dashboard-active [data-menu-context="editor"] {
   flex-direction: column !important;
   justify-content: space-between !important;
 }
+
+/* Floating Inline Toolbar & Attached Right Color Palette Card */
+#inline-color-palette-popup {
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+#inline-color-palette-popup button:active {
+  transform: scale(0.92);
+}
+
