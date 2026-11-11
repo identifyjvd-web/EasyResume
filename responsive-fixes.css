@@ -121,14 +121,15 @@ body {
 
 .compact-saved-resume-card :is(button, [role="button"]):is([aria-label*="edit" i], [title*="edit" i]),
 .compact-saved-resume-card :is(button, [role="button"]):has(svg[class*="pencil"], svg[class*="edit"], i[class*="pen"], i[class*="edit"]) {
-  width: 30px !important;
-  min-width: 30px !important;
-  height: 30px !important;
-  min-height: 30px !important;
-  padding: 5px !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 !important;
   border: 0 !important;
   border-radius: 8px !important;
   background: transparent !important;
+  /* color preserved for colourful icons */
   box-shadow: none !important;
 }
 
