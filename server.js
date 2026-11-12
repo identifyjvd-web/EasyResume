@@ -1,9 +1,12 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4321;
+const parsedPort = parseInt(process.env.PORT, 10);
+const PORT = (Number.isInteger(parsedPort) && parsedPort > 0 && parsedPort <= 65535) ? parsedPort : 4321;
+const APP_ROOT_REAL = fs.realpathSync(__dirname);
+const FORBIDDEN_PATHS = new Set(['/server.js', '/package.json', '/package-lock.json', '/start.bat']);
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -42,15 +45,29 @@ function launchBrowser(url) {
     path.join(localAppData, 'BraveSoftware\\Brave-Browser\\Application\\brave.exe')
   ];
 
+  if (!/^http:\/\/127\.0\.0\.1:\d{1,5}\/?$/.test(url)) {
+    return;
+  }
+
   for (const browserPath of candidateBrowsers) {
     if (browserPath && fs.existsSync(browserPath)) {
-      exec(`"${browserPath}" --app=${url}`);
+      const child = spawn(browserPath, [`--app=${url}`], {
+        detached: true,
+        stdio: 'ignore',
+        shell: false
+      });
+      child.unref();
       return;
     }
   }
 
-  // Fallback to default OS browser
-  exec(`start "" "${url}"`);
+  // Fallback to default OS browser without shell string interpolation
+  const fallback = spawn('cmd.exe', ['/c', 'start', '""', url], {
+    detached: true,
+    stdio: 'ignore',
+    shell: false
+  });
+  fallback.unref();
 }
 
 const server = http.createServer((req, res) => {
@@ -74,9 +91,22 @@ const server = http.createServer((req, res) => {
 
   if (pathname === '/' || pathname === '') pathname = '/index.html';
 
-  // Keep requests strictly inside the app directory
-  const filePath = path.resolve(__dirname, `.${pathname}`);
-  const relativePath = path.relative(__dirname, filePath);
+  // Block hidden dotfiles/directories and server/project configuration files
+  const normalizedPath = path.posix.normalize(pathname.replace(/\\/g, '/'));
+  const pathSegments = normalizedPath.split('/').filter(Boolean);
+  if (
+    normalizedPath.includes('\0') ||
+    pathSegments.some(seg => seg.startsWith('.')) ||
+    FORBIDDEN_PATHS.has(normalizedPath.toLowerCase())
+  ) {
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Forbidden');
+    return;
+  }
+
+  // Keep requests strictly inside the app directory (including symlink/junction resolution)
+  const filePath = path.resolve(APP_ROOT_REAL, `.${normalizedPath}`);
+  const relativePath = path.relative(APP_ROOT_REAL, filePath);
 
   if (
     relativePath === '..' ||
@@ -88,9 +118,16 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  let realFilePath;
   let stats;
   try {
-    stats = fs.statSync(filePath);
+    realFilePath = fs.realpathSync(filePath);
+    if (!realFilePath.startsWith(APP_ROOT_REAL + path.sep) && realFilePath !== APP_ROOT_REAL) {
+      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Forbidden');
+      return;
+    }
+    stats = fs.statSync(realFilePath);
   } catch (error) {
     if (error.code === 'ENOENT' || error.code === 'ENOTDIR') {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -108,15 +145,17 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  const ext = path.extname(filePath).toLowerCase();
+  const ext = path.extname(realFilePath).toLowerCase();
   const headers = {
     'Content-Type': MIME[ext] || 'application/octet-stream',
     'Content-Length': stats.size,
-    'Access-Control-Allow-Origin': '*'
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'strict-origin-when-cross-origin'
   };
 
   // Allow service workers to control root scope
-  if (pathname === '/sw.js') {
+  if (normalizedPath === '/sw.js') {
     headers['Service-Worker-Allowed'] = '/';
   }
 
@@ -132,7 +171,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  const stream = fs.createReadStream(filePath);
+  const stream = fs.createReadStream(realFilePath);
   stream.on('error', () => {
     if (!res.headersSent) {
       res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -153,10 +192,9 @@ server.on('error', (err) => {
   }
 });
 
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '127.0.0.1', () => {
   const url = `http://127.0.0.1:${PORT}`;
   console.log(`EasyResume Desktop Server running at ${url}`);
-  console.log(`Network access available on http://0.0.0.0:${PORT}`);
   launchBrowser(url);
 });
 

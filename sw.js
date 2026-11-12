@@ -1,4 +1,4 @@
-const CACHE_NAME = 'easyresume-pwa-v105';
+const CACHE_NAME = 'easyresume-pwa-v2026.11.1';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -107,10 +107,13 @@ async function addDashboardFixes(response) {
     html = html.replace(/<\\/head>/i, `${DASHBOARD_FIX_SCRIPT}\\n</head>`);
   }
 
+  const headers = new Headers(response.headers);
+  headers.delete('content-length');
+
   return new Response(html, {
     status: response.status,
     statusText: response.statusText,
-    headers: response.headers
+    headers
   });
 }
 
@@ -132,15 +135,23 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  // Enforce same-origin boundary; never intercept or cache cross-origin responses
+  let reqUrl;
+  try {
+    reqUrl = new URL(event.request.url);
+  } catch {
+    return;
+  }
+  if (reqUrl.origin !== self.location.origin) return;
+
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).then(addDashboardFixes).then((response) => {
-        if (response && response.status === 200) {
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+        if (response && response.ok && response.type === 'basic') {
+          caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', response.clone()));
         }
         return response;
-      }).catch(() => caches.match(event.request)
-        .then((cached) => cached || caches.match('./index.html'))
+      }).catch(() => caches.match('./index.html')
         .then(addDashboardFixes))
     );
     return;
@@ -150,12 +161,14 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         fetch(event.request).then((response) => {
-          if (response && response.status === 200) caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response));
+          if (response && response.ok && response.type === 'basic') {
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response));
+          }
         }).catch(() => {});
         return cachedResponse;
       }
       return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || (response.type !== 'basic' && response.type !== 'cors')) return response;
+        if (!response || !response.ok || response.type !== 'basic') return response;
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;

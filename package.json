@@ -1,6 +1,6 @@
 {
   "name": "easyresume",
-  "version": "1.0.0",
+  "version": "2026.11.1",
   "description": "Professional Resume Builder Desktop App",
   "main": "server.js",
   "scripts": {

@@ -221,9 +221,9 @@ body.dashboard-active [data-menu-context="editor"] {
   /* Mockup Container on phones: fits 100% of content with zero clipping */
   #resumes-formats-grid .resume-format-mockup,
   #resumes-formats-grid [class*="h-[260px]"] {
-    height: 220px !important;
-    min-height: 220px !important;
-    max-height: 220px !important;
+    height: 180px !important;
+    min-height: 180px !important;
+    max-height: 180px !important;
     padding: 6px 7px !important;
     border-radius: 10px !important;
     overflow: hidden !important;
@@ -404,7 +404,19 @@ body.dashboard-active [data-menu-context="editor"] {
   justify-content: space-between !important;
 }
 
-/* Floating Inline Toolbar & Attached Right Color Palette Card */
+/* =========================================================
+   SAMPLE PREVIEW MODE — Dashed green border on A4 page
+   Shows when a sample resume is being previewed before editor
+   ========================================================= */
+body.sample-preview-active .a4-page-card {
+  outline: 2.5px dashed #10b981 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.10) !important;
+  border-radius: 4px !important;
+}
+
+
+/* Floating label */
 #inline-color-palette-popup {
   box-sizing: border-box;
   pointer-events: auto;
@@ -414,3 +426,23 @@ body.dashboard-active [data-menu-context="editor"] {
   transform: scale(0.92);
 }
 
+
+
+/* Mobile: hide contact button text, show icons only */
+@media (max-width: 480px) {
+  .contact-btn-text {
+    display: none !important;
+  }
+  .contact-btn {
+    gap: 0 !important;
+  }
+}
+
+/* Keep side-by-side form input boxes horizontally aligned (never staggered up/down) */
+#editor-pane .grid {
+  align-items: end;
+}
+
+#editor-pane .grid > div {
+  min-width: 0;
+}
